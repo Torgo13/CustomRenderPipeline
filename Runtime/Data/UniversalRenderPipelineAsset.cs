@@ -430,7 +430,7 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField] internal ScriptableRendererData m_RendererData = null;
 
         // Renderer settings
-        [SerializeField] internal ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
+        [SerializeField] public ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
         [SerializeField] internal int m_DefaultRendererIndex = 0;
 
         // General settings
@@ -1025,6 +1025,7 @@ namespace UnityEngine.Rendering.Universal
         public Downsampling opaqueDownsampling
         {
             get { return m_OpaqueDownsampling; }
+            set { m_OpaqueDownsampling = value; }
         }
 
         /// <summary>
@@ -1098,6 +1099,7 @@ namespace UnityEngine.Rendering.Universal
         public LODCrossFadeDitheringType lodCrossFadeDitheringType
         {
             get { return m_LODCrossFadeDitheringType; }
+            set { m_LODCrossFadeDitheringType = value; }
         }
 
         /// <summary>
@@ -1158,7 +1160,7 @@ namespace UnityEngine.Rendering.Universal
         public bool supportsMainLightShadows
         {
             get { return m_MainLightShadowsSupported; }
-            internal set {
+            set {
                 m_MainLightShadowsSupported = value;
 #if UNITY_EDITOR
                 m_AnyShadowsSupported = m_MainLightShadowsSupported || m_AdditionalLightShadowsSupported;
@@ -1172,7 +1174,7 @@ namespace UnityEngine.Rendering.Universal
         public int mainLightShadowmapResolution
         {
             get { return (int)m_MainLightShadowmapResolution; }
-            internal set { m_MainLightShadowmapResolution = (ShadowResolution)value; }
+            set { m_MainLightShadowmapResolution = (ShadowResolution)value; }
         }
 
         /// <summary>
@@ -1364,13 +1366,13 @@ namespace UnityEngine.Rendering.Universal
         public bool supportsSoftShadows
         {
             get { return m_SoftShadowsSupported; }
-            internal set { m_SoftShadowsSupported = value; }
+            set { m_SoftShadowsSupported = value; }
         }
 
         /// <summary>
         /// Light default Soft Shadow Quality.
         /// </summary>
-        internal SoftShadowQuality softShadowQuality
+        public SoftShadowQuality softShadowQuality
         {
             get { return m_SoftShadowQuality; }
             set { m_SoftShadowQuality = value; }
@@ -1478,6 +1480,7 @@ namespace UnityEngine.Rendering.Universal
         public bool useFastSRGBLinearConversion
         {
             get { return m_UseFastSRGBLinearConversion; }
+            set { m_UseFastSRGBLinearConversion = value; }
         }
         
         /// <summary>
@@ -1688,13 +1691,15 @@ namespace UnityEngine.Rendering.Universal
             get { return editorResources?.shaders.terrainDetailGrassPS; }
         }
 
+        public Shader detailGrassBillboardShader;
+
         /// <summary>
         /// Returns the terrain detail grass billboard shader that this asset uses.
         /// </summary>
         /// <returns>Returns the terrain detail grass billboard shader that this asset uses.</returns>
         public override Shader terrainDetailGrassBillboardShader
         {
-            get { return editorResources?.shaders.terrainDetailGrassBillboardPS; }
+            get { return detailGrassBillboardShader; } //editorResources?.shaders.terrainDetailGrassBillboardPS; }
         }
 
         /// <summary>
