@@ -1187,7 +1187,7 @@ namespace UnityEngine.Rendering.Universal
                 EnqueuePass(m_DrawOffscreenUIPass);
             }
 
-            bool hasCaptureActions = renderingData.cameraData.captureActions != null && lastCameraInTheStack;
+            bool hasCaptureActions = cameraData.captureActions != null && lastCameraInTheStack;
 
             // When FXAA or scaling is active, we must perform an additional pass at the end of the frame for the following reasons:
             // 1. FXAA expects to be the last shader running on the image before it's presented to the screen. Since users are allowed
@@ -1196,9 +1196,9 @@ namespace UnityEngine.Rendering.Universal
             // 2. UberPost can only handle upscaling with linear filtering. All other filtering methods require the FinalPost pass.
             // 3. TAA sharpening using standalone RCAS pass is required. (When upscaling is not enabled).
             bool applyFinalPostProcessing = anyPostProcessing && lastCameraInTheStack &&
-                ((renderingData.cameraData.antialiasing == AntialiasingMode.FastApproximateAntialiasing) ||
-                 ((renderingData.cameraData.imageScalingMode == ImageScalingMode.Upscaling) && (renderingData.cameraData.upscalingFilter != ImageUpscalingFilter.Linear)) ||
-                 (renderingData.cameraData.IsTemporalAAEnabled() && renderingData.cameraData.taaSettings.contrastAdaptiveSharpening > 0.0f));
+                ((cameraData.antialiasing == AntialiasingMode.FastApproximateAntialiasing) ||
+                 ((cameraData.imageScalingMode == ImageScalingMode.Upscaling) && (cameraData.upscalingFilter != ImageUpscalingFilter.Linear)) ||
+                 (cameraData.IsTemporalAAEnabled() && cameraData.taaSettings.contrastAdaptiveSharpening > 0.0f));
 
             // When post-processing is enabled we can use the stack to resolve rendering to camera target (screen or RT).
             // However when there are render passes executing after post we avoid resolving to screen so rendering continues (before sRGBConversion etc)

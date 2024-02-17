@@ -435,7 +435,7 @@ namespace UnityEngine.Rendering.Universal
                         break;
                 }
 
-                builder.SetRenderFunc((TaaPassData data, RenderGraphContext context) =>
+                builder.SetRenderFunc(static (TaaPassData data, RenderGraphContext context) =>
                 {
                     data.material.SetFloat(ShaderConstants._TaaFrameInfluence, data.taaFrameInfluence);
                     data.material.SetFloat(ShaderConstants._TaaVarianceClampScale, data.taaVarianceClampScale);

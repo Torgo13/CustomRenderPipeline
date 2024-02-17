@@ -41,6 +41,8 @@ Varyings BuildVaryings(Attributes input)
 
     UNITY_SETUP_INSTANCE_ID(input);
 
+    UNITY_TRANSFER_INSTANCE_ID(input, output);
+
 #if defined(HAVE_VFX_MODIFICATION)
     AttributesElement element;
     ZERO_INITIALIZE(AttributesElement, element);

@@ -41,6 +41,7 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
 
     #if defined(DEBUG_DISPLAY)
     inputData.positionWS = input.positionWS;
+    inputData.positionCS = input.positionCS;
     inputData.viewDirectionWS = input.viewDirWS;
     #else
     inputData.positionWS = float3(0, 0, 0);

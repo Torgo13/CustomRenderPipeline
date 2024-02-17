@@ -51,6 +51,8 @@ void InitializeInputData(Varyings input, SurfaceDescription surfaceDescription, 
     #else
     inputData.vertexSH = input.sh;
     #endif
+
+    inputData.positionCS = input.positionCS;
     #endif
 }
 

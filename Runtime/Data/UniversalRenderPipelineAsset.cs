@@ -86,7 +86,12 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// Use this for 4096x4096 shadow resolution.
         /// </summary>
-        _4096 = 4096
+        _4096 = 4096,
+
+        /// <summary>
+        /// Use this for 8192x8192 shadow resolution.
+        /// </summary>
+        _8192 = 8192,
     }
 
     /// <summary>
@@ -592,6 +597,16 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public static readonly int AdditionalLightsDefaultShadowResolutionTierHigh = 1024;
 
+        /// <summary>
+        /// The list of renderer data used by this pipeline asset.
+        /// </summary>
+        public ReadOnlySpan<ScriptableRendererData> rendererDataList => m_RendererDataList;
+
+        /// <summary>
+        /// The list of renderers used by this pipeline asset.
+        /// </summary>
+        public ReadOnlySpan<ScriptableRenderer> renderers => m_Renderers;
+
 #if UNITY_EDITOR
         [NonSerialized]
         internal UniversalRenderPipelineEditorResources m_EditorResourcesAsset;
@@ -724,7 +739,7 @@ namespace UnityEngine.Rendering.Universal
                 m_RendererDataList = new ScriptableRendererData[1];
 
             // If no default data we can't create pipeline instance
-            if (m_RendererDataList[m_DefaultRendererIndex] == null)
+            if (m_DefaultRendererIndex >= m_RendererDataList.Length || m_RendererDataList[m_DefaultRendererIndex] == null)
             {
                 // If previous version and current version are miss-matched then we are waiting for the upgrader to kick in
                 if (k_AssetPreviousVersion != k_AssetVersion)

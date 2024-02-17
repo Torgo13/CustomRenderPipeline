@@ -351,6 +351,13 @@ namespace UnityEngine.Rendering.Universal
                 UniversalRenderPipelineDebugDisplaySettings.Instance.UpdateFrameTiming();
 #endif
 
+            // URP uses the camera's allowDynamicResolution flag to decide if useDynamicScale should be enabled for camera render targets.
+            // However, the RTHandle system has an additional setting that controls if useDynamicScale will be set for render targets allocated via RTHandles.
+            // In order to avoid issues at runtime, we must make the RTHandle system setting consistent with URP's logic. URP already synchronizes the setting
+            // during initialization, but unfortunately it's possible for external code to overwrite the setting due to RTHandle state being global.
+            // The best we can do to avoid errors in this situation is to ensure the state is set to the correct value every time we perform rendering.
+            RTHandles.SetHardwareDynamicResolutionState(true);
+
             SortCameras(cameras);
 #if UNITY_2021_1_OR_NEWER
             for (int i = 0; i < cameras.Count; ++i)

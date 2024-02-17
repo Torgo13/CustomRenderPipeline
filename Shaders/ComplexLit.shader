@@ -157,7 +157,7 @@ Shader "Universal Render Pipeline/Complex Lit"
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ DYNAMICLIGHTMAP_ON
-            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
             #pragma multi_compile_fog
             #pragma multi_compile_fragment _ DEBUG_DISPLAY
 
@@ -209,7 +209,7 @@ Shader "Universal Render Pipeline/Complex Lit"
 
             // -------------------------------------
             // Unity defined keywords
-            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
 
             // This is used during shadow map generation to differentiate between directional and punctual light shadows, as they use different formulas to apply Normal Bias
             #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
@@ -288,7 +288,7 @@ Shader "Universal Render Pipeline/Complex Lit"
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ DYNAMICLIGHTMAP_ON
-            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
 
             //--------------------------------------
@@ -333,7 +333,7 @@ Shader "Universal Render Pipeline/Complex Lit"
 
             // -------------------------------------
             // Unity defined keywords
-            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
 
             //--------------------------------------
             // GPU Instancing
@@ -384,7 +384,7 @@ Shader "Universal Render Pipeline/Complex Lit"
 
             // -------------------------------------
             // Unity defined keywords
-            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
 
             //--------------------------------------
             // GPU Instancing
