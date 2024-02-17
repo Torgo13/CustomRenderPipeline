@@ -625,6 +625,11 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
+        internal static bool FastApproximately(float a, float b)
+        {
+            return Mathf.Abs(a - b) < 0.000001f;
+        }
+
         internal const int kMinimumPunctualLightHardShadowResolution = 8;
         internal const int kMinimumPunctualLightSoftShadowResolution = 16;
         // Minimal shadow map resolution required to have meaningful shadows visible during lighting

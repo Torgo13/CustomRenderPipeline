@@ -63,6 +63,11 @@ namespace UnityEngine.Rendering.Universal
         void TileLight(int lightIndex)
         {
             var light = lights[lightIndex];
+            if (light.lightType != LightType.Point && light.lightType != LightType.Spot)
+            {
+                return;
+            }
+            
             var lightToWorld = (float4x4)light.localToWorldMatrix;
             var lightPositionVS = math.mul(worldToViews[m_ViewIndex], math.float4(lightToWorld.c3.xyz, 1)).xyz;
             lightPositionVS.z *= -1;
@@ -485,9 +490,10 @@ namespace UnityEngine.Rendering.Universal
                     for (var i = 0; i < clippedPointsCount; i++)
                     {
                         var candidateLine = clippedPoints[i] - hullPoint;
+                        var det = math.determinant(math.float2x2(endpointLine, candidateLine));
 
                         // Check if point i lies on the left side of the line to the current endpoint.
-                        if (endpointIndex == hullPointIndex || math.determinant(math.float2x2(endpointLine, candidateLine)) > 0)
+                        if (endpointIndex == hullPointIndex || det > 0 || (det == 0.0f && math.lengthsq(candidateLine) > math.lengthsq(endpointLine)))
                         {
                             endpointIndex = i;
                             endpointLine = candidateLine;
@@ -900,11 +906,20 @@ namespace UnityEngine.Rendering.Universal
             }
 
             var d = -math.dot(vertex, axis);
+            // If d is zero, this leads to a numerical instability in the code later on. This is why we make the value
+            // an epsilon if it is zero.
+            if (d == 0f) d = 1e-6f;
             var sign = d < 0 ? -1f : 1f;
             // sign *= vertex.z < 0 ? -1f : 1f;
             var origin = vertex + axis * d;
-            var radius = math.max(math.abs(d), 1e-6f) * circleRadius / coneHeight;
+            // Get the radius of the circular slice of the cone at the `origin`.
+            var radius = math.abs(d) * circleRadius / coneHeight;
+            // `circleU` and `circleV` are the two vectors perpendicular to the cone's axis. `cameraUV` is thus the
+            // position of the camera projected onto the plane of the circular slice. This basically creates a new
+            // 2D coordinate space, with (0, 0) located at the center of the circular slice, which why this variable
+            // is called `origin`.
             var cameraUV = math.float2(math.dot(circleU, -origin), math.dot(circleV, -origin));
+            // Use homogeneous coordinates to find the tangents.
             var polar = math.float3(cameraUV, -square(radius));
             var p1 = math.float2(-1, -polar.x / polar.y * (-1) - polar.z / polar.y);
             var p2 = math.float2(1, -polar.x / polar.y * 1 - polar.z / polar.y);

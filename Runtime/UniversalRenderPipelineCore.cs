@@ -1321,9 +1321,6 @@ namespace UnityEngine.Rendering.Universal
 
         /// <summary> Keyword used for vertex Spherical Harmonic (SH) evaluation in URP Lit shaders.</summary>
         public const string EVALUATE_SH_VERTEX = "EVALUATE_SH_VERTEX";
-
-        /// <summary> Keyword used for Drawing procedurally.</summary>
-        public const string UseDrawProcedural = "_USE_DRAW_PROCEDURAL";
     }
 
     public sealed partial class UniversalRenderPipeline

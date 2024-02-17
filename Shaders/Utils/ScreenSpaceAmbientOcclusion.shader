@@ -86,7 +86,7 @@ Shader "Hidden/Universal Render Pipeline/ScreenSpaceAmbientOcclusion"
         {
             Name "SSAO_Bilateral_FinalBlur_AfterOpaque"
 
-            ZTest NotEqual
+            ZTest Off
             ZWrite Off
             Cull Off
             Blend One SrcAlpha, Zero One
@@ -143,7 +143,7 @@ Shader "Hidden/Universal Render Pipeline/ScreenSpaceAmbientOcclusion"
         {
             Name "SSAO_Gaussian_VerticalBlur_AfterOpaque"
 
-            ZTest NotEqual
+            ZTest Off
             ZWrite Off
             Cull Off
             Blend One SrcAlpha, Zero One
@@ -187,7 +187,7 @@ Shader "Hidden/Universal Render Pipeline/ScreenSpaceAmbientOcclusion"
         {
             Name "SSAO_Kawase_AfterOpaque"
 
-            ZTest NotEqual
+            ZTest Off
             ZWrite Off
             Cull Off
             Blend One SrcAlpha, Zero One

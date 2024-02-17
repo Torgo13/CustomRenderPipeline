@@ -381,6 +381,15 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
+        void Start()
+        {
+            // Need to ensure correct behaviour for overlay cameras by setting their clear flag to nothing.
+            // This can't be done in the upgrade since the camera component can't be retrieved in the deserialization phase.
+            // OnValidate ensure future cameras won't have this issue.
+            if (m_CameraType == CameraRenderType.Overlay)
+                camera.clearFlags = CameraClearFlags.Nothing;
+        }
+
 
         /// <summary>
         /// Controls if this camera should render shadows.
@@ -768,6 +777,16 @@ namespace UnityEngine.Rendering.Universal
             {
                 m_RequiresDepthTextureOption = (m_RequiresDepthTexture) ? CameraOverrideOption.On : CameraOverrideOption.Off;
                 m_RequiresOpaqueTextureOption = (m_RequiresColorTexture) ? CameraOverrideOption.On : CameraOverrideOption.Off;
+                m_Version = 2;
+            }
+        }
+
+        /// <inheritdoc/>
+        public void OnValidate()
+        {
+            if (m_CameraType == CameraRenderType.Overlay && m_Camera != null)
+            {
+                m_Camera.clearFlags = CameraClearFlags.Nothing;
             }
         }
 
@@ -815,9 +834,9 @@ namespace UnityEngine.Rendering.Universal
         /// <inheritdoc/>
         public void OnDestroy()
         {
+            m_Camera.DestroyVolumeStack(this);
             if (camera.cameraType != CameraType.SceneView )
                 scriptableRenderer?.ReleaseRenderTargets();
-            m_Camera.DestroyVolumeStack(this);
             m_TaaPersistentData?.DeallocateTargets();
         }
     }

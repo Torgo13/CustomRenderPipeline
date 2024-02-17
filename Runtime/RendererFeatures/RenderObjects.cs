@@ -234,6 +234,9 @@ namespace UnityEngine.Experimental.Rendering.Universal
         /// <inheritdoc/>
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
+            if (renderingData.cameraData.cameraType == CameraType.Preview
+                || (renderingData.cameraData.targetTexture != null && renderingData.cameraData.targetTexture.format == RenderTextureFormat.Depth))
+                return;
             renderer.EnqueuePass(renderObjectsPass);
         }
 
