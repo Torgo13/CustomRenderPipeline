@@ -674,6 +674,18 @@ namespace UnityEngine.Rendering.Universal
         {
             get { return ref m_TaaSettings; }
         }
+        
+        public int temporalAAQuality
+        {
+            get => (int)m_TaaSettings.quality;
+            set => m_TaaSettings.quality = (TemporalAAQuality)value;
+        }
+        
+        public float contrastAdaptiveSharpening
+        {
+            get => m_TaaSettings.contrastAdaptiveSharpening;
+            set => m_TaaSettings.contrastAdaptiveSharpening = value;
+        }
 
         /// <summary>
         /// Temporal Anti-aliasing buffers and data that persists over a frame.
