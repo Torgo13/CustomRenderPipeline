@@ -1706,15 +1706,13 @@ namespace UnityEngine.Rendering.Universal
             get { return editorResources?.shaders.terrainDetailGrassPS; }
         }
 
-        public Shader detailGrassBillboardShader;
-
         /// <summary>
         /// Returns the terrain detail grass billboard shader that this asset uses.
         /// </summary>
         /// <returns>Returns the terrain detail grass billboard shader that this asset uses.</returns>
         public override Shader terrainDetailGrassBillboardShader
         {
-            get { return detailGrassBillboardShader; } //editorResources?.shaders.terrainDetailGrassBillboardPS; }
+            get { return editorResources?.shaders.terrainDetailGrassBillboardPS; }
         }
 
         /// <summary>

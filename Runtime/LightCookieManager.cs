@@ -930,7 +930,7 @@ namespace UnityEngine.Rendering.Universal
                     // Payload texture is inset
                     var potAtlas = (m_AdditionalLightsCookieAtlas as PowerOfTwoTextureAtlas);
                     var mipPadding = potAtlas == null ? 1 : potAtlas.mipPadding;
-                    var paddingSize = (int)Mathf.Pow(2, mipPadding) * 2 * Vector2.one;
+                    var paddingSize = (int)System.Math.Pow(2, mipPadding) * new Vector2(2, 2);
                     uvScaleOffset = PowerOfTwoTextureAtlas.GetPayloadScaleOffset(cookieSize, paddingSize, uvScaleOffset);
                 }
                 else

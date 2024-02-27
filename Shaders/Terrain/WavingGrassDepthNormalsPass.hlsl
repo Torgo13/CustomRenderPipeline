@@ -38,7 +38,19 @@ GrassVertexDepthNormalOutput DepthNormalOnlyVertex(GrassVertexDepthNormalInput v
 
     o.uv = v.texcoord;
     o.normal = TransformObjectToWorldNormal(v.normal);
-    o.clipPos = vertexInput.positionCS;
+
+    // Make quad look at camera in view space
+    float3 quadPivotPosVS = TransformWorldToView(vertexInput.positionWS);
+    // Get transform.lossyScale
+    float2 scaleXY_WS = float2(
+        length(unity_ObjectToWorld._m00_m10_m20), // scale x axis
+        length(unity_ObjectToWorld._m01_m11_m21)); // scale y axis
+    float3 posVS = quadPivotPosVS + float3(v.texcoord.xy * scaleXY_WS * v.tangent.xy, 0); // Reconstruct quad 4 points in view space
+    posVS.xy += v.tangent.xy;
+    // Complete SV_POSITION's view space to HClip space transformation
+    o.clipPos = mul(GetViewToHClipMatrix(), float4(posVS, 1));
+    //o.clipPos = vertexInput.positionCS;
+
     o.viewDirWS = GetCameraPositionWS() - vertexInput.positionWS;
     return o;
 }
@@ -50,7 +62,7 @@ GrassVertexDepthNormalOutput DepthNormalOnlyBillboardVertex(GrassVertexDepthNorm
     UNITY_TRANSFER_INSTANCE_ID(v, o);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-    TerrainBillboardGrass (v.vertex, v.tangent.xy);
+    //TerrainBillboardGrass (v.vertex, v.tangent.xy);
 
     // wave amount defined by the grass height
     float waveAmount = v.tangent.y;
@@ -60,14 +72,26 @@ GrassVertexDepthNormalOutput DepthNormalOnlyBillboardVertex(GrassVertexDepthNorm
 
     o.uv = v.texcoord;
     o.normal = TransformObjectToWorldNormal(v.normal);
-    o.clipPos = vertexInput.positionCS;
+
+    // Make quad look at camera in view space
+    float3 quadPivotPosVS = TransformWorldToView(vertexInput.positionWS);
+    // Get transform.lossyScale
+    float2 scaleXY_WS = float2(
+        length(unity_ObjectToWorld._m00_m10_m20), // scale x axis
+        length(unity_ObjectToWorld._m01_m11_m21)); // scale y axis
+    float3 posVS = quadPivotPosVS + float3(v.texcoord.xy * scaleXY_WS * v.tangent.xy, 0); // Reconstruct quad 4 points in view space
+    posVS.xy += v.tangent.xy;
+    // Complete SV_POSITION's view space to HClip space transformation
+    o.clipPos = mul(GetViewToHClipMatrix(), float4(posVS, 1));
+    //o.clipPos = vertexInput.positionCS;
+
     o.viewDirWS = GetCameraPositionWS() - vertexInput.positionWS;
     return o;
 }
 
 half4 DepthNormalOnlyFragment(GrassVertexDepthNormalOutput input) : SV_TARGET
 {
-    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_MainTex)).a, input.color, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_repeat)).a, input.color, _Cutoff);
     #if defined(_GBUFFER_NORMALS_OCT)
         float3 normalWS = NormalizeNormalPerPixel(input.normal);
         float2 octNormalWS = PackNormalOctQuadEncode(normalWS);           // values between [-1, +1], must use fp32 on Nintendo Switch.
