@@ -76,7 +76,7 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
 
             ENDHLSL
         }
@@ -133,13 +133,13 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_fragment _ _DEFERRED_MIXED_LIGHTING
             #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
-            #pragma multi_compile _ _LIGHT_LAYERS
+            #pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
             #pragma multi_compile_fragment _ _LIGHT_COOKIES
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
 
             ENDHLSL
         }
@@ -196,13 +196,13 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_fragment _ _DEFERRED_MIXED_LIGHTING
             #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
-            #pragma multi_compile _ _LIGHT_LAYERS
+            #pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
             #pragma multi_compile_fragment _ _LIGHT_COOKIES
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
 
             ENDHLSL
         }
@@ -261,13 +261,13 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_fragment _ _DEFERRED_MIXED_LIGHTING
             #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
-            #pragma multi_compile _ _LIGHT_LAYERS
+            #pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
             #pragma multi_compile_fragment _ _LIGHT_COOKIES
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
 
             ENDHLSL
         }
@@ -326,13 +326,13 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_fragment _ _DEFERRED_MIXED_LIGHTING
             #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
-            #pragma multi_compile _ _LIGHT_LAYERS
+            #pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
             #pragma multi_compile_fragment _ _LIGHT_COOKIES
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
 
             ENDHLSL
         }
@@ -373,7 +373,7 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
 
             ENDHLSL
         }
@@ -423,7 +423,7 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
 
             ENDHLSL
         }
@@ -466,7 +466,7 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/Shaders/Utils/StencilDeferred.hlsl"
 
             ENDHLSL
         }
