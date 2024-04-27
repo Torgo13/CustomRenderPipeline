@@ -10,7 +10,7 @@ namespace UnityEngine.Rendering.Universal
         #region Fields
         internal const string k_MotionVectorTextureName = "_MotionVectorTexture";
         internal const string k_MotionVectorDepthTextureName = "_MotionVectorDepthTexture";
-
+        
         const string kPreviousViewProjectionNoJitter = "_PrevViewProjMatrix";
         const string kViewProjectionNoJitter = "_NonJitteredViewProjMatrix";
 #if ENABLE_VR && ENABLE_XR_MODULE
@@ -30,9 +30,9 @@ namespace UnityEngine.Rendering.Universal
         #endregion
 
         #region Constructors
-        internal MotionVectorRenderPass(Material cameraMaterial, Material objectMaterial)
+        internal MotionVectorRenderPass(RenderPassEvent evt, Material cameraMaterial, Material objectMaterial)
         {
-            renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
+            renderPassEvent = evt;
             m_CameraMaterial = cameraMaterial;
             m_ObjectMaterial = objectMaterial;
             m_PassData = new PassData();

@@ -41,7 +41,6 @@ namespace UnityEngine.Rendering.Universal
             m_Renderer2DData = rendererData;
             m_BlitMaterial = blitMaterial;
             m_SamplingMaterial = samplingMaterial;
-            overrideCameraClear = true;
 
             m_CameraSortingLayerBoundsIndex = GetCameraSortingLayerBoundsIndex();
         }
@@ -195,6 +194,10 @@ namespace UnityEngine.Rendering.Universal
             var batchesDrawn = 0;
             var rtCount = 0U;
 
+            // Account for Sprite Mask and normal map usage where the first and last layer has to render the stencil pass
+            bool hasSpriteMask = UnityEngine.SpriteMaskUtility.HasSpriteMaskInScene();
+            bool normalsFirstClear = true;
+
             // Draw lights
             using (new ProfilingScope(cmd, m_ProfilingDrawLights))
             {
@@ -217,11 +220,13 @@ namespace UnityEngine.Rendering.Universal
 
                     batchesDrawn++;
 
-                    if (layerBatch.lightStats.totalNormalMapUsage > 0)
+                    if (layerBatch.lightStats.totalNormalMapUsage > 0 ||
+                        (hasSpriteMask && i == 0) ||
+                        (hasSpriteMask && i + 1 == batchCount))
                     {
                         filterSettings.sortingLayerRange = layerBatch.layerRange;
                         var depthTarget = m_NeedsDepth ? depthAttachmentHandle.nameID : BuiltinRenderTextureType.None;
-                        this.RenderNormals(context, renderingData, normalsDrawSettings, filterSettings, depthTarget, layerBatch.lightStats);
+                        this.RenderNormals(context, renderingData, normalsDrawSettings, filterSettings, depthTarget, ref normalsFirstClear);
                     }
 
                     using (new ProfilingScope(cmd, m_ProfilingDrawLightTextures))
@@ -244,21 +249,15 @@ namespace UnityEngine.Rendering.Universal
             var blendStylesCount = m_Renderer2DData.lightBlendStyles.Length;
             using (new ProfilingScope(cmd, m_ProfilingDrawRenderers))
             {
-                // Clear the target only when the first layer is rendered and this is the base camera (not camera overlay)
-                bool needsClear = ((startIndex == 0) && (renderingData.cameraData.renderType == CameraRenderType.Base));
                 RenderBufferStoreAction initialStoreAction;
                 if (msaaEnabled)
                     initialStoreAction = resolveDuringBatch < startIndex ? RenderBufferStoreAction.Resolve : RenderBufferStoreAction.StoreAndResolve;
                 else
                     initialStoreAction = RenderBufferStoreAction.Store;
                 CoreUtils.SetRenderTarget(cmd,
-                    colorAttachmentHandle, RenderBufferLoadAction.DontCare, initialStoreAction,
-                    depthAttachmentHandle, RenderBufferLoadAction.DontCare, initialStoreAction,
+                    colorAttachmentHandle, RenderBufferLoadAction.Load, initialStoreAction,
+                    depthAttachmentHandle, RenderBufferLoadAction.Load, initialStoreAction,
                     ClearFlag.None, Color.clear);
-                if (needsClear)
-                {
-                    CoreUtils.ClearRenderTarget(cmd, ClearFlag.All, CoreUtils.ConvertSRGBToActiveColorSpace(renderingData.cameraData.camera.backgroundColor));
-                }
 
                 for (var i = startIndex; i < startIndex + batchesDrawn; i++)
                 {

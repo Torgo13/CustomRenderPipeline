@@ -123,9 +123,8 @@ namespace UnityEngine.Rendering.Universal
         /// <inheritdoc/>
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (renderingData.cameraData.targetTexture != null && renderingData.cameraData.targetTexture.format == RenderTextureFormat.Depth)
+            if (UniversalRenderer.IsOffscreenDepthTexture(in renderingData.cameraData))
                 return;
-            
             if (!GetMaterials())
             {
                 Debug.LogErrorFormat("{0}.AddRenderPasses(): Missing material. {1} render pass will not be added.", GetType().Name, name);

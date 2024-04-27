@@ -23,7 +23,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public const string k_ShaderTagName = "UniversalPipeline";
 
-        private static class Profiling
+        internal static class Profiling
         {
             private static Dictionary<int, ProfilingSampler> s_HashSamplerCache = new Dictionary<int, ProfilingSampler>();
             public static readonly ProfilingSampler unknownSampler = new ProfilingSampler("Unknown");
@@ -199,8 +199,7 @@ namespace UnityEngine.Rendering.Universal
 
             // Initial state of the RTHandle system.
             // We initialize to screen width/height to avoid multiple realloc that can lead to inflated memory usage (as releasing of memory is delayed).
-            // Note: Use legacy DR control. Can be removed once URP integrates with core package DynamicResolutionHandler
-            RTHandles.Initialize(Screen.width, Screen.height, useLegacyDynamicResControl: true);
+            RTHandles.Initialize(Screen.width, Screen.height);
 
             GraphicsSettings.useScriptableRenderPipelineBatching = asset.useSRPBatcher;
 
@@ -480,7 +479,8 @@ namespace UnityEngine.Rendering.Universal
                 }
                 else
                 {
-                    RenderSingleCameraInternal(context, camera);
+                    camera.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData);
+                    RenderSingleCameraInternal(context, camera, ref additionalCameraData);
                 }
 
                 if(temporaryRT)
@@ -529,6 +529,11 @@ namespace UnityEngine.Rendering.Universal
             if (IsGameCamera(camera))
                 camera.gameObject.TryGetComponent(out additionalCameraData);
 
+            RenderSingleCameraInternal(context, camera, ref additionalCameraData);
+        }
+
+        internal static void RenderSingleCameraInternal(ScriptableRenderContext context, Camera camera, ref UniversalAdditionalCameraData additionalCameraData)
+        {
             if (additionalCameraData != null && additionalCameraData.renderType != CameraRenderType.Base)
             {
                 Debug.LogWarning("Only Base cameras can be rendered with standalone RenderSingleCamera. Camera will be skipped.");
@@ -949,11 +954,6 @@ namespace UnityEngine.Rendering.Universal
                 baseCameraData.cameraTargetDescriptor.height = baseCameraData.pixelHeight;
 				baseCameraData.cameraTargetDescriptor.useDynamicScale = false;
             }
-
-            bool isDefaultXRViewport = (!(Math.Abs(xrViewport.x) > 0.0f || Math.Abs(xrViewport.y) > 0.0f ||
-                Math.Abs(xrViewport.width) < xr.renderTargetDesc.width ||
-                Math.Abs(xrViewport.height) < xr.renderTargetDesc.height));
-            baseCameraData.isDefaultViewport = baseCameraData.isDefaultViewport && isDefaultXRViewport;
         }
 
         static void UpdateVolumeFramework(Camera camera, UniversalAdditionalCameraData additionalCameraData)

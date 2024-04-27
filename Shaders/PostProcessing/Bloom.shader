@@ -8,6 +8,7 @@ Shader "Hidden/Universal Render Pipeline/Bloom"
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UnityInput.hlsl"
         #include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
 

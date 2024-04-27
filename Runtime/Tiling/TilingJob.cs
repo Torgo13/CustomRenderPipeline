@@ -22,12 +22,12 @@ namespace UnityEngine.Rendering.Universal
         public int rangesPerItem;
 
         public Fixed2<float4x4> worldToViews;
-        public float4 centerOffset;
 
         public float2 tileScale;
         public float2 tileScaleInv;
-        public Fixed2<float2> viewPlaneHalfSizes;
-        public Fixed2<float2> viewPlaneHalfSizeInvs;
+        public Fixed2<float> viewPlaneBottoms;
+        public Fixed2<float> viewPlaneTops;
+        public Fixed2<float4> viewToViewportScaleBiases;
         public int2 tileCount;
         public float near;
         public bool isOrthographic;
@@ -41,7 +41,6 @@ namespace UnityEngine.Rendering.Universal
         {
             var index = jobIndex % itemsPerTile;
             m_ViewIndex = jobIndex / itemsPerTile;
-            m_CenterOffset = m_ViewIndex == 0 ? centerOffset.xy : centerOffset.zw;
             m_Offset = jobIndex * rangesPerItem;
 
             m_TileYRange = new InclusiveRange(short.MaxValue, short.MinValue);
@@ -192,13 +191,13 @@ namespace UnityEngine.Rendering.Universal
                 GetConeSideTangentPoints(lightPositionVS, lightDirectionVS, cosHalfAngle, baseRadius, coneHeight, range, coneU, coneV, out var l1, out var l2);
 
                 {
-                    var planeNormal = math.float3(0, 1, -viewPlaneHalfSizes[m_ViewIndex].y);
+                    var planeNormal = math.float3(0, 1, viewPlaneBottoms[m_ViewIndex]);
                     var l1t = math.dot(-lightPositionVS, planeNormal) / math.dot(l1, planeNormal);
                     var l1x = lightPositionVS + l1 * l1t;
                     if (l1t >= 0 && l1t <= 1 && l1x.z >= near) ExpandY(l1x);
                 }
                 {
-                    var planeNormal = math.float3(0, 1, viewPlaneHalfSizes[m_ViewIndex].y);
+                    var planeNormal = math.float3(0, 1, viewPlaneTops[m_ViewIndex]);
                     var l1t = math.dot(-lightPositionVS, planeNormal) / math.dot(l1, planeNormal);
                     var l1x = lightPositionVS + l1 * l1t;
                     if (l1t >= 0 && l1t <= 1 && l1x.z >= near) ExpandY(l1x);
@@ -212,7 +211,7 @@ namespace UnityEngine.Rendering.Universal
                     var planeRange = InclusiveRange.empty;
 
                     // Y-position on the view plane (Z=1)
-                    var planeY = math.lerp(-viewPlaneHalfSizes[m_ViewIndex].y, viewPlaneHalfSizes[m_ViewIndex].y, planeIndex * tileScaleInv.y);
+                    var planeY = math.lerp(viewPlaneBottoms[m_ViewIndex], viewPlaneTops[m_ViewIndex], planeIndex * tileScaleInv.y);
 
                     var planeNormal = math.float3(0, 1, -planeY);
 
@@ -256,7 +255,7 @@ namespace UnityEngine.Rendering.Universal
             {
                 var planeRange = InclusiveRange.empty;
 
-                var planeY = math.lerp(-viewPlaneHalfSizes[m_ViewIndex].y, viewPlaneHalfSizes[m_ViewIndex].y, planeIndex * tileScaleInv.y);
+                var planeY = math.lerp(viewPlaneBottoms[m_ViewIndex], viewPlaneTops[m_ViewIndex], planeIndex * tileScaleInv.y);
                 GetSphereYPlaneHorizon(lightPositionVS, range, near, sphereClipRadius, planeY, out var sphereTile0, out var sphereTile1);
                 if (SpherePointIsValid(sphereTile0)) planeRange.Expand((short)math.clamp(ViewToTileSpace(sphereTile0).x, 0, tileCount.x - 1));
                 if (SpherePointIsValid(sphereTile1)) planeRange.Expand((short)math.clamp(ViewToTileSpace(sphereTile1).x, 0, tileCount.x - 1));
@@ -348,7 +347,7 @@ namespace UnityEngine.Rendering.Universal
                 var planeRange = InclusiveRange.empty;
 
                 // Sphere
-                var planeY = math.lerp(-viewPlaneHalfSizes[m_ViewIndex].y, viewPlaneHalfSizes[m_ViewIndex].y, planeIndex * tileScaleInv.y);
+                var planeY = math.lerp(viewPlaneBottoms[m_ViewIndex], viewPlaneTops[m_ViewIndex], planeIndex * tileScaleInv.y);
                 var sphereX = math.sqrt(rangeSq - square(planeY - lightPosVS.y));
                 var sphereX0 = math.float3(lightPosVS.x - sphereX, planeY, lightPosVS.z);
                 var sphereX1 = math.float3(lightPosVS.x + sphereX, planeY, lightPosVS.z);
@@ -492,7 +491,8 @@ namespace UnityEngine.Rendering.Universal
                         var candidateLine = clippedPoints[i] - hullPoint;
                         var det = math.determinant(math.float2x2(endpointLine, candidateLine));
 
-                        // Check if point i lies on the left side of the line to the current endpoint.
+                        // Check if point i lies on the left side of the line to the current endpoint, or if it lies
+                        // collinear to the current endpoint but farther away.
                         if (endpointIndex == hullPointIndex || det > 0 || (det == 0.0f && math.lengthsq(candidateLine) > math.lengthsq(endpointLine)))
                         {
                             endpointIndex = i;
@@ -510,7 +510,7 @@ namespace UnityEngine.Rendering.Universal
                 {
                     var planeRange = InclusiveRange.empty;
 
-                    var planeY = math.lerp(-viewPlaneHalfSizes[m_ViewIndex].y, viewPlaneHalfSizes[m_ViewIndex].y, planeIndex * tileScaleInv.y);
+                    var planeY = math.lerp(viewPlaneBottoms[m_ViewIndex], viewPlaneTops[m_ViewIndex], planeIndex * tileScaleInv.y);
 
                     for (var i = 0; i < hullPointsCount; i++)
                     {
@@ -545,8 +545,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         float2 ViewToTileSpace(float3 positionVS)
         {
-            var positionCS = m_CenterOffset + positionVS.xy / positionVS.z * viewPlaneHalfSizeInvs[m_ViewIndex];
-            return (positionCS * 0.5f + 0.5f) * tileScale;
+            return (positionVS.xy / positionVS.z * viewToViewportScaleBiases[m_ViewIndex].xy + viewToViewportScaleBiases[m_ViewIndex].zw) * tileScale;
         }
 
         /// <summary>
@@ -554,8 +553,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         float2 ViewToTileSpaceOrthographic(float3 positionVS)
         {
-            var positionCS = m_CenterOffset + positionVS.xy * viewPlaneHalfSizeInvs[m_ViewIndex];
-            return (positionCS * 0.5f + 0.5f) * tileScale;
+            return (positionVS.xy * viewToViewportScaleBiases[m_ViewIndex].xy + viewToViewportScaleBiases[m_ViewIndex].zw) * tileScale;
         }
 
         /// <summary>
@@ -911,6 +909,7 @@ namespace UnityEngine.Rendering.Universal
             if (d == 0f) d = 1e-6f;
             var sign = d < 0 ? -1f : 1f;
             // sign *= vertex.z < 0 ? -1f : 1f;
+            // `origin` is the center of the circular slice we're about to calculate at distance `d` from the `vertex`.
             var origin = vertex + axis * d;
             // Get the radius of the circular slice of the cone at the `origin`.
             var radius = math.abs(d) * circleRadius / coneHeight;

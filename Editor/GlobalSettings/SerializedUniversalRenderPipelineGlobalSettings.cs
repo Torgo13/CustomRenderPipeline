@@ -67,8 +67,8 @@ namespace UnityEditor.Rendering.Universal
             SerializedProperty element = renderingLayerNameList.serializedProperty.GetArrayElementAtIndex(index);
 
             EditorGUI.PropertyField(rect, element, EditorGUIUtility.TrTextContent($"Layer {index}"), true);
-            
-            if (element.stringValue?.Length == 0)
+
+            if (string.IsNullOrEmpty(element.stringValue))
             {
                 element.stringValue = GetDefaultLayerName(index);
                 serializedObject.ApplyModifiedProperties();

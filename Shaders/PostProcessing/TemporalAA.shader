@@ -2,6 +2,7 @@ Shader "Hidden/Universal Render Pipeline/TemporalAA"
 {
     HLSLINCLUDE
         #pragma exclude_renderers gles
+        #pragma multi_compile _ _USE_DRAW_PROCEDURAL
 
         #pragma vertex Vert
         #pragma fragment TaaFrag

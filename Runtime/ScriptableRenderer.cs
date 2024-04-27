@@ -644,7 +644,7 @@ namespace UnityEngine.Rendering.Universal
             }
 
             ResetNativeRenderPassFrameData();
-            useRenderPassEnabled = data.useNativeRenderPass && SystemInfo.graphicsDeviceType != GraphicsDeviceType.OpenGLES2;
+            useRenderPassEnabled = data.useNativeRenderPass && SystemInfo.graphicsDeviceType != GraphicsDeviceType.OpenGLES2 && SystemInfo.graphicsDeviceType != GraphicsDeviceType.Direct3D12;
             Clear(CameraRenderType.Base);
             m_ActiveRenderPassQueue.Clear();
 
@@ -1323,7 +1323,19 @@ namespace UnityEngine.Rendering.Universal
 
             if ((cameraClearFlags == CameraClearFlags.Skybox && RenderSettings.skybox != null) ||
                 cameraClearFlags == CameraClearFlags.Nothing)
-                return ClearFlag.DepthStencil;
+            {
+                // Clear color if msaa is used. If color is not cleared will alpha to coverage blend with previous frame if alpha clipping is enabled of any opaque objects.
+                if (cameraData.cameraTargetDescriptor.msaaSamples > 1)
+                {
+                    // Sets the clear color to black to make the alpha to coverage blending blend with black when using alpha clipping.
+                    cameraData.camera.backgroundColor = Color.black;
+                    return ClearFlag.DepthStencil | ClearFlag.Color;
+                }
+                else
+                {
+                    return ClearFlag.DepthStencil;
+                }
+            }
 
             return ClearFlag.All;
         }
@@ -1471,10 +1483,6 @@ namespace UnityEngine.Rendering.Universal
 
             var cmd = renderingData.commandBuffer;
 
-            // Track CPU only as GPU markers for this scope were "too noisy".
-            using (new ProfilingScope(null, Profiling.RenderPass.setRenderPassAttachments))
-                SetRenderPassAttachments(cmd, renderPass, ref cameraData);
-
             // Selectively enable foveated rendering
             if (cameraData.xr.supportsFoveatedRendering)
             {
@@ -1483,6 +1491,10 @@ namespace UnityEngine.Rendering.Universal
                     cmd.SetFoveatedRenderingMode(FoveatedRenderingMode.Enabled);
                 }
             }
+
+            // Track CPU only as GPU markers for this scope were "too noisy".
+            using (new ProfilingScope(null, Profiling.RenderPass.setRenderPassAttachments))
+                SetRenderPassAttachments(cmd, renderPass, ref cameraData);
 
             // Also, we execute the commands recorded at this point to ensure SetRenderTarget is called before RenderPass.Execute
             context.ExecuteCommandBuffer(cmd);
@@ -1514,7 +1526,7 @@ namespace UnityEngine.Rendering.Universal
         {
 #pragma warning disable 0618 // Obsolete usage: Using deprecated RenderTargetIdentifiers to ensure backwards compatibility with passes set with RenderTargetIdentifier
             Camera camera = cameraData.camera;
-            ClearFlag cameraClearFlag = renderPass.overrideCameraClear ? ClearFlag.None : GetCameraClearFlag(ref cameraData);
+            ClearFlag cameraClearFlag = GetCameraClearFlag(ref cameraData);
 
             // Invalid configuration - use current attachment setup
             // Note: we only check color buffers. This is only technically correct because for shadowmaps and depth only passes

@@ -48,9 +48,8 @@ namespace UnityEngine.Rendering.Universal
         /// <inheritdoc/>
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (renderingData.cameraData.targetTexture != null && renderingData.cameraData.targetTexture.format == RenderTextureFormat.Depth)
+            if (UniversalRenderer.IsOffscreenDepthTexture(in renderingData.cameraData))
                 return;
-            
             if (!LoadMaterial())
             {
                 Debug.LogErrorFormat(

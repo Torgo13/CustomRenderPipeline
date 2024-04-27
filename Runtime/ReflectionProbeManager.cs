@@ -10,7 +10,6 @@ namespace UnityEngine.Rendering.Universal
         int2 m_Resolution;
         RenderTexture m_AtlasTexture0;
         RenderTexture m_AtlasTexture1;
-        RTHandle m_AtlasTexture0Handle;
         BuddyAllocator m_AtlasAllocator;
         Dictionary<int, CachedProbe> m_Cache;
         Dictionary<int, int> m_WarningCache;
@@ -52,7 +51,6 @@ namespace UnityEngine.Rendering.Universal
         }
 
         public RenderTexture atlasRT => m_AtlasTexture0;
-        public RTHandle atlasRTHandle => m_AtlasTexture0Handle;
 
         public static ReflectionProbeManager Create()
         {
@@ -83,7 +81,6 @@ namespace UnityEngine.Rendering.Universal
             m_AtlasTexture0.filterMode = FilterMode.Bilinear;
             m_AtlasTexture0.hideFlags = HideFlags.HideAndDontSave;
             m_AtlasTexture0.Create();
-            m_AtlasTexture0Handle = RTHandles.Alloc(m_AtlasTexture0);
 
             m_AtlasTexture1 = new RenderTexture(m_AtlasTexture0.descriptor);
             m_AtlasTexture1.name = k_ReflectionProbeAtlasName;
@@ -283,6 +280,8 @@ namespace UnityEngine.Rendering.Universal
                     {
                         var level = cachedProbe.levels[mip];
                         var dataIndex = cachedProbe.dataIndices[mip];
+                        // If we need to y-flip we will instead flip the atlas since that is updated less frequent and then the lookup should be correct.
+                        // By doing this we won't have to y-flip the lookup in the shader code. 
                         var scaleBias = GetScaleOffset(level, dataIndex, true, !SystemInfo.graphicsUVStartsAtTop);
                         var sizeWithoutPadding = (1 << (m_AtlasAllocator.levelCount + 1 - level)) - 2;
                         Blitter.BlitCubeToOctahedral2DQuadWithPadding(cmd, cachedProbe.texture, new Vector2(sizeWithoutPadding, sizeWithoutPadding), scaleBias, mip, true, 2, cachedProbe.hdrData);
@@ -319,9 +318,7 @@ namespace UnityEngine.Rendering.Universal
             if (m_AtlasTexture0)
             {
                 m_AtlasTexture0.Release();
-                m_AtlasTexture0Handle.Release();
             }
-
             Object.DestroyImmediate(m_AtlasTexture0);
             Object.DestroyImmediate(m_AtlasTexture1);
 

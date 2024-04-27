@@ -973,6 +973,10 @@ namespace UnityEngine.Rendering.Universal
         public static readonly int worldToCameraMatrix = Shader.PropertyToID("unity_WorldToCamera");
         public static readonly int cameraToWorldMatrix = Shader.PropertyToID("unity_CameraToWorld");
 
+        public static readonly int shadowBias = Shader.PropertyToID("_ShadowBias");
+        public static readonly int lightDirection = Shader.PropertyToID("_LightDirection");
+        public static readonly int lightPosition = Shader.PropertyToID("_LightPosition");
+
         public static readonly int cameraWorldClipPlanes = Shader.PropertyToID("unity_CameraWorldClipPlanes");
 
         public static readonly int billboardNormal = Shader.PropertyToID("unity_BillboardNormal");
@@ -1321,6 +1325,9 @@ namespace UnityEngine.Rendering.Universal
 
         /// <summary> Keyword used for vertex Spherical Harmonic (SH) evaluation in URP Lit shaders.</summary>
         public const string EVALUATE_SH_VERTEX = "EVALUATE_SH_VERTEX";
+
+        /// <summary> Keyword used for Drawing procedurally.</summary>
+        public const string UseDrawProcedural = "_USE_DRAW_PROCEDURAL";
     }
 
     public sealed partial class UniversalRenderPipeline
@@ -1790,9 +1797,9 @@ namespace UnityEngine.Rendering.Universal
     }
 
     // Internal class to detect and cache runtime platform information.
-    // TODO: refine the logic to provide platform abstraction. Eg, we should devide platforms based on capabilities and perf budget.
-    // TODO: isXRMobile is a bad catagory. Alignment and refactor needed.
-    // TODO: Compress all the query data into "isXRMobile" style bools and enums.
+    // TODO: refine the logic to provide platform abstraction. Eg, we should divide platforms based on capabilities and perf budget.
+    // TODO: isXRMobile is a bad category. Alignment and refactor needed.
+    // TODO: Compress all the query data into "isXRMobile" style booleans and enums.
     internal static class PlatformAutoDetect
     {
         /// <summary>
@@ -1800,17 +1807,20 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         internal static void Initialize()
         {
-            bool isRunningXRMobile = false;
-#if ENABLE_VR && ENABLE_VR_MODULE
-#if PLATFORM_WINRT || PLATFORM_ANDROID
-            isRunningXRMobile = IsRunningXRMobile();
-#endif
-#endif
-            isXRMobile = isRunningXRMobile;
+            bool isRunningMobile = false;
+            #if ENABLE_VR && ENABLE_VR_MODULE
+                #if PLATFORM_WINRT || PLATFORM_ANDROID
+                    isRunningMobile = IsRunningXRMobile();
+                #endif
+            #endif
+
+            isXRMobile = isRunningMobile;
+            isShaderAPIMobileDefined = GraphicsSettings.HasShaderDefine(BuiltinShaderDefine.SHADER_API_MOBILE);
+            isSwitch = Application.platform == RuntimePlatform.Switch;
         }
 
 #if ENABLE_VR && ENABLE_VR_MODULE
-#if PLATFORM_WINRT || PLATFORM_ANDROID
+    #if PLATFORM_WINRT || PLATFORM_ANDROID
         // XR mobile platforms are not treated as dedicated mobile platforms in Core. Handle them specially here. (Quest and HL).
         private static List<XR.XRDisplaySubsystem> displaySubsystemList = new List<XR.XRDisplaySubsystem>();
         private static bool IsRunningXRMobile()
@@ -1829,12 +1839,40 @@ namespace UnityEngine.Rendering.Universal
             }
             return false;
         }
-#endif
+    #endif
 #endif
 
         /// <summary>
         /// If true, the runtime platform is an XR mobile platform.
         /// </summary>
-        static internal bool isXRMobile { get; private set; } = false;
+        internal static bool isXRMobile { get; private set; } = false;
+
+        /// <summary>
+        /// If true, then SHADER_API_MOBILE has been defined in URP Shaders.
+        /// </summary>
+        internal static bool isShaderAPIMobileDefined { get; private set; } = false;
+
+        /// <summary>
+        /// If true, then the runtime platform is set to Switch.
+        /// </summary>
+        internal static bool isSwitch { get; private set; } = false;
+
+        /// <summary>
+        /// Gives the SH evaluation mode when set to automatically detect.
+        /// </summary>
+        /// <param name="mode">The current SH evaluation mode.</param>
+        /// <returns>Returns the SH evaluation mode to use.</returns>
+        internal static ShEvalMode ShAutoDetect(ShEvalMode mode)
+        {
+            if (mode == ShEvalMode.Auto)
+            {
+                if (isXRMobile || isShaderAPIMobileDefined || isSwitch)
+                    return ShEvalMode.PerVertex;
+                else
+                    return ShEvalMode.PerPixel;
+            }
+
+            return mode;
+        }
     }
 }

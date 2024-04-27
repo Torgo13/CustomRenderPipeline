@@ -162,9 +162,6 @@ namespace UnityEngine.Rendering.Universal
         }
     }
 
-    /// <summary>
-    /// The class for the decal renderer feature.
-    /// </summary>
     [DisallowMultipleRendererFeature("Decal")]
     [Tooltip("With this Renderer Feature, Unity can project specific Materials (decals) onto other objects in the Scene.")]
     [URPHelpURL("renderer-feature-decal")]
@@ -452,7 +449,6 @@ namespace UnityEngine.Rendering.Universal
             return true;
         }
 
-        /// <inheritdoc />
         public override void OnCameraPreCull(ScriptableRenderer renderer, in CameraData cameraData)
         {
             if (cameraData.cameraType == CameraType.Preview)
@@ -491,12 +487,10 @@ namespace UnityEngine.Rendering.Universal
             m_DrawErrorSystem.Execute(cameraData);
         }
 
-        /// <inheritdoc />
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (renderingData.cameraData.targetTexture != null && renderingData.cameraData.targetTexture.format == RenderTextureFormat.Depth)
+            if (UniversalRenderer.IsOffscreenDepthTexture(in renderingData.cameraData))
                 return;
-            
             if (renderingData.cameraData.cameraType == CameraType.Preview)
             {
                 renderer.EnqueuePass(m_DecalPreviewPass);
@@ -537,15 +531,10 @@ namespace UnityEngine.Rendering.Universal
             return m_Technique == DecalTechnique.GBuffer || m_Technique == DecalTechnique.ScreenSpace;
         }
 
-        /// <inheritdoc />
         public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
         {
-            // Disable obsolete warning for internal usage
-            #pragma warning disable CS0618
-
-            if (renderer.cameraColorTargetHandle == null)
+            if (UniversalRenderer.IsOffscreenDepthTexture(renderingData.cameraData))
                 return;
-            
             if (m_Technique == DecalTechnique.DBuffer)
             {
                 m_DBufferRenderPass.Setup(renderingData.cameraData);
@@ -579,7 +568,6 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
-        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             m_DBufferRenderPass?.Dispose();
