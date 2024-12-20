@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.Rendering;
+using System.Text;
 
 namespace UnityEditor.Rendering
 {
@@ -396,7 +397,7 @@ namespace UnityEditor.Rendering
         /// <param name="upgraders">List or available upgraders.</param>
         static void LogMaterialVariantMessage(List<Material> materials, List<MaterialUpgrader> upgraders)
         {
-            var sb = new System.Text.StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("Can not upgrade Material Variants, the following assets were skipped:");
             bool needsLogging = false;
 
