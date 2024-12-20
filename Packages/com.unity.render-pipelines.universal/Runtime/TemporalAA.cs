@@ -382,54 +382,39 @@ namespace UnityEngine.Rendering.Universal
         static internal string ValidateAndWarn(ref CameraData cameraData)
         {
             string warning = null;
-            bool anyWarning = false;
 
-            if(!cameraData.postProcessEnabled)
-            {
-                warning = "Disabling TAA because camera has post-processing disabled.";
-                anyWarning = true;
-            }
-
-            if (!anyWarning && cameraData.taaPersistentData == null)
+            if (cameraData.taaPersistentData == null)
             {
                 warning = "Disabling TAA due to invalid persistent data.";
-                anyWarning = true;
             }
 
-            if (!anyWarning && cameraData.cameraTargetDescriptor.msaaSamples != 1)
+            if (warning == null && cameraData.cameraTargetDescriptor.msaaSamples != 1)
             {
                 if (cameraData.xr != null && cameraData.xr.enabled)
-                {
                     warning = "Disabling TAA because MSAA is on. MSAA must be disabled globally for all cameras in XR mode.";
-                    anyWarning = true;
-                }
                 else
-                {
                     warning = "Disabling TAA because MSAA is on.";
-                    anyWarning = true;
-                }
             }
 
-            if(!anyWarning && cameraData.camera.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData))
+            if(warning == null && cameraData.camera.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData))
             {
                 if (additionalCameraData.renderType == CameraRenderType.Overlay ||
                     additionalCameraData.cameraStack.Count > 0)
                 {
                     warning = "Disabling TAA because camera is stacked.";
-                    anyWarning = true;
                 }
             }
 
-            if (!anyWarning && cameraData.camera.allowDynamicResolution)
-            {
+            if (warning == null && cameraData.camera.allowDynamicResolution)
                 warning = "Disabling TAA because camera has dynamic resolution enabled. You can use a constant render scale instead.";
-                anyWarning = true;
-            }
+
+            if(warning == null && !cameraData.postProcessEnabled)
+                warning = "Disabling TAA because camera has post-processing disabled.";
 
             const int warningThrottleFrames = 60 * 1; // 60 FPS * 1 sec
-            if(anyWarning && Time.frameCount % warningThrottleFrames == 0)
+            if(Time.frameCount % warningThrottleFrames == 0)
                 Debug.LogWarning(warning);
-            
+
             return warning;
         }
 
@@ -564,7 +549,7 @@ namespace UnityEngine.Rendering.Universal
                         break;
                 }
 
-                builder.SetRenderFunc(static (TaaPassData data, RenderGraphContext context) =>
+                builder.SetRenderFunc((TaaPassData data, RenderGraphContext context) =>
                 {
                     data.material.SetFloat(ShaderConstants._TaaFrameInfluence, data.taaFrameInfluence);
                     data.material.SetFloat(ShaderConstants._TaaVarianceClampScale, data.taaVarianceClampScale);

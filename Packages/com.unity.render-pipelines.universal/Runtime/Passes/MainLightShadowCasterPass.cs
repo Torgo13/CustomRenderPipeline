@@ -31,9 +31,10 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         int m_MainLightShadowmapID;
         internal RTHandle m_MainLightShadowmapTexture;
-        private RTHandle m_EmptyLightShadowmapTexture;
+        private RTHandle m_EmptyMainLightShadowmapTexture;
         private const int k_EmptyShadowMapDimensions = 1;
-        private const string k_EmptyShadowMapName = "_EmptyLightShadowmapTexture";
+        private const string k_MainLightShadowMapTextureName = "_MainLightShadowmapTexture";
+        private const string k_EmptyMainLightShadowMapTextureName = "_EmptyMainLightShadowmapTexture";
         private static readonly Vector4 s_EmptyShadowParams = new Vector4(1, 0, 1, 0);
         private static readonly Vector4 s_EmptyShadowmapSize = s_EmptyShadowmapSize = new Vector4(k_EmptyShadowMapDimensions, 1f / k_EmptyShadowMapDimensions, k_EmptyShadowMapDimensions, k_EmptyShadowMapDimensions);
 
@@ -73,9 +74,9 @@ namespace UnityEngine.Rendering.Universal.Internal
             MainLightShadowConstantBuffer._ShadowOffset1 = Shader.PropertyToID("_MainLightShadowOffset1");
             MainLightShadowConstantBuffer._ShadowmapSize = Shader.PropertyToID("_MainLightShadowmapSize");
 
-            m_MainLightShadowmapID = Shader.PropertyToID("_MainLightShadowmapTexture");
+            m_MainLightShadowmapID = Shader.PropertyToID(k_MainLightShadowMapTextureName);
 
-            m_EmptyLightShadowmapTexture = ShadowUtils.AllocShadowRT(k_EmptyShadowMapDimensions, k_EmptyShadowMapDimensions, k_ShadowmapBufferBits, 1, 0, name: k_EmptyShadowMapName);
+            m_EmptyMainLightShadowmapTexture = RTHandles.Alloc(Texture2D.blackTexture);
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace UnityEngine.Rendering.Universal.Internal
         public void Dispose()
         {
             m_MainLightShadowmapTexture?.Release();
-            m_EmptyLightShadowmapTexture?.Release();
+            m_EmptyMainLightShadowmapTexture?.Release();
         }
 
         /// <summary>
@@ -97,6 +98,11 @@ namespace UnityEngine.Rendering.Universal.Internal
         {
             if (!renderingData.shadowData.mainLightShadowsEnabled)
                 return false;
+
+#if UNITY_EDITOR
+            if (CoreUtils.IsSceneLightingDisabled(renderingData.cameraData.camera))
+                return false;
+#endif
 
             using var profScope = new ProfilingScope(null, m_ProfilingSetupSampler);
 
@@ -141,13 +147,11 @@ namespace UnityEngine.Rendering.Universal.Internal
                     return SetupForEmptyRendering(ref renderingData);
             }
 
-            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_MainLightShadowmapTexture, renderTargetWidth, renderTargetHeight, k_ShadowmapBufferBits, name: "_MainLightShadowmapTexture");
-
             m_MaxShadowDistanceSq = renderingData.cameraData.maxShadowDistance * renderingData.cameraData.maxShadowDistance;
             m_CascadeBorder = renderingData.shadowData.mainLightShadowCascadeBorder;
             m_CreateEmptyShadowmap = false;
             useNativeRenderPass = true;
-            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_EmptyLightShadowmapTexture, 1, 1, k_ShadowmapBufferBits, name: "_EmptyLightShadowmapTexture");
+            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_MainLightShadowmapTexture, renderTargetWidth, renderTargetHeight, k_ShadowmapBufferBits, name: k_MainLightShadowMapTextureName);
 
             return true;
         }
@@ -159,7 +163,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
             m_CreateEmptyShadowmap = true;
             useNativeRenderPass = false;
-            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_EmptyLightShadowmapTexture, k_EmptyShadowMapDimensions, k_EmptyShadowMapDimensions, k_ShadowmapBufferBits, name: k_EmptyShadowMapName);
+            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_EmptyMainLightShadowmapTexture, k_EmptyShadowMapDimensions, k_EmptyShadowMapDimensions, k_ShadowmapBufferBits, name: k_EmptyMainLightShadowMapTextureName);
 
             return true;
         }
@@ -167,9 +171,16 @@ namespace UnityEngine.Rendering.Universal.Internal
         /// <inheritdoc />
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
+            // UUM-63146 - glClientWaitSync: Expected application to have kicked everything until job: 96089 (possibly by calling glFlush)" are thrown in the Android Player on some devices with PowerVR Rogue GE8320
+            // Resetting of target would clean up the color attachment buffers and depth attachment buffers, which inturn is preventing the leak in the said platform. This is likely a symptomatic fix, but is solving the problem for now.
+            if (Application.platform == RuntimePlatform.Android && PlatformAutoDetect.isRunningOnPowerVRGPU)
+                ResetTarget();
             if (m_CreateEmptyShadowmap)
-                ConfigureTarget(m_EmptyLightShadowmapTexture);
-            else
+            {
+                // Reset pass RTs to null
+                ResetTarget();
+                return;
+            }
                 ConfigureTarget(m_MainLightShadowmapTexture);
             ConfigureClear(ClearFlag.All, Color.black);
         }
@@ -180,7 +191,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             if (m_CreateEmptyShadowmap)
             {
                 SetEmptyMainLightCascadeShadowmap(ref context, ref renderingData);
-                renderingData.commandBuffer.SetGlobalTexture(m_MainLightShadowmapID, m_EmptyLightShadowmapTexture.nameID);
+                renderingData.commandBuffer.SetGlobalTexture(m_MainLightShadowmapID, m_EmptyMainLightShadowmapTexture.nameID);
 
                 return;
             }
@@ -236,7 +247,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 // Need set the worldToCamera Matrix as that is not set for passes executed before normal rendering,
                 // otherwise shadows will behave incorrectly when Scene and Game windows are open at the same time (UUM-63267).
-                ShadowUtils.SetWorldToCameraMatrix(cmd, renderingData.cameraData.GetViewMatrix());
+                ShadowUtils.SetWorldToCameraAndCameraToWorldMatrices(cmd, renderingData.cameraData.GetViewMatrix());
 
                 var settings = new ShadowDrawingSettings(cullResults, shadowLightIndex, BatchCullingProjectionType.Orthographic);
                 settings.useRenderingLayerMaskTest = UniversalRenderPipeline.asset.useRenderingLayers;

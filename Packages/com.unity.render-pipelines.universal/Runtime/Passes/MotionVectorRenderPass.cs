@@ -8,11 +8,14 @@ namespace UnityEngine.Rendering.Universal
     sealed class MotionVectorRenderPass : ScriptableRenderPass
     {
         #region Fields
-        internal const string k_MotionVectorTextureName = "_MotionVectorTexture";
-        internal const string k_MotionVectorDepthTextureName = "_MotionVectorDepthTexture";
-        
+#if OPTIMISATION_SHADERPARAMS
+        static readonly int kPreviousViewProjectionNoJitter = Shader.PropertyToID("_PrevViewProjMatrix");
+        static readonly int kViewProjectionNoJitter = Shader.PropertyToID("_NonJitteredViewProjMatrix");
+        static readonly int kMotionVectorTexture = Shader.PropertyToID("_MotionVectorTexture");
+#else
         const string kPreviousViewProjectionNoJitter = "_PrevViewProjMatrix";
         const string kViewProjectionNoJitter = "_NonJitteredViewProjMatrix";
+#endif // OPTIMISATION_SHADERPARAMS
 #if ENABLE_VR && ENABLE_XR_MODULE
         const string kPreviousViewProjectionNoJitterStereo = "_PrevViewProjMatrixStereo";
         const string kViewProjectionNoJitterStereo = "_NonJitteredViewProjMatrixStereo";
@@ -25,16 +28,18 @@ namespace UnityEngine.Rendering.Universal
         RTHandle m_Depth;
         readonly Material m_CameraMaterial;
         readonly Material m_ObjectMaterial;
+        readonly FilteringSettings m_FilteringSettings;
 
         private PassData m_PassData;
         #endregion
 
         #region Constructors
-        internal MotionVectorRenderPass(RenderPassEvent evt, Material cameraMaterial, Material objectMaterial)
+        internal MotionVectorRenderPass(RenderPassEvent evt, Material cameraMaterial, Material objectMaterial, LayerMask opaqueLayerMask)
         {
             renderPassEvent = evt;
             m_CameraMaterial = cameraMaterial;
             m_ObjectMaterial = objectMaterial;
+            m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque, opaqueLayerMask);
             m_PassData = new PassData();
             base.profilingSampler = ProfilingSampler.Get(URPProfileId.MotionVectors);
 
@@ -117,7 +122,7 @@ namespace UnityEngine.Rendering.Universal
 
                 // TODO: add option to only draw either one?
                 DrawCameraMotionVectors(context, cmd, ref renderingData, camera, cameraMaterial);
-                DrawObjectMotionVectors(context, ref renderingData, camera, objectMaterial, cmd);
+                DrawObjectMotionVectors(context, ref renderingData, camera, objectMaterial, cmd, ref passData.filteringSettings);
             }
         }
 
@@ -125,6 +130,7 @@ namespace UnityEngine.Rendering.Universal
         {
             m_PassData.cameraMaterial = m_CameraMaterial;
             m_PassData.objectMaterial = m_ObjectMaterial;
+            m_PassData.filteringSettings = m_FilteringSettings;
 
             ExecutePass(context, m_PassData, ref renderingData);
         }
@@ -179,7 +185,7 @@ namespace UnityEngine.Rendering.Universal
             cmd.Clear();
         }
 
-        private static void DrawObjectMotionVectors(ScriptableRenderContext context, ref RenderingData renderingData, Camera camera, Material objectMaterial, CommandBuffer cmd)
+        private static void DrawObjectMotionVectors(ScriptableRenderContext context, ref RenderingData renderingData, Camera camera, Material objectMaterial, CommandBuffer cmd, ref FilteringSettings filteringSettings)
         {
 #if ENABLE_VR && ENABLE_XR_MODULE
             bool foveatedRendering = renderingData.cameraData.xr.supportsFoveatedRendering;
@@ -193,7 +199,6 @@ namespace UnityEngine.Rendering.Universal
 #endif
 
             var drawingSettings = GetDrawingSettings(ref renderingData, objectMaterial);
-            var filteringSettings = new FilteringSettings(RenderQueueRange.opaque, camera.cullingMask);
             var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
 
             context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref filteringSettings, ref renderStateBlock);
@@ -217,6 +222,7 @@ namespace UnityEngine.Rendering.Universal
             internal RenderingData renderingData;
             internal Material cameraMaterial;
             internal Material objectMaterial;
+            internal FilteringSettings filteringSettings;
         }
 
         internal void Render(RenderGraph renderGraph, ref TextureHandle cameraDepthTexture, in TextureHandle motionVectorColor, in TextureHandle motionVectorDepth, ref RenderingData renderingData)
@@ -232,11 +238,16 @@ namespace UnityEngine.Rendering.Universal
                 passData.renderingData = renderingData;
                 passData.cameraMaterial = m_CameraMaterial;
                 passData.objectMaterial = m_ObjectMaterial;
+                passData.filteringSettings = m_FilteringSettings;
 
                 builder.SetRenderFunc((PassData data, RenderGraphContext context) =>
                 {
                     ExecutePass(context.renderContext, data, ref data.renderingData);
+#if OPTIMISATION_SHADERPARAMS
+                    data.renderingData.commandBuffer.SetGlobalTexture(kMotionVectorTexture, data.motionVectorColor);
+#else
                     data.renderingData.commandBuffer.SetGlobalTexture("_MotionVectorTexture", data.motionVectorColor);
+#endif // OPTIMISATION_SHADERPARAMS
                 });
 
                 return;

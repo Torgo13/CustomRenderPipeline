@@ -124,6 +124,14 @@ namespace UnityEngine.Rendering.Universal
         /// Use this to select the high <c>SubpixelMorphologicalAntiAliasing</c> SMAA quality
         /// </summary>
         High
+/*#if CUSTOM_URP
+        ,
+
+        /// <summary>
+        /// Use this to select the ultra <c>SubpixelMorphologicalAntiAliasing</c> SMAA quality
+        /// </summary>
+        Ultra
+#endif // CUSTOM_URP*/
     }
 
     /// <summary>
@@ -276,7 +284,11 @@ namespace UnityEngine.Rendering.Universal
 
     static class CameraTypeUtility
     {
+#if OPTIMISATION
+        static string[] s_CameraTypeNames = Enum.GetNames(typeof(CameraRenderType));
+#else
         static string[] s_CameraTypeNames = Enum.GetNames(typeof(CameraRenderType)).ToArray();
+#endif // OPTIMISATION
 
         public static string GetName(this CameraRenderType type)
         {
@@ -379,15 +391,6 @@ namespace UnityEngine.Rendering.Universal
                 }
                 return m_Camera;
             }
-        }
-
-        void Start()
-        {
-            // Need to ensure correct behaviour for overlay cameras by setting their clear flag to nothing.
-            // This can't be done in the upgrade since the camera component can't be retrieved in the deserialization phase.
-            // OnValidate ensure future cameras won't have this issue.
-            if (m_CameraType == CameraRenderType.Overlay)
-                camera.clearFlags = CameraClearFlags.Nothing;
         }
 
 
@@ -677,18 +680,6 @@ namespace UnityEngine.Rendering.Universal
         {
             get { return ref m_TaaSettings; }
         }
-        
-        public int temporalAAQuality
-        {
-            get => (int)m_TaaSettings.quality;
-            set => m_TaaSettings.quality = (TemporalAAQuality)value;
-        }
-        
-        public float contrastAdaptiveSharpening
-        {
-            get => m_TaaSettings.contrastAdaptiveSharpening;
-            set => m_TaaSettings.contrastAdaptiveSharpening = value;
-        }
 
         /// <summary>
         /// Temporal Anti-aliasing buffers and data that persists over a frame.
@@ -770,7 +761,7 @@ namespace UnityEngine.Rendering.Universal
             get => m_ScreenCoordScaleBias;
             set => m_ScreenCoordScaleBias = value;
         }
-        
+
         /// <summary>
         /// Returns true if this camera allows outputting to HDR displays.
         /// </summary>
@@ -792,16 +783,6 @@ namespace UnityEngine.Rendering.Universal
             {
                 m_RequiresDepthTextureOption = (m_RequiresDepthTexture) ? CameraOverrideOption.On : CameraOverrideOption.Off;
                 m_RequiresOpaqueTextureOption = (m_RequiresColorTexture) ? CameraOverrideOption.On : CameraOverrideOption.Off;
-                m_Version = 2;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void OnValidate()
-        {
-            if (m_CameraType == CameraRenderType.Overlay && m_Camera != null)
-            {
-                m_Camera.clearFlags = CameraClearFlags.Nothing;
             }
         }
 
@@ -849,9 +830,9 @@ namespace UnityEngine.Rendering.Universal
         /// <inheritdoc/>
         public void OnDestroy()
         {
-            m_Camera.DestroyVolumeStack(this);
             if (camera.cameraType != CameraType.SceneView )
                 scriptableRenderer?.ReleaseRenderTargets();
+            m_Camera.DestroyVolumeStack(this);
             m_TaaPersistentData?.DeallocateTargets();
         }
     }

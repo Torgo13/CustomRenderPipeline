@@ -64,7 +64,8 @@ namespace UnityEngine.Rendering.Universal.Internal
         private bool m_CreateEmptyShadowmap;
         private RTHandle m_EmptyAdditionalLightShadowmapTexture;
         private const int k_EmptyShadowMapDimensions = 1;
-        private const string k_EmptyShadowMapName = "_EmptyAdditionalLightShadowmapTexture";
+        private const string k_AdditionalLightShadowMapTextureName = "_AdditionalLightsShadowmapTexture";
+        private const string k_EmptyAdditionalLightShadowMapTextureName = "_EmptyAdditionalLightShadowmapTexture";
         internal static Vector4[] s_EmptyAdditionalLightIndexToShadowParams = null;
 
         float m_MaxShadowDistanceSq;
@@ -107,7 +108,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             AdditionalShadowsConstantBuffer._AdditionalShadowOffset1 = Shader.PropertyToID("_AdditionalShadowOffset1");
             AdditionalShadowsConstantBuffer._AdditionalShadowFadeParams = Shader.PropertyToID("_AdditionalShadowFadeParams");
             AdditionalShadowsConstantBuffer._AdditionalShadowmapSize = Shader.PropertyToID("_AdditionalShadowmapSize");
-            m_AdditionalLightsShadowmapID = Shader.PropertyToID("_AdditionalLightsShadowmapTexture");
+            m_AdditionalLightsShadowmapID = Shader.PropertyToID(k_AdditionalLightShadowMapTextureName);
 
             m_AdditionalLightsWorldToShadow_SSBO = Shader.PropertyToID("_AdditionalLightsWorldToShadow_SSBO");
             m_AdditionalShadowParams_SSBO = Shader.PropertyToID("_AdditionalShadowParams_SSBO");
@@ -141,7 +142,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                 m_ShadowResolutionRequests.Capacity = maxVisibleAdditionalLights;
             }
 
-            m_EmptyAdditionalLightShadowmapTexture = ShadowUtils.AllocShadowRT(k_EmptyShadowMapDimensions, k_EmptyShadowMapDimensions, k_ShadowmapBufferBits, 1, 0, name: k_EmptyShadowMapName);
+            m_EmptyAdditionalLightShadowmapTexture = RTHandles.Alloc(Texture2D.blackTexture);
         }
 
         /// <summary>
@@ -829,7 +830,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                 m_AdditionalLightShadowSliceIndexTo_WorldShadowMatrix[globalShadowSliceIndex] = sliceTransform * m_AdditionalLightShadowSliceIndexTo_WorldShadowMatrix[globalShadowSliceIndex];
             }
 
-            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_AdditionalLightsShadowmapHandle, renderTargetWidth, renderTargetHeight, k_ShadowmapBufferBits, name: "_AdditionalLightsShadowmapTexture");
+            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_AdditionalLightsShadowmapHandle, renderTargetWidth, renderTargetHeight, k_ShadowmapBufferBits, name: k_AdditionalLightShadowMapTextureName);
 
             m_MaxShadowDistanceSq = renderingData.cameraData.maxShadowDistance * renderingData.cameraData.maxShadowDistance;
             m_CascadeBorder = renderingData.shadowData.mainLightShadowCascadeBorder;
@@ -845,7 +846,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                 return false;
 
             renderingData.shadowData.isKeywordAdditionalLightShadowsEnabled = true;
-            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_EmptyAdditionalLightShadowmapTexture, k_EmptyShadowMapDimensions, k_EmptyShadowMapDimensions, k_ShadowmapBufferBits, name: k_EmptyShadowMapName);
+            ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_EmptyAdditionalLightShadowmapTexture, k_EmptyShadowMapDimensions, k_EmptyShadowMapDimensions, k_ShadowmapBufferBits, name: k_EmptyAdditionalLightShadowMapTextureName);
             m_CreateEmptyShadowmap = true;
             useNativeRenderPass = false;
 
@@ -859,9 +860,21 @@ namespace UnityEngine.Rendering.Universal.Internal
         /// <inheritdoc/>
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
+            // UUM-63146 - glClientWaitSync: Expected application to have kicked everything until job: 96089 (possibly by calling glFlush)" are thrown in the Android Player on some devices with PowerVR Rogue GE8320
+            // Resetting of target would clean up the color attachment buffers and depth attachment buffers, which inturn is preventing the leak in the said platform. This is likely a symptomatic fix, but is solving the problem for now.
+            if (Application.platform == RuntimePlatform.Android && PlatformAutoDetect.isRunningOnPowerVRGPU)
+                ResetTarget();
             if (m_CreateEmptyShadowmap)
-                ConfigureTarget(m_EmptyAdditionalLightShadowmapTexture);
-            else
+            {
+#if OPTIMISATION // SLZ
+            // Don't clear if the shadowcaster pass isn't used.
+                ConfigureClear(ClearFlag.None, Color.black);
+#endif // OPTIMISATION
+
+                // Reset pass RTs to null
+                ResetTarget();
+                return;
+            }
                 ConfigureTarget(m_AdditionalLightsShadowmapHandle);
 
             ConfigureClear(ClearFlag.All, Color.black);
@@ -942,7 +955,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             {
                 // Need set the worldToCamera Matrix as that is not set for passes executed before normal rendering,
                 // otherwise shadows will behave incorrectly when Scene and Game windows are open at the same time (UUM-63267).
-                ShadowUtils.SetWorldToCameraMatrix(cmd, renderingData.cameraData.GetViewMatrix());
+                ShadowUtils.SetWorldToCameraAndCameraToWorldMatrices(cmd, renderingData.cameraData.GetViewMatrix());
 
                 bool anyShadowSliceRenderer = false;
                 int shadowSlicesCount = m_ShadowSliceToAdditionalLightIndex.Count;

@@ -280,7 +280,11 @@ namespace UnityEngine.Rendering.Universal
                 if (c.TryGetComponent<UniversalAdditionalCameraData>(out var acd))
                 {
                     acd.taaPersistentData?.DeallocateTargets();
+#if BUGFIX
+                }
+#else
                 };
+#endif // BUGFIX
             }
         }
 
@@ -473,15 +477,48 @@ namespace UnityEngine.Rendering.Universal
 
                 camera.targetTexture = temporaryRT ? temporaryRT : destination;
 
-                if (standardRequest != null)
+#if OPTIMISATION_LISTPOOL
+                using (UnityEngine.Pool.ListPool<Camera>.Get(out var tmp))
+#else
+                using (ListPool<Camera>.Get(out var tmp))
+#endif // OPTIMISATION_LISTPOOL
                 {
-                    Render(context, new Camera[] { camera });
+                    tmp.Add(camera);
+                    if (standardRequest != null)
+                    {
+#if OPTIMISATION
+                        Render(context, tmp);
+#else
+                        Render(context, tmp.ToArray());
+#endif // OPTIMISATION
+                    }
+                    else
+                    {
+                        using (new ProfilingScope(null, Profiling.Pipeline.beginContextRendering))
+                        {
+                            BeginContextRendering(context, tmp);
+                        }
+
+                        using (new ProfilingScope(null, Profiling.Pipeline.beginCameraRendering))
+                        {
+                            BeginCameraRendering(context, camera);
+                        }
+
+                        camera.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData);
+                        RenderSingleCameraInternal(context, camera, ref additionalCameraData);
+
+                        using (new ProfilingScope(null, Profiling.Pipeline.endCameraRendering))
+                        {
+                            EndCameraRendering(context, camera);
+                        }
+
+                        using (new ProfilingScope(null, Profiling.Pipeline.endContextRendering))
+                        {
+                            EndContextRendering(context, tmp);
+                        }
+                    }
                 }
-                else
-                {
-                    camera.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData);
-                    RenderSingleCameraInternal(context, camera, ref additionalCameraData);
-                }
+
 
                 if(temporaryRT)
                 {
@@ -687,7 +724,7 @@ namespace UnityEngine.Rendering.Universal
         /// The last camera resolves the final target to screen.
         /// </summary>
         /// <param name="context">Render context used to record commands during execution.</param>
-        /// <param name="camera">Camera to render.</param>
+        /// <param name="baseCamera">Camera to render.</param>
         static void RenderCameraStack(ScriptableRenderContext context, Camera baseCamera)
         {
             using var profScope = new ProfilingScope(null, ProfilingSampler.Get(URPProfileId.RenderCameraStack));
@@ -871,7 +908,7 @@ namespace UnityEngine.Rendering.Universal
                             CameraData overlayCameraData = baseCameraData;
                             overlayCameraData.camera = currCamera;
                             overlayCameraData.baseCamera = baseCamera;
-                            
+
                             UpdateCameraStereoMatrices(currAdditionalCameraData.camera, xrPass);
 
                             using (new ProfilingScope(null, Profiling.Pipeline.beginCameraRendering))
@@ -886,7 +923,7 @@ namespace UnityEngine.Rendering.Universal
 
                             bool lastCamera = i == lastActiveOverlayCameraIndex;
                             InitializeAdditionalCameraData(currCamera, currAdditionalCameraData, lastCamera, ref overlayCameraData);
-                            
+
                             overlayCameraData.stackAnyPostProcessingEnabled = anyPostProcessingEnabled;
                             overlayCameraData.stackLastCameraOutputToHDR = finalOutputHDR;
 
@@ -1077,7 +1114,7 @@ namespace UnityEngine.Rendering.Universal
             bool needsAlphaChannel = Graphics.preserveFramebufferAlpha;
 
             cameraData.hdrColorBufferPrecision = asset ? asset.hdrColorBufferPrecision : HDRColorBufferPrecision._32Bits;
-            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, cameraData.renderScale,
+            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, ref cameraData,
                 cameraData.isHdrEnabled, cameraData.hdrColorBufferPrecision, msaaSamples, needsAlphaChannel, cameraData.requiresOpaqueTexture);
         }
 
@@ -1766,6 +1803,15 @@ namespace UnityEngine.Rendering.Universal
 
                     break;
                 }
+
+#if CUSTOM_URP
+                case UpscalingFilterSelection.SGSR:
+                {
+                    filter = ImageUpscalingFilter.SGSR;
+
+                    break;
+                }
+#endif // CUSTOM_URP
             }
 
             return filter;

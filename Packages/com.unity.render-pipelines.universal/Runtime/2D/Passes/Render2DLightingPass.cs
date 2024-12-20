@@ -41,6 +41,9 @@ namespace UnityEngine.Rendering.Universal
             m_Renderer2DData = rendererData;
             m_BlitMaterial = blitMaterial;
             m_SamplingMaterial = samplingMaterial;
+#if OPTIMISATION // ARM
+            overrideCameraClear = true;
+#endif // OPTIMISATION
 
             m_CameraSortingLayerBoundsIndex = GetCameraSortingLayerBoundsIndex();
         }
@@ -194,8 +197,7 @@ namespace UnityEngine.Rendering.Universal
             var batchesDrawn = 0;
             var rtCount = 0U;
 
-            // Account for Sprite Mask and normal map usage where the first and last layer has to render the stencil pass
-            bool hasSpriteMask = UnityEngine.SpriteMaskUtility.HasSpriteMaskInScene();
+            // Account for sprite mask interaction with normals. Only clear normals at the start as we require stencil for sprite mask in different layer batches
             bool normalsFirstClear = true;
 
             // Draw lights
@@ -220,13 +222,12 @@ namespace UnityEngine.Rendering.Universal
 
                     batchesDrawn++;
 
-                    if (layerBatch.lightStats.totalNormalMapUsage > 0 ||
-                        (hasSpriteMask && i == 0) ||
-                        (hasSpriteMask && i + 1 == batchCount))
+                    if (layerBatch.useNormals)
                     {
                         filterSettings.sortingLayerRange = layerBatch.layerRange;
                         var depthTarget = m_NeedsDepth ? depthAttachmentHandle.nameID : BuiltinRenderTextureType.None;
-                        this.RenderNormals(context, renderingData, normalsDrawSettings, filterSettings, depthTarget, ref normalsFirstClear);
+                        this.RenderNormals(context, renderingData, normalsDrawSettings, filterSettings, depthTarget, normalsFirstClear);
+						normalsFirstClear = false;
                     }
 
                     using (new ProfilingScope(cmd, m_ProfilingDrawLightTextures))
@@ -249,15 +250,26 @@ namespace UnityEngine.Rendering.Universal
             var blendStylesCount = m_Renderer2DData.lightBlendStyles.Length;
             using (new ProfilingScope(cmd, m_ProfilingDrawRenderers))
             {
+#if OPTIMISATION // ARM
+                // Clear the target only when the first layer is rendered and this is the base camera (not camera overlay)
+                bool needsClear = ((startIndex == 0) && (renderingData.cameraData.renderType == CameraRenderType.Base));
+#endif // OPTIMISATION
+
                 RenderBufferStoreAction initialStoreAction;
                 if (msaaEnabled)
                     initialStoreAction = resolveDuringBatch < startIndex ? RenderBufferStoreAction.Resolve : RenderBufferStoreAction.StoreAndResolve;
                 else
                     initialStoreAction = RenderBufferStoreAction.Store;
                 CoreUtils.SetRenderTarget(cmd,
+#if OPTIMISATION // ARM
+                    colorAttachmentHandle, RenderBufferLoadAction.DontCare, initialStoreAction,
+                    depthAttachmentHandle, RenderBufferLoadAction.DontCare, initialStoreAction,
+                    needsClear ? ClearFlag.All : ClearFlag.None, needsClear ? CoreUtils.ConvertSRGBToActiveColorSpace(renderingData.cameraData.camera.backgroundColor) : Color.clear);
+#else
                     colorAttachmentHandle, RenderBufferLoadAction.Load, initialStoreAction,
                     depthAttachmentHandle, RenderBufferLoadAction.Load, initialStoreAction,
                     ClearFlag.None, Color.clear);
+#endif // OPTIMISATION
 
                 for (var i = startIndex; i < startIndex + batchesDrawn; i++)
                 {

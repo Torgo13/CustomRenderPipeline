@@ -39,7 +39,7 @@ namespace UnityEngine.Rendering.Universal
     /// </summary>
     public sealed partial class UniversalRenderer : ScriptableRenderer
     {
-        #if UNITY_SWITCH || UNITY_ANDROID
+        #if (UNITY_SWITCH || UNITY_ANDROID) && !UNITY_EDITOR
         const GraphicsFormat k_DepthStencilFormat = GraphicsFormat.D24_UNorm_S8_UInt;
         const int k_DepthBufferBits = 24;
         #else
@@ -51,6 +51,13 @@ namespace UnityEngine.Rendering.Universal
         const int k_AfterFinalBlitPassQueueOffset = k_FinalBlitPassQueueOffset + 1;
 
         static readonly List<ShaderTagId> k_DepthNormalsOnly = new List<ShaderTagId> { new ShaderTagId("DepthNormalsOnly") };
+#if OPTIMISATION_SHADERPARAMS
+        static readonly int k_CameraColorTexture = Shader.PropertyToID("_CameraColorTexture");
+        static readonly int k_AfterPostProcessTexture = Shader.PropertyToID("_AfterPostProcessTexture");
+        static readonly int k_CameraRenderingLayersTexture = Shader.PropertyToID("_CameraRenderingLayersTexture");
+        static readonly int k_CameraNormalsTexture = Shader.PropertyToID("_CameraNormalsTexture");
+        static readonly int k_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
+#endif // OPTIMISATION_SHADERPARAMS
 
         private static class Profiling
         {
@@ -128,7 +135,10 @@ namespace UnityEngine.Rendering.Universal
         internal RTHandle m_CameraDepthAttachment;
         RTHandle m_XRTargetHandleAlias;
         internal RTHandle m_DepthTexture;
-        public RTHandle m_NormalsTexture;
+#if CUSTOM_URP
+        public
+#endif // CUSTOM_URP
+        RTHandle m_NormalsTexture;
         RTHandle m_DecalLayersTexture;
         RTHandle m_OpaqueColor;
         RTHandle m_MotionVectorColor;
@@ -136,7 +146,10 @@ namespace UnityEngine.Rendering.Universal
 
         ForwardLights m_ForwardLights;
         DeferredLights m_DeferredLights;
-        public RenderingMode m_RenderingMode;
+#if CUSTOM_URP
+        public
+#endif // CUSTOM_URP
+        RenderingMode m_RenderingMode;
         DepthPrimingMode m_DepthPrimingMode;
         CopyDepthMode m_CopyDepthMode;
         bool m_DepthPrimingRecommended;
@@ -291,7 +304,7 @@ namespace UnityEngine.Rendering.Universal
                 copyResolvedDepth: RenderingUtils.MultisampleDepthResolveSupported() && SystemInfo.supportsMultisampleAutoResolve && copyDepthAfterTransparents);
 
             // Motion vectors depend on the (copy) depth texture. Depth is reprojected to calculate motion vectors.
-            m_MotionVectorPass = new MotionVectorRenderPass(copyDepthEvent + 1, m_CameraMotionVecMaterial, m_ObjectMotionVecMaterial);
+            m_MotionVectorPass = new MotionVectorRenderPass(copyDepthEvent + 1, m_CameraMotionVecMaterial, m_ObjectMotionVecMaterial, data.opaqueLayerMask);
 
             m_DrawSkyboxPass = new DrawSkyboxPass(RenderPassEvent.BeforeRenderingSkybox);
             m_CopyColorPass = new CopyColorPass(RenderPassEvent.AfterRenderingSkybox, m_SamplingMaterial, m_BlitMaterial);
@@ -479,6 +492,20 @@ namespace UnityEngine.Rendering.Universal
 
         bool IsDepthPrimingEnabled(ref CameraData cameraData)
         {
+#if UNITY_EDITOR
+            // We need to disable depth-priming for DrawCameraMode.Wireframe, since depth-priming forces ZTest to Equal
+            // for opaques rendering, which breaks wireframe rendering.
+            if (cameraData.isSceneViewCamera)
+            {
+                foreach (var sceneViewObject in UnityEditor.SceneView.sceneViews)
+                {
+                    var sceneView = sceneViewObject as UnityEditor.SceneView;
+                    if (sceneView != null && sceneView.camera == cameraData.camera && sceneView.cameraMode.drawMode == UnityEditor.DrawCameraMode.Wireframe)
+                        return false;
+                }
+            }
+#endif
+
             // depth priming requires an extra depth copy, disable it on platforms not supporting it (like GLES when MSAA is on)
             if (!CanCopyDepth(ref cameraData))
                 return false;
@@ -700,7 +727,16 @@ namespace UnityEngine.Rendering.Universal
                     // Do depth copy before the render pass that requires depth texture as shader read resource
                     copyDepthPassEvent = (RenderPassEvent)Mathf.Min((int)RenderPassEvent.AfterRenderingTransparents, ((int)renderPassInputs.requiresDepthTextureEarliestEvent) - 1);
                 }
+
                 m_CopyDepthPass.renderPassEvent = copyDepthPassEvent;
+
+                // In case we are making the copy depth pass earlier, we need to force set these variables to disable
+                // depth resolve as the render pass event itself has been moved earlier and it's not possible anymore
+                if (copyDepthPassEvent < RenderPassEvent.AfterRenderingTransparents)
+                {
+                    m_CopyDepthPass.m_CopyResolvedDepth = false;
+                    m_CopyDepthMode = CopyDepthMode.AfterOpaques;
+                }
             }
             else if (cameraHasPostProcessingWithDepth || isSceneViewOrPreviewCamera || isGizmosEnabled)
             {
@@ -928,7 +964,11 @@ namespace UnityEngine.Rendering.Universal
                 cmd.SetGlobalTexture(renderingLayersTexture.name, renderingLayersTexture.nameID);
                 RenderingLayerUtils.SetupProperties(cmd, renderingLayerMaskSize);
                 if (this.renderingModeActual == RenderingMode.Deferred) // As this is requested by render pass we still want to set it
+#if OPTIMISATION_SHADERPARAMS
+                    cmd.SetGlobalTexture(k_CameraRenderingLayersTexture, renderingLayersTexture.nameID);
+#else
                     cmd.SetGlobalTexture("_CameraRenderingLayersTexture", renderingLayersTexture.nameID);
+#endif // OPTIMISATION_SHADERPARAMS
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
             }
@@ -968,7 +1008,11 @@ namespace UnityEngine.Rendering.Universal
 
                 cmd.SetGlobalTexture(normalsTexture.name, normalsTexture.nameID);
                 if (this.renderingModeActual == RenderingMode.Deferred) // As this is requested by render pass we still want to set it
+#if OPTIMISATION_SHADERPARAMS
+                    cmd.SetGlobalTexture(k_CameraNormalsTexture, normalsTexture.nameID);
+#else
                     cmd.SetGlobalTexture("_CameraNormalsTexture", normalsTexture.nameID);
+#endif // OPTIMISATION_SHADERPARAMS
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
             }
@@ -1128,7 +1172,11 @@ namespace UnityEngine.Rendering.Universal
             // Set the depth texture to the far Z if we do not have a depth prepass or copy depth
             // Don't do this for Overlay cameras to not lose depth data in between cameras (as Base is guaranteed to be first)
             if (cameraData.renderType == CameraRenderType.Base && !requiresDepthPrepass && !requiresDepthCopyPass)
+#if OPTIMISATION_SHADERPARAMS
+                Shader.SetGlobalTexture(k_CameraDepthTexture, SystemInfo.usesReversedZBuffer ? Texture2D.blackTexture : Texture2D.whiteTexture);
+#else
                 Shader.SetGlobalTexture("_CameraDepthTexture", SystemInfo.usesReversedZBuffer ? Texture2D.blackTexture : Texture2D.whiteTexture);
+#endif // OPTIMISATION_SHADERPARAMS
 
             if (copyColorPass)
             {
@@ -1150,12 +1198,12 @@ namespace UnityEngine.Rendering.Universal
                 colorDesc.graphicsFormat = MotionVectorRenderPass.k_TargetFormat;
                 colorDesc.depthBufferBits = (int)DepthBits.None;
                 colorDesc.msaaSamples = 1;  // Disable MSAA, consider a pixel resolve for half left velocity and half right velocity --> no velocity, which is untrue.
-                RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorColor, colorDesc, FilterMode.Point, TextureWrapMode.Clamp, name: MotionVectorRenderPass.k_MotionVectorTextureName);
+                RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorColor, colorDesc, FilterMode.Point, TextureWrapMode.Clamp, name: "_MotionVectorTexture");
 
                 var depthDescriptor = cameraTargetDescriptor;
                 depthDescriptor.graphicsFormat = GraphicsFormat.None;
                 depthDescriptor.msaaSamples = 1;
-                RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorDepth, depthDescriptor, FilterMode.Point, TextureWrapMode.Clamp, name: MotionVectorRenderPass.k_MotionVectorDepthTextureName);
+                RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorDepth, depthDescriptor, FilterMode.Point, TextureWrapMode.Clamp, name: "_MotionVectorDepthTexture");
 
                 m_MotionVectorPass.Setup(m_MotionVectorColor, m_MotionVectorDepth);
                 EnqueuePass(m_MotionVectorPass);
@@ -1300,6 +1348,10 @@ namespace UnityEngine.Rendering.Universal
                 m_FinalDepthCopyPass.Setup(m_DepthTexture, k_CameraTarget);
                 m_FinalDepthCopyPass.CopyToDepth = true;
                 m_FinalDepthCopyPass.MssaSamples = 0;
+                // Turning off unnecessary NRP in Editor because of MSAA mistmatch between CameraTargetDescriptor vs camera backbuffer
+                // NRP layer considers this being a pass with MSAA samples by checking CameraTargetDescriptor taken from RP asset
+                // while the camera backbuffer has a single sample
+                m_FinalDepthCopyPass.useNativeRenderPass = false;
                 EnqueuePass(m_FinalDepthCopyPass);
             }
 #endif
@@ -1470,9 +1522,16 @@ namespace UnityEngine.Rendering.Universal
                 {
                     m_ActiveCameraColorAttachment = m_ColorBufferSystem.GetBackBuffer(cmd);
                     ConfigureCameraColorTarget(m_ActiveCameraColorAttachment);
+
+#if OPTIMISATION_SHADERPARAMS
+                    cmd.SetGlobalTexture(k_CameraColorTexture, m_ActiveCameraColorAttachment.nameID);
+                    //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
+                    cmd.SetGlobalTexture(k_AfterPostProcessTexture, m_ActiveCameraColorAttachment.nameID);
+#else
                     cmd.SetGlobalTexture("_CameraColorTexture", m_ActiveCameraColorAttachment.nameID);
                     //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
                     cmd.SetGlobalTexture("_AfterPostProcessTexture", m_ActiveCameraColorAttachment.nameID);
+#endif // OPTIMISATION_SHADERPARAMS
                 }
 
                 if (m_CameraDepthAttachment == null || m_CameraDepthAttachment.nameID != BuiltinRenderTextureType.CameraTarget)
@@ -1606,9 +1665,16 @@ namespace UnityEngine.Rendering.Universal
                 ConfigureCameraColorTarget(m_ColorBufferSystem.GetBackBuffer(cmd));
 
             m_ActiveCameraColorAttachment = m_ColorBufferSystem.GetBackBuffer(cmd);
+
+#if OPTIMISATION_SHADERPARAMS
+            cmd.SetGlobalTexture(k_CameraColorTexture, m_ActiveCameraColorAttachment.nameID);
+            //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
+            cmd.SetGlobalTexture(k_AfterPostProcessTexture, m_ActiveCameraColorAttachment.nameID);
+#else
             cmd.SetGlobalTexture("_CameraColorTexture", m_ActiveCameraColorAttachment.nameID);
             //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
             cmd.SetGlobalTexture("_AfterPostProcessTexture", m_ActiveCameraColorAttachment.nameID);
+#endif // OPTIMISATION_SHADERPARAMS
         }
 
         internal override RTHandle GetCameraColorFrontBuffer(CommandBuffer cmd)

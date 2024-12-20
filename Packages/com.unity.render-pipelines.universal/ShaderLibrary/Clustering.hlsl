@@ -96,7 +96,7 @@ bool ClusterNext(inout ClusterIterator it, out uint entityIndex)
 {
 #if MAX_LIGHTS_PER_TILE > 32 || !defined(_ENVIRONMENTREFLECTIONS_OFF)
     uint maxIndex = it.entityIndexNextMax >> 16;
-    [loop] while (it.tileMask == 0 && (it.entityIndexNextMax & 0xFFFF) <= maxIndex)
+    while (it.tileMask == 0 && (it.entityIndexNextMax & 0xFFFF) <= maxIndex)
     {
         // Extract the lower 16 bits and shift by 5 to divide by 32.
         uint wordIndex = ((it.entityIndexNextMax & 0xFFFF) >> 5);

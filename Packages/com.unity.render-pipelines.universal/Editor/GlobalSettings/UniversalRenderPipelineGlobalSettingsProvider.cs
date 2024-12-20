@@ -10,7 +10,11 @@ namespace UnityEditor.Rendering.Universal
         public UniversalGlobalSettingsPanelProvider()
             : base("Project/Graphics/URP Global Settings")
         {
+#if OPTIMISATION
+            keywords = GetSearchKeywordsFromGUIContentProperties<UniversalRenderPipelineGlobalSettingsUI.Styles>();
+#else
             keywords = GetSearchKeywordsFromGUIContentProperties<UniversalRenderPipelineGlobalSettingsUI.Styles>().ToArray();
+#endif // OPTIMISATION
         }
 
         [SettingsProvider]
@@ -25,7 +29,7 @@ namespace UnityEditor.Rendering.Universal
 
         protected override void Create(bool useProjectSettingsFolder, bool activateAsset)
         {
-            UniversalGlobalSettingsCreator.Create(useProjectSettingsFolder: true, activateAsset: true);
+            UniversalGlobalSettingsCreator.Create(useProjectSettingsFolder: useProjectSettingsFolder, activateAsset: activateAsset);
         }
 
         protected override void Ensure()

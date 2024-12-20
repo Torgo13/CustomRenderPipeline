@@ -15,6 +15,10 @@ namespace UnityEngine.Rendering.Universal.Internal
     /// </summary>
     public class CopyDepthPass : ScriptableRenderPass
     {
+#if OPTIMISATION_SHADERPARAMS
+        private static readonly int k_CameraDepthAttachment = Shader.PropertyToID("_CameraDepthAttachment");
+        private static readonly int k_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
+#endif // OPTIMISATION_SHADERPARAMS
         private RTHandle source { get; set; }
         private RTHandle destination { get; set; }
         internal int MssaSamples { get; set; }
@@ -99,7 +103,11 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_PassData.msaaSamples = MssaSamples;
             m_PassData.copyResolvedDepth = m_CopyResolvedDepth;
             m_PassData.copyToDepth = CopyToDepth || !RenderingUtils.SupportsGraphicsFormat(GraphicsFormat.R32_SFloat, FormatUsage.Render);
+#if OPTIMISATION_SHADERPARAMS
+            renderingData.commandBuffer.SetGlobalTexture(k_CameraDepthAttachment, source.nameID);
+#else
             renderingData.commandBuffer.SetGlobalTexture("_CameraDepthAttachment", source.nameID);
+#endif // OPTIMISATION_SHADERPARAMS
             ExecutePass(context, m_PassData, ref renderingData.commandBuffer, ref renderingData.cameraData, source, destination);
         }
 
@@ -181,8 +189,6 @@ namespace UnityEngine.Rendering.Universal.Internal
                 Vector4 scaleBias = yflip ? new Vector4(viewportScale.x, -viewportScale.y, 0, viewportScale.y) : new Vector4(viewportScale.x, viewportScale.y, 0, 0);
                 if (isGameViewFinalTarget)
                     cmd.SetViewport(cameraData.pixelRect);
-                else
-                    cmd.SetViewport(new Rect(0, 0, cameraData.cameraTargetDescriptor.width, cameraData.cameraTargetDescriptor.height));
                 Blitter.BlitTexture(cmd, source, scaleBias, copyDepthMaterial, 0);
             }
         }
@@ -191,7 +197,11 @@ namespace UnityEngine.Rendering.Universal.Internal
         public override void OnCameraCleanup(CommandBuffer cmd)
         {
             if (cmd == null)
+#if SAFETY
+                throw new ArgumentNullException(nameof(cmd));
+#else
                 throw new ArgumentNullException("cmd");
+#endif // SAFETY
 
             destination = k_CameraTarget;
         }
@@ -209,7 +219,11 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 builder.SetRenderFunc((PassData data, RenderGraphContext context) =>
                 {
+#if OPTIMISATION_SHADERPARAMS
+                    context.cmd.SetGlobalTexture(k_CameraDepthAttachment, data.source);
+#else
                     context.cmd.SetGlobalTexture("_CameraDepthAttachment", data.source);
+#endif // OPTIMISATION_SHADERPARAMS
                 });
             }
 
@@ -249,7 +263,11 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 builder.SetRenderFunc((PassData data, RenderGraphContext context) =>
                 {
+#if OPTIMISATION_SHADERPARAMS
+                    data.cmd.SetGlobalTexture(k_CameraDepthTexture, data.destination);
+#else
                     data.cmd.SetGlobalTexture("_CameraDepthTexture", data.destination);
+#endif // OPTIMISATION_SHADERPARAMS
                 });
             }
         }

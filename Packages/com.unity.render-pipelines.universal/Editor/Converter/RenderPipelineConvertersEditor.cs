@@ -152,7 +152,7 @@ namespace UnityEditor.Rendering.Universal
 
         void InitIfNeeded()
         {
-            if (m_CoreConvertersList.Count > 0)
+            if (m_CoreConvertersList.Any())
                 return;
             m_CoreConvertersList = new List<RenderPipelineConverter>();
 
@@ -174,7 +174,7 @@ namespace UnityEditor.Rendering.Universal
                 m_ContainerChoices.Add(container.name);
             }
 
-            if (m_ConverterContainers.Count > 0)
+            if (m_ConverterContainers.Any())
             {
                 GetConverters();
             }
@@ -240,7 +240,7 @@ namespace UnityEditor.Rendering.Universal
             string theme = EditorGUIUtility.isProSkin ? "dark" : "light";
             InitIfNeeded();
 
-            if (m_ConverterContainers.Count > 0)
+            if (m_ConverterContainers.Any())
             {
                 m_SerializedObject = new SerializedObject(this);
                 converterEditorAsset.CloneTree(rootVisualElement);
@@ -285,7 +285,7 @@ namespace UnityEditor.Rendering.Universal
             // If not then Init Button should be active
             // Get all active converters
 
-            if (m_ConverterStates.Count > 0)
+            if (m_ConverterStates.Any())
             {
                 foreach (ConverterState state in m_ConverterStates)
                 {
@@ -355,6 +355,15 @@ namespace UnityEditor.Rendering.Universal
         }
         void ToggleAllNone(ClickEvent evt, int index, bool value, VisualElement item)
         {
+            void ToggleSelection(Label labelSelected, Label labelNotSelected)
+            {
+                labelSelected.AddToClassList("selected");
+                labelSelected.RemoveFromClassList("not_selected");
+
+                labelNotSelected.AddToClassList("not_selected");
+                labelNotSelected.RemoveFromClassList("selected");
+            }
+
             var conv = m_ConverterStates[index];
             if (conv.items.Count > 0)
             {
@@ -363,29 +372,25 @@ namespace UnityEditor.Rendering.Universal
                     convItem.isActive = value;
                 }
                 UpdateSelectedConverterItems(index, item);
+
+                var allLabel = item.Q<Label>("all");
+                var noneLabel = item.Q<Label>("none");
+
                 // Changing the look of the labels
                 if (value)
                 {
-                    item.Q<Label>("all").AddToClassList("selected");
-                    item.Q<Label>("all").RemoveFromClassList("not_selected");
-
-                    item.Q<Label>("none").AddToClassList("not_selected");
-                    item.Q<Label>("none").RemoveFromClassList("selected");
+                    ToggleSelection(allLabel, noneLabel);
                 }
                 else
                 {
-                    item.Q<Label>("none").AddToClassList("selected");
-                    item.Q<Label>("none").RemoveFromClassList("not_selected");
-
-                    item.Q<Label>("all").AddToClassList("not_selected");
-                    item.Q<Label>("all").RemoveFromClassList("selected");
+                    ToggleSelection(noneLabel, allLabel);
                 }
             }
         }
 
         void ConverterStatusInfo(int index, VisualElement item)
         {
-            Tuple<string, Texture2D> info = converterStateInfoDisabled;
+            Tuple<string, Texture2D> info = converterStateInfoDisabled;;
             // Check if it is active
             if (m_ConverterStates[index].isActive)
             {

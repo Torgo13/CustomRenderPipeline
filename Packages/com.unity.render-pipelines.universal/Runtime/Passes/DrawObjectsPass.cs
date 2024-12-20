@@ -22,12 +22,21 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         public void Setup(RTHandle colorAttachment, RTHandle renderingLayersTexture, RTHandle depthAttachment)
         {
+#if SAFETY
+            if (colorAttachment == null)
+                throw new ArgumentException("Color attachment can not be null", nameof(colorAttachment));
+            if (renderingLayersTexture == null)
+                throw new ArgumentException("Rendering layers attachment can not be null", nameof(renderingLayersTexture));
+            if (depthAttachment == null)
+                throw new ArgumentException("Depth attachment can not be null", nameof(depthAttachment));
+#else
             if (colorAttachment == null)
                 throw new ArgumentException("Color attachment can not be null", "colorAttachment");
             if (renderingLayersTexture == null)
                 throw new ArgumentException("Rendering layers attachment can not be null", "renderingLayersTexture");
             if (depthAttachment == null)
                 throw new ArgumentException("Depth attachment can not be null", "depthAttachment");
+#endif // SAFETY
 
             m_ColorTargetIndentifiers[0] = colorAttachment;
             m_ColorTargetIndentifiers[1] = renderingLayersTexture;
@@ -97,7 +106,12 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_PassData = new PassData();
             m_ProfilerTag = profilerTag;
             m_ProfilingSampler = new ProfilingSampler(profilerTag);
+#if OPTIMISATION
             m_ShaderTagIdList.AddRange(shaderTagIds);
+#else
+            foreach (ShaderTagId sid in shaderTagIds)
+                m_ShaderTagIdList.Add(sid);
+#endif // OPTIMISATION
             renderPassEvent = evt;
             m_FilteringSettings = new FilteringSettings(renderQueueRange, layerMask);
             m_RenderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
@@ -180,10 +194,12 @@ namespace UnityEngine.Rendering.Universal.Internal
                 Vector4 drawObjectPassData = new Vector4(0.0f, 0.0f, 0.0f, (data.m_IsOpaque) ? 1.0f : 0.0f);
                 cmd.SetGlobalVector(s_DrawObjectPassDataPropID, drawObjectPassData);
 
-                if (data.m_RenderingData.cameraData.xrRendering && data.m_IsActiveTargetBackBuffer)
+#if ENABLE_VR && ENABLE_XR_MODULE
+                if (data.m_RenderingData.cameraData.xr.enabled && data.m_IsActiveTargetBackBuffer)
                 {
                     cmd.SetViewport(data.m_RenderingData.cameraData.xr.GetViewport());
                 }
+#endif
 
                 // scaleBias.x = flipSign
                 // scaleBias.y = scale
@@ -261,7 +277,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             internal ProfilingSampler m_ProfilingSampler;
 
             internal bool m_ShouldTransparentsReceiveShadows;
-            internal bool m_IsActiveTargetBackBuffer;
+			internal bool m_IsActiveTargetBackBuffer;
 
             internal DrawObjectsPass pass;
         }

@@ -16,7 +16,7 @@ namespace UnityEditor.Rendering.Universal
             {
                 case (EventType.Layout):
                 {
-                    Vector2 size2 = 0.5f * size * Vector2.one;
+                    Vector2 size2 = Vector2.one * size * 0.5f;
                     if (isAngleHandle)
                         size2.x = 0.0f;
 
@@ -32,7 +32,7 @@ namespace UnityEditor.Rendering.Universal
                     float w = texture.width;
                     float h = texture.height;
                     float max = Mathf.Max(w, h);
-                    Vector3 scale = 0.5f * size * new Vector2(w / max, h / max);
+                    Vector3 scale = new Vector2(w / max, h / max) * size * 0.5f;
 
                     if (Camera.current == null)
                         scale.y *= -1f;
@@ -104,12 +104,14 @@ namespace UnityEditor.Rendering.Universal
             {
                 foreach (Camera camera in Camera.allCameras)
                 {
-                    if (camera.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData) && additionalCameraData.scriptableRenderer is Renderer2D renderer2D)
-                    {
+                    UniversalAdditionalCameraData additionalCameraData = camera.GetComponent<UniversalAdditionalCameraData>();
+                    ScriptableRenderer renderer = additionalCameraData?.scriptableRenderer;
+                    Renderer2D renderer2D = renderer as Renderer2D;
+                    if (renderer2D != null)
                         return renderer2D.GetRenderer2DData();
-                    }
                 }
             }
+
 
             return rendererData;
         }

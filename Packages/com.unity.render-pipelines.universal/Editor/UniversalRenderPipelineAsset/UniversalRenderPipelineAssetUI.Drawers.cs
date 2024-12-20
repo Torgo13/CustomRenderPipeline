@@ -91,8 +91,8 @@ namespace UnityEditor.Rendering.Universal
 
                 for (int apiIndex = 0; apiIndex < unsupportedAPIs.Length; apiIndex++)
                 {
-                    if (Array.FindIndex(graphicsAPIs, element => element == unsupportedAPIs[apiIndex]) >= 0)
-                        unsupportedGraphicsApisMessage += $"{renderer} at index {i} does not support {unsupportedAPIs[apiIndex]}.\n";
+                    if (System.Array.FindIndex(graphicsAPIs, element => element == unsupportedAPIs[apiIndex]) >= 0)
+                        unsupportedGraphicsApisMessage += System.String.Format("{0} at index {1} does not support {2}.\n", renderer, i, unsupportedAPIs[apiIndex]);
                 }
             }
 

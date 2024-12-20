@@ -10,13 +10,15 @@ namespace UnityEditor.Rendering.Universal
         internal Bounds GetBounds()
         {
             ShadowCaster2D shadowCaster = (ShadowCaster2D)owner;
-            if (shadowCaster.TryGetComponent<Renderer>(out var m_Renderer))
+            Renderer m_Renderer = shadowCaster.GetComponent<Renderer>();
+            if (m_Renderer != null)
             {
                 return m_Renderer.bounds;
             }
             else
             {
-                if (shadowCaster.TryGetComponent<Collider2D>(out var collider))
+                Collider2D collider = shadowCaster.GetComponent<Collider2D>();
+                if (collider != null)
                     return collider.bounds;
             }
 
@@ -107,7 +109,9 @@ namespace UnityEditor.Rendering.Universal
             {
                 for (int i = 0; i < targets.Length; i++)
                 {
-                    if (((ShadowCaster2D)targets[i]).TryGetComponent<Renderer>(out _))
+                    ShadowCaster2D shadowCaster = (ShadowCaster2D)targets[i];
+                    Renderer renderer = shadowCaster.GetComponent<Renderer>();
+                    if (renderer != null)
                         return true;
                 }
             }

@@ -6,7 +6,7 @@ using Unity.Mathematics;
 
 namespace UnityEngine.Rendering.Universal
 {
-    [BurstCompile(FloatMode = FloatMode.Fast, DisableSafetyChecks = true, OptimizeFor = OptimizeFor.Performance)]
+    [BurstCompile(FloatMode = FloatMode.Default, DisableSafetyChecks = true, OptimizeFor = OptimizeFor.Performance)]
     struct TilingJob : IJobFor
     {
         [ReadOnly]
@@ -62,11 +62,6 @@ namespace UnityEngine.Rendering.Universal
         void TileLight(int lightIndex)
         {
             var light = lights[lightIndex];
-            if (light.lightType != LightType.Point && light.lightType != LightType.Spot)
-            {
-                return;
-            }
-            
             var lightToWorld = (float4x4)light.localToWorldMatrix;
             var lightPositionVS = math.mul(worldToViews[m_ViewIndex], math.float4(lightToWorld.c3.xyz, 1)).xyz;
             lightPositionVS.z *= -1;

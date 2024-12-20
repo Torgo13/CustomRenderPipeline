@@ -640,7 +640,7 @@ namespace UnityEditor.Rendering
             }
 
             // if any scenes should be considered, do the same for clips used by scenes
-            if (scenePaths.Length > 0)
+            if (scenePaths.Any())
             {
                 GetClipDependencyMappings(clipPaths, scenePaths, out var clipSceneDependents, out var sceneDependencies);
                 GatherClipsUsageInDependentScenes(

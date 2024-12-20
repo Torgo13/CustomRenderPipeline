@@ -29,7 +29,7 @@ The following URP Shaders use Physically Based Shading:
 
 **Note:** This shading model is not suitable for low-end mobile hardware. If you’re targeting this hardware, use Shaders with a [Simple Shading](#simple-shading) model.
 
-To read more about Physically Based Rendering, see [this walkthrough by Joe Wilson on Marmoset](https://marmoset.co/posts/physically-based-rendering-and-you-can-too/).
+To read more about Physically Based Rendering, refer to [this walkthrough by Joe Wilson on Marmoset](https://marmoset.co/posts/physically-based-rendering-and-you-can-too/).
 ## Simple shading
 
 This shading model is suitable for stylized visuals or for games that run on less powerful platforms. With this shading model, Materials are not truly photorealistic. The Shaders do not conserve energy. This shading model is based on the [Blinn-Phong](https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model) model.
@@ -51,7 +51,7 @@ The URP Baked Lit shader is the only shader that uses the Baked Lit shading mode
 
 ## Shaders with no lighting
 
-URP comes with some Shaders that are Unlit. This means that they have no directional lights and no baked lighting. Because there are no light calculations, these shaders compile faster than Shaders with lighting. If you know in advance that your GameObject or visual doesn’t need lighting, choose an Unlit shader to save calculation and build time in your final product.
+URP comes with some unlit-type shaders. Materials with unlit-type shaders are not affected by neither real-time, nor baked lighting. Unlit shaders let you create unique visual look of the objects in your scene. Unlit shaders have significantly faster compilation speed compared with lit shaders.
 
 The following URP Shaders have no lighting:
 - [Unlit](unlit-shader.md)

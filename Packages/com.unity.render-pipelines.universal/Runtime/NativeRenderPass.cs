@@ -21,9 +21,6 @@ namespace UnityEngine.Rendering.Universal
         private Hash128[] m_PassIndexToPassHash = new Hash128[kRenderPassMaxCount];
         private Dictionary<Hash128, int> m_RenderPassesAttachmentCount = new Dictionary<Hash128, int>(kRenderPassMapSize);
 
-        // used to keep track of the index of the first pass in the last group of merged native passes
-        private int m_firstPassIndexOfLastMergeableGroup;
-
         AttachmentDescriptor[] m_ActiveColorAttachmentDescriptors = new AttachmentDescriptor[]
         {
             RenderingUtils.emptyAttachment, RenderingUtils.emptyAttachment, RenderingUtils.emptyAttachment,
@@ -80,8 +77,6 @@ namespace UnityEngine.Rendering.Universal
                     m_MergeableRenderPassesMapArrays[i][j] = -1;
                 }
             }
-
-            m_firstPassIndexOfLastMergeableGroup = 0;
         }
 
         internal void SetupNativeRenderPassFrameData(ref CameraData cameraData, bool isRenderPassEnabled)
@@ -121,7 +116,6 @@ namespace UnityEngine.Rendering.Universal
                     {
                         m_MergeableRenderPassesMap.Add(hash, m_MergeableRenderPassesMapArrays[m_MergeableRenderPassesMap.Count]);
                         m_RenderPassesAttachmentCount.Add(hash, 0);
-                        m_firstPassIndexOfLastMergeableGroup = i;
                     }
                     else if (m_MergeableRenderPassesMap[hash][GetValidPassIndexCount(m_MergeableRenderPassesMap[hash]) - 1] != (i - 1))
                     {
@@ -134,7 +128,6 @@ namespace UnityEngine.Rendering.Universal
 
                         m_MergeableRenderPassesMap.Add(hash, m_MergeableRenderPassesMapArrays[m_MergeableRenderPassesMap.Count]);
                         m_RenderPassesAttachmentCount.Add(hash, 0);
-                        m_firstPassIndexOfLastMergeableGroup = i;
                     }
 
                     m_MergeableRenderPassesMap[hash][GetValidPassIndexCount(m_MergeableRenderPassesMap[hash])] = i;
@@ -148,7 +141,7 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
-        internal void UpdateFinalStoreActions(int[] currentMergeablePasses, ref CameraData cameraData, bool isLastMergeableGroup)
+        internal void UpdateFinalStoreActions(int[] currentMergeablePasses, ref CameraData cameraData)
         {
             for (int i = 0; i < m_FinalColorStoreAction.Length; ++i)
                 m_FinalColorStoreAction[i] = RenderBufferStoreAction.Store;
@@ -183,8 +176,6 @@ namespace UnityEngine.Rendering.Universal
                             m_FinalColorStoreAction[i] = RenderBufferStoreAction.StoreAndResolve;
                         else if (m_FinalColorStoreAction[i] == RenderBufferStoreAction.DontCare)
                             m_FinalColorStoreAction[i] = RenderBufferStoreAction.Resolve;
-                        else if (isLastMergeableGroup && m_FinalColorStoreAction[i] == RenderBufferStoreAction.Resolve)
-                            m_FinalColorStoreAction[i] = RenderBufferStoreAction.StoreAndResolve;
                     }
                 }
 
@@ -208,7 +199,7 @@ namespace UnityEngine.Rendering.Universal
 
                 m_RenderPassesAttachmentCount[currentPassHash] = 0;
 
-                UpdateFinalStoreActions(currentMergeablePasses, ref cameraData, currentPassIndex == m_firstPassIndexOfLastMergeableGroup);
+                UpdateFinalStoreActions(currentMergeablePasses, ref cameraData);
 
                 int currentAttachmentIdx = 0;
                 bool hasInput = false;
@@ -286,7 +277,9 @@ namespace UnityEngine.Rendering.Universal
 
         bool IsDepthOnlyRenderTexture(RenderTexture t)
         {
-            return t.graphicsFormat == GraphicsFormat.None;
+            if (t.graphicsFormat == GraphicsFormat.None)
+                return true;
+            return false;
         }
 
         internal void SetNativeRenderPassAttachmentList(ScriptableRenderPass renderPass, ref CameraData cameraData, RTHandle passColorAttachment, RTHandle passDepthAttachment, ClearFlag finalClearFlag, Color finalClearColor)
@@ -303,7 +296,7 @@ namespace UnityEngine.Rendering.Universal
 
                 m_RenderPassesAttachmentCount[currentPassHash] = 0;
 
-                UpdateFinalStoreActions(currentMergeablePasses, ref cameraData, currentPassIndex == m_firstPassIndexOfLastMergeableGroup);
+                UpdateFinalStoreActions(currentMergeablePasses, ref cameraData);
 
                 int currentAttachmentIdx = 0;
                 foreach (var passIdx in currentMergeablePasses)
@@ -545,7 +538,7 @@ namespace UnityEngine.Rendering.Universal
             uint lastSubPassAttCount = GetSubPassAttachmentIndicesCount(lastSubPass);
             uint currentSubPassAttCount = GetSubPassAttachmentIndicesCount(currentSubPass);
 
-            if (currentSubPassAttCount != lastSubPassAttCount)
+            if (currentSubPassAttCount > lastSubPassAttCount)
                 return false;
 
             uint numEqualAttachments = 0;
@@ -658,9 +651,8 @@ namespace UnityEngine.Rendering.Universal
             return CreateRenderPassHash(desc.w, desc.h, desc.depthID, desc.samples, hashIndex);
         }
 
-        private RenderPassDescriptor InitializeRenderPassDescriptor(ref CameraData cameraData, ScriptableRenderPass renderPass)
+        internal static void GetRenderTextureDescriptor(ref CameraData cameraData, ScriptableRenderPass renderPass, out RenderTextureDescriptor targetRT)
         {
-            RenderTextureDescriptor targetRT;
             if (!renderPass.overrideCameraTarget || (renderPass.colorAttachmentHandle.rt == null && renderPass.depthAttachmentHandle.rt == null))
             {
                 targetRT = cameraData.cameraTargetDescriptor;
@@ -669,8 +661,8 @@ namespace UnityEngine.Rendering.Universal
                 // and it's new dimensions might not be reflected on the targetTexture. This also applies to camera stacks rendering to a target texture.
                 if (cameraData.targetTexture != null)
                 {
-                    targetRT.width = cameraData.pixelWidth;
-                    targetRT.height = cameraData.pixelHeight;
+                    targetRT.width = cameraData.scaledWidth;
+                    targetRT.height = cameraData.scaledHeight;
                 }
             }
             else
@@ -678,6 +670,11 @@ namespace UnityEngine.Rendering.Universal
                 var handle = GetFirstAllocatedRTHandle(renderPass);
                 targetRT = handle.rt != null ? handle.rt.descriptor : renderPass.depthAttachmentHandle.rt.descriptor;
             }
+        }
+
+        private RenderPassDescriptor InitializeRenderPassDescriptor(ref CameraData cameraData, ScriptableRenderPass renderPass)
+        {
+            GetRenderTextureDescriptor(ref cameraData, renderPass, out RenderTextureDescriptor targetRT);
 
             var depthTarget = renderPass.overrideCameraTarget ? renderPass.depthAttachmentHandle : cameraDepthTargetHandle;
             var depthID = (targetRT.graphicsFormat == GraphicsFormat.None && targetRT.depthStencilFormat != GraphicsFormat.None) ? renderPass.colorAttachmentHandle.GetHashCode() : depthTarget.GetHashCode();

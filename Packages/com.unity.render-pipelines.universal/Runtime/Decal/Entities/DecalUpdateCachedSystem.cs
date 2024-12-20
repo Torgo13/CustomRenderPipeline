@@ -113,6 +113,9 @@ namespace UnityEngine.Rendering.Universal
     /// </summary>
     internal class DecalUpdateCachedSystem
     {
+#if OPTIMISATION_SHADERPARAMS
+        private static readonly int k_DrawOrder = Shader.PropertyToID("_DrawOrder");
+#endif // OPTIMISATION_SHADERPARAMS
         private DecalEntityManager m_EntityManager;
         private ProfilingSampler m_Sampler;
         private ProfilingSampler m_SamplerJob;
@@ -142,8 +145,13 @@ namespace UnityEngine.Rendering.Universal
 
             // Make sure draw order is up to date
             var material = entityChunk.material;
+#if OPTIMISATION_SHADERPARAMS
+            if (material.HasProperty(k_DrawOrder))
+                cachedChunk.drawOrder = material.GetInt(k_DrawOrder);
+#else
             if (material.HasProperty("_DrawOrder"))
                 cachedChunk.drawOrder = material.GetInt("_DrawOrder");
+#endif // OPTIMISATION_SHADERPARAMS
 
             // Shader can change any time in editor, so we have to update passes each time
 #if !UNITY_EDITOR
@@ -189,7 +197,11 @@ namespace UnityEngine.Rendering.Universal
 #if ENABLE_BURST_1_0_0_OR_NEWER
         [Unity.Burst.BurstCompile]
 #endif
+#if SAFETY
+        public struct UpdateTransformsJob : IJobParallelForTransform
+#else
         public unsafe struct UpdateTransformsJob : IJobParallelForTransform
+#endif // SAFETY
         {
             private static readonly quaternion k_MinusYtoZRotation = quaternion.EulerXYZ(-math.PI / 2.0f, 0, 0);
 

@@ -11,7 +11,7 @@ namespace UnityEngine.Rendering.Universal
         #else
         internal const int k_DepthBufferBits = 32;
         #endif
-        
+
         const int k_FinalBlitPassQueueOffset = 1;
         const int k_AfterFinalBlitPassQueueOffset = k_FinalBlitPassQueueOffset + 1;
 
@@ -26,6 +26,10 @@ namespace UnityEngine.Rendering.Universal
         internal RenderTargetBufferSystem m_ColorBufferSystem;
 
         private static readonly ProfilingSampler m_ProfilingSampler = new ProfilingSampler("Create Camera Textures");
+#if OPTIMISATION_SHADERPARAMS
+        private static readonly int k_CameraColorTexture = Shader.PropertyToID("_CameraColorTexture");
+        private static readonly int k_AfterPostProcessTexture = Shader.PropertyToID("_AfterPostProcessTexture");
+#endif // OPTIMISATION_SHADERPARAMS
 
         bool m_UseDepthStencilBuffer = true;
         bool m_CreateColorTexture;
@@ -209,9 +213,15 @@ namespace UnityEngine.Rendering.Universal
                     if (m_ColorBufferSystem.PeekBackBuffer() == null || m_ColorBufferSystem.PeekBackBuffer().nameID != BuiltinRenderTextureType.CameraTarget)
                     {
                         m_ColorTextureHandle = m_ColorBufferSystem.GetBackBuffer(cmd);
+#if OPTIMISATION_SHADERPARAMS
+                        cmd.SetGlobalTexture(k_CameraColorTexture, m_ColorTextureHandle.nameID);
+                        //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
+                        cmd.SetGlobalTexture(k_AfterPostProcessTexture, m_ColorTextureHandle.nameID);
+#else
                         cmd.SetGlobalTexture("_CameraColorTexture", m_ColorTextureHandle.nameID);
                         //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
                         cmd.SetGlobalTexture("_AfterPostProcessTexture", m_ColorTextureHandle.nameID);
+#endif // OPTIMISATION_SHADERPARAMS
                     }
 
                     m_ColorTextureHandle = m_ColorBufferSystem.PeekBackBuffer();
@@ -288,7 +298,7 @@ namespace UnityEngine.Rendering.Universal
                         RenderTextureDescriptor descriptor = cameraData.cameraTargetDescriptor;
                         DebugHandler.ConfigureColorDescriptorForDebugScreen(ref descriptor, cameraData.pixelWidth, cameraData.pixelHeight);
                         RenderingUtils.ReAllocateIfNeeded(ref DebugHandler.DebugScreenColorHandle, descriptor, name: "_DebugScreenColor");
-                        
+
                         RenderTextureDescriptor depthDesc = cameraData.cameraTargetDescriptor;
                         DebugHandler.ConfigureDepthDescriptorForDebugScreen(ref depthDesc, k_DepthBufferBits, cameraData.pixelWidth, cameraData.pixelHeight);
                         RenderingUtils.ReAllocateIfNeeded(ref DebugHandler.DebugScreenDepthHandle, depthDesc, name: "_DebugScreenDepth");
@@ -370,7 +380,7 @@ namespace UnityEngine.Rendering.Universal
                 m_DrawOffscreenUIPass.Setup(ref cameraData, k_DepthBufferBits);
                 EnqueuePass(m_DrawOffscreenUIPass);
             }
-            
+
             // TODO: Investigate how to make FXAA work with HDR output.
             bool isFXAAEnabled = cameraData.antialiasing == AntialiasingMode.FastApproximateAntialiasing && !outputToHDR;
 
@@ -453,9 +463,15 @@ namespace UnityEngine.Rendering.Universal
                 ConfigureCameraColorTarget(m_ColorBufferSystem.GetBackBuffer(cmd));
 
             m_ColorTextureHandle = m_ColorBufferSystem.GetBackBuffer(cmd);
+#if OPTIMISATION_SHADERPARAMS
+            cmd.SetGlobalTexture(k_CameraColorTexture, m_ColorTextureHandle.nameID);
+            //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
+            cmd.SetGlobalTexture(k_AfterPostProcessTexture, m_ColorTextureHandle.nameID);
+#else
             cmd.SetGlobalTexture("_CameraColorTexture", m_ColorTextureHandle.nameID);
             //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
             cmd.SetGlobalTexture("_AfterPostProcessTexture", m_ColorTextureHandle.nameID);
+#endif // OPTIMISATION_SHADERPARAMS
         }
 
         internal override RTHandle GetCameraColorFrontBuffer(CommandBuffer cmd)

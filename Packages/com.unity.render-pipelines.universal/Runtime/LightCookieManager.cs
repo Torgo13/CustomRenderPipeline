@@ -113,7 +113,9 @@ namespace UnityEngine.Rendering.Universal
             {
                 void Swap(int a, int b)
                 {
-                    (data[b], data[a]) = (data[a], data[b]);
+                    var tmp = data[a];
+                    data[a] = data[b];
+                    data[b] = tmp;
                 }
 
                 if (compare(data[end], data[start]) < 0) Swap(start, end);
@@ -501,6 +503,11 @@ namespace UnityEngine.Rendering.Universal
 
             m_CookieSizeDivisor = 1;
             m_PrevCookieRequestPixelCount = 0xFFFFFFFF;
+
+#if BUGFIX // SLZ
+            // Remove DontUnloadUnusedAsset flag from atlas to prevent memory leak
+            m_AdditionalLightsCookieAtlas.AtlasTexture.rt.hideFlags = m_AdditionalLightsCookieAtlas.AtlasTexture.rt.hideFlags & ~(HideFlags.DontUnloadUnusedAsset);
+#endif // BUGFIX
         }
 
         public bool isInitialized() => m_AdditionalLightsCookieAtlas != null && m_AdditionalLightsCookieShaderData != null;
@@ -508,11 +515,43 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// Release LightCookieManager resources.
         /// </summary>
+#if OPTIMISATION_IDISPOSABLE // SLZ
+        private bool disposed = false;
+
+        ~LightCookieManager()
+        {
+            Dispose(false);
+        }
+
+        /// <summary>
+        /// Release LightCookieManager resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        public void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                m_AdditionalLightsCookieAtlas?.Release();
+                m_AdditionalLightsCookieShaderData?.Dispose();
+                disposed = true;
+            }
+
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+#else
         public void Dispose()
         {
             m_AdditionalLightsCookieAtlas?.Release();
             m_AdditionalLightsCookieShaderData?.Dispose();
         }
+#endif // OPTIMISATION_IDISPOSABLE
 
         // -1 on invalid/disabled cookie.
         public int GetLightCookieShaderDataIndex(int visibleLightIndex)
@@ -930,7 +969,11 @@ namespace UnityEngine.Rendering.Universal
                     // Payload texture is inset
                     var potAtlas = (m_AdditionalLightsCookieAtlas as PowerOfTwoTextureAtlas);
                     var mipPadding = potAtlas == null ? 1 : potAtlas.mipPadding;
-                    var paddingSize = (int)System.Math.Pow(2, mipPadding) * new Vector2(2, 2);
+#if OPTIMISATION
+                    var paddingSize = (int)Mathf.Pow(2, mipPadding) * 2 * Vector2.one;
+#else
+                    var paddingSize = Vector2.one * (int)Mathf.Pow(2, mipPadding) * 2;
+#endif // OPTIMISATION
                     uvScaleOffset = PowerOfTwoTextureAtlas.GetPayloadScaleOffset(cookieSize, paddingSize, uvScaleOffset);
                 }
                 else
