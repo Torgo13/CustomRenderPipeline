@@ -163,11 +163,7 @@ namespace UnityEngine.Rendering
             return bitStates * 3 + arrayLength;
         }
 
-#if SAFETY
-        private static void CalculateRadixSortSupportArrays(
-#else
         private static unsafe void CalculateRadixSortSupportArrays(
-#endif // SAFETY
             int bitStates, int arrayLength, uint* supportArray,
             out uint* bucketIndices, out uint* bucketSizes, out uint* bucketPrefix, out uint* arrayOutput)
         {
@@ -177,11 +173,7 @@ namespace UnityEngine.Rendering
             arrayOutput = bucketPrefix + bitStates;
         }
 
-#if SAFETY
-        private static void MergeSort(uint* array, uint* support, int length)
-#else
         private static unsafe void MergeSort(uint* array, uint* support, int length)
-#endif // SAFETY
         {
             for (int k = 1; k < length; k *= 2)
             {
@@ -230,11 +222,7 @@ namespace UnityEngine.Rendering
         /// <param name="arr">Array to sort.</param>
         /// <param name="sortSize">Size of the array to sort. If greater than array capacity, it will get clamped.</param>
         /// <param name="supportArray">Secondary array reference, used to store intermediate merge results.</param>
-#if SAFETY
-        public static void MergeSort(uint[] arr, int sortSize, ref uint[] supportArray)
-#else
         public static unsafe void MergeSort(uint[] arr, int sortSize, ref uint[] supportArray)
-#endif // SAFETY
         {
 #if SAFETY
             if (arr == null)
@@ -263,11 +251,7 @@ namespace UnityEngine.Rendering
         /// <param name="arr">Array to sort.</param>
         /// <param name="sortSize">Size of the array to sort. If greater than array capacity, it will get clamped.</param>
         /// <param name="supportArray">Secondary array reference, used to store intermediate merge results.</param>
-#if SAFETY
-        public static void MergeSort(NativeArray<uint> arr, int sortSize, ref NativeArray<uint> supportArray)
-#else
         public static unsafe void MergeSort(NativeArray<uint> arr, int sortSize, ref NativeArray<uint> supportArray)
-#endif // SAFETY
         {
             sortSize = Math.Min(sortSize, arr.Length);
             if (!arr.IsCreated || sortSize == 0)
@@ -279,11 +263,7 @@ namespace UnityEngine.Rendering
             CoreUnsafeUtils.MergeSort((uint*)arr.GetUnsafePtr(), (uint*)supportArray.GetUnsafePtr(), sortSize);
         }
 
-#if SAFETY
-        private static void InsertionSort(uint* arr, int length)
-#else
         private static unsafe void InsertionSort(uint* arr, int length)
-#endif // SAFETY
         {
             for (int i = 0; i < length; ++i)
             {
@@ -304,11 +284,7 @@ namespace UnityEngine.Rendering
         /// </summary>
         /// <param name="arr">Array to sort.</param>
         /// <param name="sortSize">Size of the array to sort. If greater than array capacity, it will get clamped.</param>
-#if SAFETY
-        public static void InsertionSort(uint[] arr, int sortSize)
-#else
         public static unsafe void InsertionSort(uint[] arr, int sortSize)
-#endif // SAFETY
         {
 #if SAFETY
             if (arr == null)
@@ -332,11 +308,7 @@ namespace UnityEngine.Rendering
         /// </summary>
         /// <param name="arr">Array to sort.</param>
         /// <param name="sortSize">Size of the array to sort. If greater than array capacity, it will get clamped.</param>
-#if SAFETY
-        public static void InsertionSort(NativeArray<uint> arr, int sortSize)
-#else
         public static unsafe void InsertionSort(NativeArray<uint> arr, int sortSize)
-#endif // SAFETY
         {
             sortSize = Math.Min(arr.Length, sortSize);
             if (!arr.IsCreated || sortSize == 0)
@@ -345,11 +317,7 @@ namespace UnityEngine.Rendering
             CoreUnsafeUtils.InsertionSort((uint*)arr.GetUnsafePtr(), sortSize);
         }
 
-#if SAFETY
-        private static void RadixSort(uint* array, uint* support, int radixBits, int bitStates, int length)
-#else
         private static unsafe void RadixSort(uint* array, uint* support, int radixBits, int bitStates, int length)
-#endif // SAFETY
         {
             uint mask = (uint)(bitStates - 1);
             CalculateRadixSortSupportArrays(bitStates, length, support, out uint* bucketIndices, out uint* bucketSizes, out uint* bucketPrefix, out uint* arrayOutput);
@@ -389,11 +357,7 @@ namespace UnityEngine.Rendering
         /// <param name="sortSize">Size of the array to sort. If greater than array capacity, it will get clamped.</param>
         /// <param name="supportArray">Array of uints that is used for support data. The algorithm will automatically allocate it if necessary.</param>
         /// <param name="radixBits">Number of bits to use for each bucket. Can only be 8, 4 or 2.</param>
-#if SAFETY
-        public static void RadixSort(uint[] arr, int sortSize, ref uint[] supportArray, int radixBits = 8)
-#else
         public static unsafe void RadixSort(uint[] arr, int sortSize, ref uint[] supportArray, int radixBits = 8)
-#endif // SAFETY
         {
 #if SAFETY
             if (arr == null)
@@ -425,11 +389,7 @@ namespace UnityEngine.Rendering
         /// <param name="sortSize">Size of the array to sort. If greater than array capacity, it will get clamped.</param>
         /// <param name="supportArray">Array of uints that is used for support data. The algorithm will automatically allocate it if necessary.</param>
         /// <param name="radixBits">Number of bits to use for each bucket. Can only be 8, 4 or 2.</param>
-#if SAFETY
-        public static void RadixSort(NativeArray<uint> array, int sortSize, ref NativeArray<uint> supportArray, int radixBits = 8)
-#else
         public static unsafe void RadixSort(NativeArray<uint> array, int sortSize, ref NativeArray<uint> supportArray, int radixBits = 8)
-#endif // SAFETY
         {
             sortSize = Math.Min(sortSize, array.Length);
             CalculateRadixParams(radixBits, out int bitStates);
@@ -449,11 +409,7 @@ namespace UnityEngine.Rendering
         /// <param name="arr">uint array.</param>
         /// <param name="left">Left boundary.</param>
         /// <param name="right">Left boundary.</param>
-#if SAFETY
-        public static void QuickSort(uint[] arr, int left, int right)
-#else
         public static unsafe void QuickSort(uint[] arr, int left, int right)
-#endif // SAFETY
         {
             fixed (uint* ptr = arr)
                 CoreUnsafeUtils.QuickSort<uint, uint, UintKeyGetter>(ptr, left, right);
@@ -767,11 +723,7 @@ namespace UnityEngine.Rendering
         /// </summary>
         /// <param name="arr">Input array.</param>
         /// <returns>True if there is any duplicate in the input array.</returns>
-#if SAFETY
-        public static bool HaveDuplicates(int[] arr)
-#else
         public static unsafe bool HaveDuplicates(int[] arr)
-#endif // SAFETY
         {
             int* copy = stackalloc int[arr.Length];
             arr.CopyTo<int>(copy, arr.Length);

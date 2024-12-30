@@ -74,11 +74,7 @@ namespace UnityEngine.Rendering.Universal
         {
             if (cmd == null)
             {
-#if SAFETY
-                throw new System.ArgumentNullException(nameof(cmd));
-#else
                 throw new System.ArgumentNullException("cmd");
-#endif // SAFETY
             }
 
             CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.DecalNormalBlendLow, false);

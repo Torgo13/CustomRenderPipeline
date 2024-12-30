@@ -110,11 +110,7 @@ namespace UnityEngine.Rendering.Universal.UTess
 
 #endif
 
-#if SAFETY
-        public static ArraySlice<T> ConvertExistingDataToArraySlice(void* dataPointer, int stride, int length)
-#else
         public static unsafe ArraySlice<T> ConvertExistingDataToArraySlice(void* dataPointer, int stride, int length)
-#endif // SAFETY
         {
             if (length < 0)
                 throw new System.ArgumentException($"Invalid length of '{length}'. It must be greater than 0.",
@@ -157,11 +153,7 @@ namespace UnityEngine.Rendering.Universal.UTess
             }
         }
 
-#if SAFETY
-        internal void* GetUnsafeReadOnlyPtr()
-#else
         internal unsafe void* GetUnsafeReadOnlyPtr()
-#endif // SAFETY
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
@@ -176,10 +168,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                 throw new ArgumentException($"array.Length ({array.Length}) does not match the Length of this instance ({Length}).", nameof(array));
 #endif
 
-#if SAFETY
-#else
             unsafe
-#endif // SAFETY
             {
                 GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
                 IntPtr addr = handle.AddrOfPinnedObject();

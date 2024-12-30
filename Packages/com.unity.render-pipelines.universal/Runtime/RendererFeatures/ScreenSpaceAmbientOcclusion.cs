@@ -597,11 +597,7 @@ namespace UnityEngine.Rendering.Universal
             public override void OnCameraCleanup(CommandBuffer cmd)
             {
                 if (cmd == null)
-#if SAFETY
-                    throw new ArgumentNullException(nameof(cmd));
-#else
                     throw new ArgumentNullException("cmd");
-#endif // SAFETY
 
                 if (!m_CurrentSettings.AfterOpaque)
                     CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.ScreenSpaceOcclusion, false);

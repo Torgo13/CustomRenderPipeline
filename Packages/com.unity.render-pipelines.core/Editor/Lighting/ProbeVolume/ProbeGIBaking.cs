@@ -1402,11 +1402,7 @@ namespace UnityEngine.Rendering
         ///   CellSharedData: a binary flat file containing bricks data
         ///   CellSupportData: a binary flat file containing debug data (stripped from player builds if building without debug shaders)
         /// </summary>
-#if SAFETY
-        static void WriteBakingCells(ProbeVolumePerSceneData data, List<BakingCell> bakingCells)
-#else
         unsafe static void WriteBakingCells(ProbeVolumePerSceneData data, List<BakingCell> bakingCells)
-#endif // SAFETY
         {
             data.GetBlobFileNames(out var cellDataFilename, out var cellOptionalDataFilename, out var cellSharedDataFilename, out var cellSupportDataFilename);
 
@@ -1594,10 +1590,7 @@ namespace UnityEngine.Rendering
             if (!AssetDatabase.MakeEditable(outputPaths.ToArray()))
                 Debug.LogWarning($"Failed to make one or more probe volume output file(s) writable. This could result in baked data not being properly written to disk. {string.Join(",", outputPaths)}");
 
-#if SAFETY
-#else
             unsafe
-#endif // SAFETY
             {
                 using (var fs = new System.IO.FileStream(cellDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
                 {
@@ -1652,11 +1645,7 @@ namespace UnityEngine.Rendering
             EditorUtility.SetDirty(data);
         }
 
-#if SAFETY
-        static void WriteDilatedCells(ProbeVolumePerSceneData data, List<Cell> cells)
-#else
         unsafe static void WriteDilatedCells(ProbeVolumePerSceneData data, List<Cell> cells)
-#endif // SAFETY
         {
             data.GetBlobFileNames(out var cellDataFilename, out var cellOptionalDataFilename, out var cellSharedDataFilename, out var cellSupportDataFilename);
 
@@ -1721,10 +1710,7 @@ namespace UnityEngine.Rendering
             if (!AssetDatabase.MakeEditable(outputPaths.ToArray()))
                 Debug.LogWarning($"Failed to make one or more probe volume output file(s) writable. This could result in baked data not being properly written to disk. {string.Join(",", outputPaths)}");
 
-#if SAFETY
-#else
             unsafe
-#endif // SAFETY
             {
                 using (var fs = new System.IO.FileStream(cellDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
                 {

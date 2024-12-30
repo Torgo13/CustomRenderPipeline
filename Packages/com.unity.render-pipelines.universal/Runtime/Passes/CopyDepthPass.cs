@@ -197,11 +197,7 @@ namespace UnityEngine.Rendering.Universal.Internal
         public override void OnCameraCleanup(CommandBuffer cmd)
         {
             if (cmd == null)
-#if SAFETY
-                throw new ArgumentNullException(nameof(cmd));
-#else
                 throw new ArgumentNullException("cmd");
-#endif // SAFETY
 
             destination = k_CameraTarget;
         }

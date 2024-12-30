@@ -1384,11 +1384,7 @@ namespace UnityEngine.Rendering.Universal
         public static bool IsGameCamera(Camera camera)
         {
             if (camera == null)
-#if SAFETY
-                throw new ArgumentNullException(nameof(camera));
-#else
                 throw new ArgumentNullException("camera");
-#endif // SAFETY
 
             return camera.cameraType == CameraType.Game || camera.cameraType == CameraType.VR;
         }
@@ -1402,11 +1398,7 @@ namespace UnityEngine.Rendering.Universal
         public static bool IsStereoEnabled(Camera camera)
         {
             if (camera == null)
-#if SAFETY
-                throw new ArgumentNullException(nameof(camera));
-#else
                 throw new ArgumentNullException("camera");
-#endif // SAFETY
 
             return IsGameCamera(camera) && (camera.stereoTargetEye == StereoTargetEyeMask.Both);
         }
