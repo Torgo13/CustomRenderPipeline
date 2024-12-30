@@ -330,6 +330,18 @@ namespace UnityEngine.Rendering
                     return true;
 
                 // Single channel swizzle
+#if OPTIMISATION_ENUM
+                var srcSwizzle =
+                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleA(source.graphicsFormat)) & 0x7)) << 24) |
+                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleB(source.graphicsFormat)) & 0x7)) << 16) |
+                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleG(source.graphicsFormat)) & 0x7)) << 8) |
+                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleR(source.graphicsFormat)) & 0x7)));
+                var dstSwizzle =
+                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleA(destination.graphicsFormat)) & 0x7)) << 24) |
+                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleB(destination.graphicsFormat)) & 0x7)) << 16) |
+                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleG(destination.graphicsFormat)) & 0x7)) << 8) |
+                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleR(destination.graphicsFormat)) & 0x7)));
+#else
                 var srcSwizzle =
                     ((1 << ((int)GraphicsFormatUtility.GetSwizzleA(source.graphicsFormat) & 0x7)) << 24) |
                     ((1 << ((int)GraphicsFormatUtility.GetSwizzleB(source.graphicsFormat) & 0x7)) << 16) |
@@ -340,6 +352,7 @@ namespace UnityEngine.Rendering
                     ((1 << ((int)GraphicsFormatUtility.GetSwizzleB(destination.graphicsFormat) & 0x7)) << 16) |
                     ((1 << ((int)GraphicsFormatUtility.GetSwizzleG(destination.graphicsFormat) & 0x7)) << 8) |
                     ((1 << ((int)GraphicsFormatUtility.GetSwizzleR(destination.graphicsFormat) & 0x7)));
+#endif // OPTIMISATION_ENUM
                 if (srcSwizzle != dstSwizzle)
                     return true;
             }

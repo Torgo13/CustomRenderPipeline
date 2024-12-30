@@ -200,12 +200,20 @@ namespace UnityEngine.Rendering.Universal
 
         static Event Combine(Event a, Event b)
         {
+#if OPTIMISATION_ENUM
+            return (Event)Mathf.Min(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(a), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(b));
+#else
             return (Event)Mathf.Min((int)a, (int)b);
+#endif // OPTIMISATION_ENUM
         }
 
         static MaskSize Combine(MaskSize a, MaskSize b)
         {
+#if OPTIMISATION_ENUM
+            return (MaskSize)Mathf.Max(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(a), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(b));
+#else
             return (MaskSize)Mathf.Max((int)a, (int)b);
+#endif // OPTIMISATION_ENUM
         }
     }
 }

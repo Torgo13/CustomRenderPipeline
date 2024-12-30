@@ -544,7 +544,11 @@ namespace UnityEngine.Rendering
                 RenderTextureFormat format = isShadowMap ? RenderTextureFormat.Shadowmap : RenderTextureFormat.Depth;
                 GraphicsFormat stencilFormat = !isShadowMap && SystemInfo.IsFormatSupported(GraphicsFormat.R8_UInt, FormatUsage.StencilSampling) ? GraphicsFormat.R8_UInt : GraphicsFormat.None;
 
+#if OPTIMISATION_ENUM
+                rt = new RenderTexture(width, height, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(depthBufferBits), format, RenderTextureReadWrite.Linear)
+#else
                 rt = new RenderTexture(width, height, (int)depthBufferBits, format, RenderTextureReadWrite.Linear)
+#endif // OPTIMISATION_ENUM
                 {
                     hideFlags = HideFlags.HideAndDontSave,
                     volumeDepth = slices,
@@ -559,7 +563,11 @@ namespace UnityEngine.Rendering
                     anisoLevel = anisoLevel,
                     mipMapBias = mipMapBias,
                     stencilFormat = stencilFormat,
+#if OPTIMISATION_ENUM
+                    antiAliasing = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(msaaSamples),
+#else
                     antiAliasing = (int)msaaSamples,
+#endif // OPTIMISATION_ENUM
                     bindTextureMS = bindTextureMS,
                     useDynamicScale = m_HardwareDynamicResRequested && useDynamicScale,
                     memorylessMode = memoryless,
@@ -569,7 +577,11 @@ namespace UnityEngine.Rendering
             }
             else
             {
+#if OPTIMISATION_ENUM
+                rt = new RenderTexture(width, height, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(depthBufferBits), colorFormat)
+#else
                 rt = new RenderTexture(width, height, (int)depthBufferBits, colorFormat)
+#endif // OPTIMISATION_ENUM
                 {
                     hideFlags = HideFlags.HideAndDontSave,
                     volumeDepth = slices,
@@ -583,7 +595,11 @@ namespace UnityEngine.Rendering
                     autoGenerateMips = autoGenerateMips,
                     anisoLevel = anisoLevel,
                     mipMapBias = mipMapBias,
+#if OPTIMISATION_ENUM
+                    antiAliasing = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(msaaSamples),
+#else
                     antiAliasing = (int)msaaSamples,
+#endif // OPTIMISATION_ENUM
                     bindTextureMS = bindTextureMS,
                     useDynamicScale = m_HardwareDynamicResRequested && useDynamicScale,
                     memorylessMode = memoryless,
@@ -821,7 +837,11 @@ namespace UnityEngine.Rendering
             {
                 RenderTextureFormat format = isShadowMap ? RenderTextureFormat.Shadowmap : RenderTextureFormat.Depth;
                 GraphicsFormat stencilFormat = !isShadowMap && SystemInfo.IsFormatSupported(GraphicsFormat.R8_UInt, FormatUsage.StencilSampling) ? GraphicsFormat.R8_UInt : GraphicsFormat.None;
+#if OPTIMISATION_ENUM
+                rt = new RenderTexture(width, height, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(depthBufferBits), format, RenderTextureReadWrite.Linear)
+#else
                 rt = new RenderTexture(width, height, (int)depthBufferBits, format, RenderTextureReadWrite.Linear)
+#endif // OPTIMISATION_ENUM
                 {
                     hideFlags = HideFlags.HideAndDontSave,
                     volumeDepth = slices,
@@ -833,7 +853,11 @@ namespace UnityEngine.Rendering
                     autoGenerateMips = autoGenerateMips,
                     anisoLevel = anisoLevel,
                     mipMapBias = mipMapBias,
+#if OPTIMISATION_ENUM
+                    antiAliasing = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(msaaSamples),
+#else
                     antiAliasing = (int)msaaSamples,
+#endif // OPTIMISATION_ENUM
                     bindTextureMS = bindTextureMS,
                     useDynamicScale = m_HardwareDynamicResRequested && useDynamicScale,
                     memorylessMode = memoryless,
@@ -844,7 +868,11 @@ namespace UnityEngine.Rendering
             }
             else
             {
+#if OPTIMISATION_ENUM
+                rt = new RenderTexture(width, height, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(depthBufferBits), colorFormat)
+#else
                 rt = new RenderTexture(width, height, (int)depthBufferBits, colorFormat)
+#endif // OPTIMISATION_ENUM
                 {
                     hideFlags = HideFlags.HideAndDontSave,
                     volumeDepth = slices,
@@ -856,7 +884,11 @@ namespace UnityEngine.Rendering
                     autoGenerateMips = autoGenerateMips,
                     anisoLevel = anisoLevel,
                     mipMapBias = mipMapBias,
+#if OPTIMISATION_ENUM
+                    antiAliasing = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(msaaSamples),
+#else
                     antiAliasing = (int)msaaSamples,
+#endif // OPTIMISATION_ENUM
                     bindTextureMS = bindTextureMS,
                     useDynamicScale = m_HardwareDynamicResRequested && useDynamicScale,
                     memorylessMode = memoryless,

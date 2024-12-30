@@ -574,6 +574,7 @@ namespace UnityEngine.Rendering.Universal
                 var softShadowQuality = (additionalLightData.softShadowQuality == SoftShadowQuality.UsePipelineSettings)
                     ? UniversalRenderPipeline.asset?.softShadowQuality
                     : additionalLightData.softShadowQuality;
+
                 softShadows *= Math.Max((int)softShadowQuality, (int)SoftShadowQuality.Low);
             }
 

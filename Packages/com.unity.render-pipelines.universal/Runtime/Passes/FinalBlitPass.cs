@@ -58,7 +58,11 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_BlitMaterialData = new BlitMaterialData[blitTypeCount];
             for (int i = 0; i < blitTypeCount; ++i)
             {
+#if OPTIMISATION_ENUM
+                m_BlitMaterialData[i].material = i == Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(BlitType.Core) ? blitMaterial : blitHDRMaterial;
+#else
                 m_BlitMaterialData[i].material = i == (int)BlitType.Core ? blitMaterial : blitHDRMaterial;
+#endif // OPTIMISATION_ENUM
                 m_BlitMaterialData[i].nearestSamplerPass = m_BlitMaterialData[i].material?.FindPass(BlitPassNames.NearestSampler) ?? -1;
                 m_BlitMaterialData[i].bilinearSamplerPass = m_BlitMaterialData[i].material?.FindPass(BlitPassNames.BilinearSampler) ?? -1;
             }
@@ -227,7 +231,11 @@ namespace UnityEngine.Rendering.Universal.Internal
             passData.renderingData = renderingData;
             passData.requireSrgbConversion = renderingData.cameraData.requireSrgbConversion;
 
+#if OPTIMISATION_ENUM
+            passData.blitMaterialData = m_BlitMaterialData[Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(blitType)];
+#else
             passData.blitMaterialData = m_BlitMaterialData[(int)blitType];
+#endif // OPTIMISATION_ENUM
         }
 
         internal void Render(RenderGraph renderGraph, ref RenderingData renderingData, TextureHandle src, TextureHandle dest, TextureHandle overlayUITexture)

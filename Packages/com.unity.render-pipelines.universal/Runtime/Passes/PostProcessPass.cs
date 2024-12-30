@@ -350,7 +350,11 @@ namespace UnityEngine.Rendering.Universal
 
         internal static RenderTextureDescriptor GetCompatibleDescriptor(RenderTextureDescriptor desc, int width, int height, GraphicsFormat format, DepthBits depthBufferBits = DepthBits.None)
         {
+#if OPTIMISATION_ENUM
+            desc.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(depthBufferBits);
+#else
             desc.depthBufferBits = (int)depthBufferBits;
+#endif // OPTIMISATION_ENUM
             desc.msaaSamples = 1;
             desc.width = width;
             desc.height = height;
@@ -1021,12 +1025,16 @@ namespace UnityEngine.Rendering.Universal
 
             PostProcessUtils.SetSourceSize(cmd, m_Descriptor);
 
+#if OPTIMISATION_ENUM
+            Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, material, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(m_MotionBlur.quality.value));
+#else
             Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, material, (int)m_MotionBlur.quality.value);
+#endif // OPTIMISATION_ENUM
         }
 
-#endregion
+        #endregion
 
-#region Panini Projection
+        #region Panini Projection
 
         // Back-ported & adapted from the work of the Stockholm demo team - thanks Lasse!
         void DoPaniniProjection(Camera camera, CommandBuffer cmd, RTHandle source, RTHandle destination)

@@ -141,7 +141,11 @@ namespace UnityEngine.Rendering.Universal.UTess
             if (0 != i)
                 return i;
 
+#if OPTIMISATION_ENUM
+            if (a.type != UnsafeUtility.EnumToInt(UEventType.EVENT_POINT))
+#else
             if (a.type != (int)UEventType.EVENT_POINT)
+#endif // OPTIMISATION_ENUM
             {
                 float o = ModuleHandle.OrientFast(a.a, a.b, b.b);
                 if (0 != o)

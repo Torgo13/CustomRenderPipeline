@@ -55,10 +55,17 @@ namespace UnityEngine.Rendering.Universal.Internal
             if (s_RenderStateBlocks == null)
             {
                 s_RenderStateBlocks = new RenderStateBlock[5];
+#if OPTIMISATION_ENUM
+                s_RenderStateBlocks[0] = DeferredLights.OverwriteStencil(m_RenderStateBlock, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialMask), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialLit));
+                s_RenderStateBlocks[1] = DeferredLights.OverwriteStencil(m_RenderStateBlock, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialMask), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialSimpleLit));
+                s_RenderStateBlocks[2] = DeferredLights.OverwriteStencil(m_RenderStateBlock, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialMask), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialUnlit));
+                s_RenderStateBlocks[3] = DeferredLights.OverwriteStencil(m_RenderStateBlock, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialMask), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialUnlit));  // Fill GBuffer, but skip lighting pass for ComplexLit
+#else
                 s_RenderStateBlocks[0] = DeferredLights.OverwriteStencil(m_RenderStateBlock, (int)StencilUsage.MaterialMask, (int)StencilUsage.MaterialLit);
                 s_RenderStateBlocks[1] = DeferredLights.OverwriteStencil(m_RenderStateBlock, (int)StencilUsage.MaterialMask, (int)StencilUsage.MaterialSimpleLit);
                 s_RenderStateBlocks[2] = DeferredLights.OverwriteStencil(m_RenderStateBlock, (int)StencilUsage.MaterialMask, (int)StencilUsage.MaterialUnlit);
                 s_RenderStateBlocks[3] = DeferredLights.OverwriteStencil(m_RenderStateBlock, (int)StencilUsage.MaterialMask, (int)StencilUsage.MaterialUnlit);  // Fill GBuffer, but skip lighting pass for ComplexLit
+#endif // OPTIMISATION_ENUM
                 s_RenderStateBlocks[4] = s_RenderStateBlocks[0];
             }
         }

@@ -79,7 +79,11 @@ namespace UnityEngine.Rendering.Universal
         /// <returns>True if the given camera render type is supported in the renderer's current state.</returns>
         public bool SupportsCameraStackingType(CameraRenderType cameraRenderType)
         {
+#if OPTIMISATION_ENUM
+            return (SupportedCameraStackingTypes() & 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(cameraRenderType)) != 0;
+#else
             return (SupportedCameraStackingTypes() & 1 << (int)cameraRenderType) != 0;
+#endif // OPTIMISATION_ENUM
         }
 
         /// <summary>
@@ -1064,11 +1068,19 @@ namespace UnityEngine.Rendering.Universal
         internal void RecordCustomRenderGraphPasses(RenderGraph renderGraph, ScriptableRenderContext context, ref RenderingData renderingData, RenderPassEvent injectionPoint)
         {
             int range = ScriptableRenderPass.GetRenderPassEventRange(injectionPoint);
+#if OPTIMISATION_ENUM
+            int nextValue = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(injectionPoint) + range;
+#else
             int nextValue = (int) injectionPoint + range;
+#endif // OPTIMISATION_ENUM
 
             foreach (ScriptableRenderPass pass in m_ActiveRenderPassQueue)
             {
+#if OPTIMISATION_ENUM
+                if (pass.renderPassEvent >= injectionPoint && Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(pass.renderPassEvent) < nextValue)
+#else
                 if (pass.renderPassEvent >= injectionPoint && (int) pass.renderPassEvent < nextValue)
+#endif // OPTIMISATION_ENUM
                     pass.RecordRenderGraph(renderGraph, ref renderingData);
             }
         }

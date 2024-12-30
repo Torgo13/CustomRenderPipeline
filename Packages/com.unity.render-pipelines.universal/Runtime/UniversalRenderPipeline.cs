@@ -215,7 +215,11 @@ namespace UnityEngine.Rendering.Universal
 
 
             // Configure initial XR settings
+#if OPTIMISATION_ENUM
+            MSAASamples msaaSamples = (MSAASamples)Mathf.Clamp(Mathf.NextPowerOfTwo(QualitySettings.antiAliasing), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(MSAASamples.None), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(MSAASamples.MSAA8x));
+#else
             MSAASamples msaaSamples = (MSAASamples)Mathf.Clamp(Mathf.NextPowerOfTwo(QualitySettings.antiAliasing), (int)MSAASamples.None, (int)MSAASamples.MSAA8x);
+#endif // OPTIMISATION_ENUM
             XRSystem.SetDisplayMSAASamples(msaaSamples);
             XRSystem.SetRenderScale(asset.renderScale);
 
@@ -448,7 +452,11 @@ namespace UnityEngine.Rendering.Universal
                 RenderTexture destination = standardRequest != null ? standardRequest.destination : singleRequest.destination;
                 int mipLevel = standardRequest != null ? standardRequest.mipLevel : singleRequest.mipLevel;
                 int slice = standardRequest != null ? standardRequest.slice : singleRequest.slice;
+#if OPTIMISATION_ENUM
+                int face = standardRequest != null ? Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(standardRequest.face) : Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(singleRequest.face);
+#else
                 int face = standardRequest != null ? (int)standardRequest.face : (int)singleRequest.face;
+#endif // OPTIMISATION_ENUM
 
                 //store data that will be changed
                 var orignalTarget = camera.targetTexture;
@@ -782,7 +790,11 @@ namespace UnityEngine.Rendering.Universal
 
                         var overlayRenderer = data.scriptableRenderer;
                         // Checking if they are the same renderer type but just not supporting Overlay
+#if OPTIMISATION_ENUM
+                        if ((overlayRenderer.SupportedCameraStackingTypes() & 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Overlay)) == 0)
+#else
                         if ((overlayRenderer.SupportedCameraStackingTypes() & 1 << (int)CameraRenderType.Overlay) == 0)
+#endif // OPTIMISATION_ENUM
                         {
                             Debug.LogWarning($"The camera: {currCamera.name} is using a renderer of type {renderer.GetType().Name} which does not support Overlay cameras in it's current state.");
                             continue;
@@ -1109,7 +1121,11 @@ namespace UnityEngine.Rendering.Universal
             // Use XR's MSAA if camera is XR camera. XR MSAA needs special handle here because it is not per Camera.
             // Multiple cameras could render into the same XR display and they should share the same MSAA level.
             if (cameraData.xrRendering && rendererSupportsMSAA && camera.targetTexture == null)
+#if OPTIMISATION_ENUM
+                msaaSamples = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(XRSystem.GetDisplayMSAASamples());
+#else
                 msaaSamples = (int)XRSystem.GetDisplayMSAASamples();
+#endif // OPTIMISATION_ENUM
 
             bool needsAlphaChannel = Graphics.preserveFramebufferAlpha;
 
@@ -1423,7 +1439,11 @@ namespace UnityEngine.Rendering.Universal
 
                 if (data && (data.additionalLightsShadowResolutionTier == UniversalAdditionalLightData.AdditionalLightsShadowResolutionTierCustom))
                 {
+#if OPTIMISATION_ENUM
+                    m_ShadowResolutionData.Add(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(light.shadowResolution)); // native code does not clamp light.shadowResolution between -1 and 3
+#else
                     m_ShadowResolutionData.Add((int)light.shadowResolution); // native code does not clamp light.shadowResolution between -1 and 3
+#endif // OPTIMISATION_ENUM
                 }
                 else if (data && (data.additionalLightsShadowResolutionTier != UniversalAdditionalLightData.AdditionalLightsShadowResolutionTierCustom))
                 {
@@ -1935,12 +1955,20 @@ namespace UnityEngine.Rendering.Universal
             switch (tonemapping.mode.value)
             {
                 case TonemappingMode.Neutral:
+#if OPTIMISATION_ENUM
+                    eetfMode = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(tonemapping.neutralHDRRangeReductionMode.value);
+#else
                     eetfMode = (int)tonemapping.neutralHDRRangeReductionMode.value;
+#endif // OPTIMISATION_ENUM
                     hueShift = tonemapping.hueShiftAmount.value;
                     break;
 
                 case TonemappingMode.ACES:
+#if OPTIMISATION_ENUM
+                    eetfMode = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(tonemapping.acesPreset.value);
+#else
                     eetfMode = (int)tonemapping.acesPreset.value;
+#endif // OPTIMISATION_ENUM
                     break;
             }
 

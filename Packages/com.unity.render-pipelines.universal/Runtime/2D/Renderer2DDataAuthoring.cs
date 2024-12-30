@@ -86,7 +86,11 @@ namespace UnityEngine.Rendering.Universal
                     ref var blendStyle = ref m_LightBlendStyles[i];
 
                     // Custom blend mode (99) now falls back to Multiply.
+#if OPTIMISATION_ENUM
+                    if (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(blendStyle.blendMode) == 99)
+#else
                     if ((int)blendStyle.blendMode == 99)
+#endif // OPTIMISATION_ENUM
                         blendStyle.blendMode = Light2DBlendStyle.BlendMode.Multiply;
                 }
 

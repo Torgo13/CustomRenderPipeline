@@ -259,6 +259,15 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
 
             hashCode.Append(mipMapBias);
             hashCode.Append(slices);
+#if OPTIMISATION_ENUM
+            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(depthBufferBits));
+            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(colorFormat));
+            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(filterMode));
+            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(wrapMode));
+            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(dimension));
+            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(memoryless));
+            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(vrUsage));
+#else
             hashCode.Append((int) depthBufferBits);
             hashCode.Append((int) colorFormat);
             hashCode.Append((int) filterMode);
@@ -266,6 +275,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
             hashCode.Append((int) dimension);
             hashCode.Append((int) memoryless);
             hashCode.Append((int) vrUsage);
+#endif // OPTIMISATION_ENUM
             hashCode.Append(anisoLevel);
             hashCode.Append(enableRandomWrite);
             hashCode.Append(useMipMap);
@@ -273,7 +283,11 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
             hashCode.Append(isShadowMap);
             hashCode.Append(bindTextureMS);
             hashCode.Append(useDynamicScale);
+#if OPTIMISATION_ENUM
+            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(msaaSamples));
+#else
             hashCode.Append((int) msaaSamples);
+#endif // OPTIMISATION_ENUM
 #if UNITY_2020_2_OR_NEWER
             hashCode.Append(fastMemoryDesc.inFastMemory);
 #endif

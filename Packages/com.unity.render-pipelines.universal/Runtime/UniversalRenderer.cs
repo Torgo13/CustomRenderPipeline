@@ -72,9 +72,17 @@ namespace UnityEngine.Rendering.Universal
             {
                 case RenderingMode.Forward:
                 case RenderingMode.ForwardPlus:
+#if OPTIMISATION_ENUM
+                    return 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Base) | 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Overlay);
+#else
                     return 1 << (int)CameraRenderType.Base | 1 << (int)CameraRenderType.Overlay;
+#endif // OPTIMISATION_ENUM
                 case RenderingMode.Deferred:
+#if OPTIMISATION_ENUM
+                    return 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Base);
+#else
                     return 1 << (int)CameraRenderType.Base;
+#endif // OPTIMISATION_ENUM
                 default:
                     return 0;
             }
@@ -278,14 +286,23 @@ namespace UnityEngine.Rendering.Universal
                 // - If a material cannot be lit in deferred (unlit, bakedLit, special material such as hair, skin shader), then it should declare UniversalForwardOnly pass
                 // - Legacy materials have unamed pass, which is implicitely renamed as SRPDefaultUnlit. In that case, they are considered forward-only too.
                 // TO declare a material with unnamed pass and UniversalForward/UniversalForwardOnly pass is an ERROR, as the material will be rendered twice.
+#if OPTIMISATION_ENUM
+                StencilState forwardOnlyStencilState = DeferredLights.OverwriteStencil(m_DefaultStencilState, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialMask));
+#else
                 StencilState forwardOnlyStencilState = DeferredLights.OverwriteStencil(m_DefaultStencilState, (int)StencilUsage.MaterialMask);
+#endif // OPTIMISATION_ENUM
                 ShaderTagId[] forwardOnlyShaderTagIds = new ShaderTagId[]
                 {
                     new ShaderTagId("UniversalForwardOnly"),
                     new ShaderTagId("SRPDefaultUnlit"), // Legacy shaders (do not have a gbuffer pass) are considered forward-only for backward compatibility
                     new ShaderTagId("LightweightForward") // Legacy shaders (do not have a gbuffer pass) are considered forward-only for backward compatibility
                 };
+
+#if OPTIMISATION_ENUM
+                int forwardOnlyStencilRef = stencilData.stencilReference | Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(StencilUsage.MaterialUnlit);
+#else
                 int forwardOnlyStencilRef = stencilData.stencilReference | (int)StencilUsage.MaterialUnlit;
+#endif // OPTIMISATION_ENUM
                 m_GBufferCopyDepthPass = new CopyDepthPass(RenderPassEvent.BeforeRenderingGbuffer + 1, m_CopyDepthMaterial, true);
                 m_DeferredPass = new DeferredPass(RenderPassEvent.BeforeRenderingDeferredLights, m_DeferredLights);
                 m_RenderOpaqueForwardOnlyPass = new DrawObjectsPass("Render Opaques Forward Only", forwardOnlyShaderTagIds, true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, forwardOnlyStencilState, forwardOnlyStencilRef);
@@ -727,7 +744,11 @@ namespace UnityEngine.Rendering.Universal
                 if (renderPassInputs.requiresDepthTexture)
                 {
                     // Do depth copy before the render pass that requires depth texture as shader read resource
+#if OPTIMISATION_ENUM
+                    copyDepthPassEvent = (RenderPassEvent)Mathf.Min(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(RenderPassEvent.AfterRenderingTransparents), (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(renderPassInputs.requiresDepthTextureEarliestEvent)) - 1);
+#else
                     copyDepthPassEvent = (RenderPassEvent)Mathf.Min((int)RenderPassEvent.AfterRenderingTransparents, ((int)renderPassInputs.requiresDepthTextureEarliestEvent) - 1);
+#endif // OPTIMISATION_ENUM
                 }
 
                 m_CopyDepthPass.renderPassEvent = copyDepthPassEvent;
@@ -791,7 +812,11 @@ namespace UnityEngine.Rendering.Universal
             var colorDescriptor = cameraTargetDescriptor;
             colorDescriptor.useMipMap = false;
             colorDescriptor.autoGenerateMips = false;
+#if OPTIMISATION_ENUM
+            colorDescriptor.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None);
+#else
             colorDescriptor.depthBufferBits = (int)DepthBits.None;
+#endif // OPTIMISATION_ENUM
             m_ColorBufferSystem.SetCameraSettings(colorDescriptor, FilterMode.Bilinear);
 
             // Configure all settings require to start a new camera stack (base camera only)
@@ -1202,7 +1227,11 @@ namespace UnityEngine.Rendering.Universal
             {
                 var colorDesc = cameraTargetDescriptor;
                 colorDesc.graphicsFormat = MotionVectorRenderPass.k_TargetFormat;
+#if OPTIMISATION_ENUM
+                colorDesc.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None);
+#else
                 colorDesc.depthBufferBits = (int)DepthBits.None;
+#endif // OPTIMISATION_ENUM
                 colorDesc.msaaSamples = 1;  // Disable MSAA, consider a pixel resolve for half left velocity and half right velocity --> no velocity, which is untrue.
                 RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorColor, colorDesc, FilterMode.Point, TextureWrapMode.Clamp, name: "_MotionVectorTexture");
 
@@ -1500,9 +1529,17 @@ namespace UnityEngine.Rendering.Universal
                 inputSummary.requiresColorTexture |= needsColor;
                 inputSummary.requiresMotionVectors |= needsMotion;
                 if (needsDepth)
+#if OPTIMISATION_ENUM
+                    inputSummary.requiresDepthTextureEarliestEvent = (RenderPassEvent)Mathf.Min(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(pass.renderPassEvent), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(inputSummary.requiresDepthTextureEarliestEvent));
+#else
                     inputSummary.requiresDepthTextureEarliestEvent = (RenderPassEvent)Mathf.Min((int)pass.renderPassEvent, (int)inputSummary.requiresDepthTextureEarliestEvent);
+#endif // OPTIMISATION_ENUM
                 if (needsNormals || needsDepth)
+#if OPTIMISATION_ENUM
+                    inputSummary.requiresDepthNormalAtEvent = (RenderPassEvent)Mathf.Min(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(pass.renderPassEvent), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(inputSummary.requiresDepthNormalAtEvent));
+#else
                     inputSummary.requiresDepthNormalAtEvent = (RenderPassEvent)Mathf.Min((int)pass.renderPassEvent, (int)inputSummary.requiresDepthNormalAtEvent);
+#endif // OPTIMISATION_ENUM
             }
 
             // NOTE: TAA and motion vector dependencies added here to share between Execute and Render (Graph) paths.
@@ -1514,7 +1551,11 @@ namespace UnityEngine.Rendering.Universal
             if (inputSummary.requiresMotionVectors)
             {
                 inputSummary.requiresDepthTexture = true;
+#if OPTIMISATION_ENUM
+                inputSummary.requiresDepthTextureEarliestEvent = (RenderPassEvent)Mathf.Min(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(m_MotionVectorPass.renderPassEvent), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(inputSummary.requiresDepthTextureEarliestEvent));
+#else
                 inputSummary.requiresDepthTextureEarliestEvent = (RenderPassEvent)Mathf.Min((int)m_MotionVectorPass.renderPassEvent, (int)inputSummary.requiresDepthTextureEarliestEvent);
+#endif // OPTIMISATION_ENUM
             }
 
             return inputSummary;

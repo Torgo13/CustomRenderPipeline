@@ -1040,7 +1040,11 @@ namespace UnityEngine.Rendering.Universal
                 ref var visLight = ref lightData.visibleLights.UnsafeElementAtMutable(visIndex);
 
                 // Update the (cpu) data
+#if OPTIMISATION_ENUM
+                lightTypes[bufIndex] = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(visLight.lightType);
+#else
                 lightTypes[bufIndex] = (int)visLight.lightType;
+#endif // OPTIMISATION_ENUM
                 worldToLights[bufIndex] = visLight.localToWorldMatrix.inverse;
                 atlasUVRects[bufIndex] = validUvRects[i];
                 cookieEnableBits[bufIndex] = true;

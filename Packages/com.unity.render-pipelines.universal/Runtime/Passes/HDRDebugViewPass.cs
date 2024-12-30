@@ -53,7 +53,11 @@ namespace UnityEngine.Rendering.Universal
             descriptor.useMipMap = false;
             descriptor.autoGenerateMips = false;
             descriptor.useDynamicScale = true;
+#if OPTIMISATION_ENUM
+            descriptor.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None);
+#else
             descriptor.depthBufferBits = (int)DepthBits.None;
+#endif // OPTIMISATION_ENUM
         }
 
         public static void ConfigureDescriptorForCIEPrepass(ref RenderTextureDescriptor descriptor)
@@ -114,7 +118,11 @@ namespace UnityEngine.Rendering.Universal
                 Vector4 debugParameters = new Vector4(ShaderConstants._SizeOfHDRXYMapping, ShaderConstants._SizeOfHDRXYMapping, 0, 0);
                 data.material.SetVector(ShaderConstants._HDRDebugParamsId, debugParameters);
                 data.material.SetVector(ShaderPropertyId.hdrOutputLuminanceParams, data.luminanceParameters);
+#if OPTIMISATION_ENUM
+                data.material.SetInteger(ShaderConstants._DebugHDRModeId, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(data.hdrDebugMode));
+#else
                 data.material.SetInteger(ShaderConstants._DebugHDRModeId, (int)data.hdrDebugMode);
+#endif // OPTIMISATION_ENUM
 
                 RenderingUtils.FinalBlit(cmd, ref data.cameraData, sourceTexture, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, data.material, 1);
             }

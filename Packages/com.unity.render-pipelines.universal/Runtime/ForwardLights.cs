@@ -95,6 +95,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                     p.lightCookieManager = new LightCookieManager(ref settings);
                     p.forwardPlus = false;
                 }
+
                 return p;
             }
         }
@@ -390,6 +391,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                     {
                         m_ZBinsBuffer.SetData(m_ZBins.Reinterpret<float4>(UnsafeUtility.SizeOf<uint>()));
                         m_TileMasksBuffer.SetData(m_TileMasks.Reinterpret<float4>(UnsafeUtility.SizeOf<uint>()));
+
 #if OPTIMISATION_SHADERPARAMS
                         cmd.SetGlobalConstantBuffer(m_ZBinsBuffer, k_URP_ZBinBuffer, 0, UniversalRenderPipeline.maxZBinWords * 4);
                         cmd.SetGlobalConstantBuffer(m_TileMasksBuffer, k_urp_TileBuffer, 0, UniversalRenderPipeline.maxTileWords * 4);
@@ -449,6 +451,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                     CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.LightCookies, false);
                 }
             }
+
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
         }
