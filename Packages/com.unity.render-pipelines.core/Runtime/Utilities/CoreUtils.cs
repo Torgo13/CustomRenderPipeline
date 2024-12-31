@@ -1231,6 +1231,41 @@ namespace UnityEngine.Rendering
         {
             Mesh mesh = new Mesh();
 
+#if OPTIMISATION_LISTPOOL
+            using var _0 = UnityEngine.Pool.ListPool<Vector3>.Get(out var vertices);
+            if (vertices.Capacity < 8)
+                vertices.Capacity = 8;
+
+            vertices.Add(new Vector3(min.x, min.y, min.z));
+            vertices.Add(new Vector3(max.x, min.y, min.z));
+            vertices.Add(new Vector3(max.x, max.y, min.z));
+            vertices.Add(new Vector3(min.x, max.y, min.z));
+            vertices.Add(new Vector3(min.x, min.y, max.z));
+            vertices.Add(new Vector3(max.x, min.y, max.z));
+            vertices.Add(new Vector3(max.x, max.y, max.z));
+            vertices.Add(new Vector3(min.x, max.y, max.z));
+
+            mesh.SetVertices(vertices);
+
+            using var _1 = UnityEngine.Pool.ListPool<int>.Get(out var triangles);
+            if (triangles.Capacity < 36)
+                triangles.Capacity = 36;
+
+            triangles.Add(0); triangles.Add(2); triangles.Add(1);
+            triangles.Add(0); triangles.Add(3); triangles.Add(2);
+            triangles.Add(1); triangles.Add(6); triangles.Add(5);
+            triangles.Add(1); triangles.Add(2); triangles.Add(6);
+            triangles.Add(5); triangles.Add(7); triangles.Add(4);
+            triangles.Add(5); triangles.Add(6); triangles.Add(7);
+            triangles.Add(4); triangles.Add(3); triangles.Add(0);
+            triangles.Add(4); triangles.Add(7); triangles.Add(3);
+            triangles.Add(3); triangles.Add(6); triangles.Add(2);
+            triangles.Add(3); triangles.Add(7); triangles.Add(6);
+            triangles.Add(4); triangles.Add(1); triangles.Add(5);
+            triangles.Add(4); triangles.Add(0); triangles.Add(1);
+
+            mesh.SetTriangles(triangles, 0);
+#else
             Vector3[] vertices = new Vector3[8];
 
             vertices[0] = new Vector3(min.x, min.y, min.z);
@@ -1260,6 +1295,8 @@ namespace UnityEngine.Rendering
             triangles[33] = 4; triangles[34] = 0; triangles[35] = 1;
 
             mesh.triangles = triangles;
+#endif // OPTIMISATION_LISTPOOL
+
             return mesh;
         }
 

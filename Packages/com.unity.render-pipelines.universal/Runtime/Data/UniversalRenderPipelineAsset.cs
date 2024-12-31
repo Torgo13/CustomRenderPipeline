@@ -613,18 +613,6 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public static readonly int AdditionalLightsDefaultShadowResolutionTierHigh = 1024;
 
-#if CUSTOM_URP
-        /// <summary>
-        /// The list of renderer data used by this pipeline asset.
-        /// </summary>
-        public ReadOnlySpan<ScriptableRendererData> rendererDataList => m_RendererDataList;
-
-        /// <summary>
-        /// The list of renderers used by this pipeline asset.
-        /// </summary>
-        public ReadOnlySpan<ScriptableRenderer> renderers => m_Renderers;
-#endif // CUSTOM_URP
-
 #if UNITY_EDITOR
         [NonSerialized]
         internal UniversalRenderPipelineEditorResources m_EditorResourcesAsset;
@@ -1219,6 +1207,7 @@ namespace UnityEngine.Rendering.Universal
 #else
             get { return (int)m_MainLightShadowmapResolution; }
 #endif // OPTIMISATION_ENUM
+
 #if CUSTOM_URP
             set { m_MainLightShadowmapResolution = (ShadowResolution)value; }
 #else

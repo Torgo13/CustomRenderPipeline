@@ -294,15 +294,14 @@ namespace UnityEngine.Rendering.Universal
         {
 #if OPTIMISATION_ENUM
             int typeInt = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(type);
-#else
-            int typeInt = (int)type;
-#endif // OPTIMISATION_ENUM
             if (typeInt < 0 || typeInt >= s_CameraTypeNames.Length)
-#if OPTIMISATION_ENUM
                 typeInt = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Base);
 #else
+            int typeInt = (int)type;
+            if (typeInt < 0 || typeInt >= s_CameraTypeNames.Length)
                 typeInt = (int)CameraRenderType.Base;
 #endif // OPTIMISATION_ENUM
+
             return s_CameraTypeNames[typeInt];
         }
     }

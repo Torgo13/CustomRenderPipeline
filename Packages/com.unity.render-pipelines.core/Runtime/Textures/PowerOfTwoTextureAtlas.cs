@@ -222,15 +222,9 @@ namespace UnityEngine.Rendering
                 return false;
             }
 
-#if BUGFIX
-            TextureSizeToPowerOfTwo(texture, ref width, ref height);
-
-            return base.AllocateTexture(cmd, ref scaleOffset, texture, width, height, overrideInstanceID);
-#else
             TextureSizeToPowerOfTwo(texture, ref height, ref width);
 
             return base.AllocateTexture(cmd, ref scaleOffset, texture, width, height);
-#endif // BUGFIX
         }
 
         /// <summary>
