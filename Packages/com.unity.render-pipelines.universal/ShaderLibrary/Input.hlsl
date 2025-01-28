@@ -41,7 +41,13 @@ struct InputData
 {
     float3  positionWS;
     float4  positionCS;
+    // SLZ MODIFIED // make normal a half instead of full float
+    half3  normalWS;
+    // ELSE SLZ MODIFIED
+    /*
     float3  normalWS;
+    */
+    // END SLZ MODIFIED
     half3   viewDirectionWS;
     float4  shadowCoord;
     half    fogCoord;

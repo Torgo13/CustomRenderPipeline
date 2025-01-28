@@ -52,11 +52,14 @@ namespace UnityEngine.Rendering
         /// <param name="capacity">New size of array to resize</param>
         public static void ResizeArray<T>(ref T[] array, int capacity)
         {
+#if OPTIMISATION // Array passed by ref cannot be null
+#else
             if (array == null)
             {
                 array = new T[capacity];
                 return;
             }
+#endif // OPTIMISATION
 
             Array.Resize<T>(ref array, capacity);
         }

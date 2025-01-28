@@ -12,10 +12,13 @@ namespace UnityEngine.Rendering.Universal
         static readonly int kPreviousViewProjectionNoJitter = Shader.PropertyToID("_PrevViewProjMatrix");
         static readonly int kViewProjectionNoJitter = Shader.PropertyToID("_NonJitteredViewProjMatrix");
         static readonly int kMotionVectorTexture = Shader.PropertyToID("_MotionVectorTexture");
+        int kColor;
+        int kDepth;
 #else
         const string kPreviousViewProjectionNoJitter = "_PrevViewProjMatrix";
         const string kViewProjectionNoJitter = "_NonJitteredViewProjMatrix";
 #endif // OPTIMISATION_SHADERPARAMS
+
 #if ENABLE_VR && ENABLE_XR_MODULE
         const string kPreviousViewProjectionNoJitterStereo = "_PrevViewProjMatrixStereo";
         const string kViewProjectionNoJitterStereo = "_NonJitteredViewProjMatrixStereo";
@@ -53,12 +56,22 @@ namespace UnityEngine.Rendering.Universal
         {
             m_Color = color;
             m_Depth = depth;
+#if OPTIMISATION_SHADERPARAMS
+            kColor = Shader.PropertyToID(m_Color.name);
+            kDepth = Shader.PropertyToID(m_Depth.name);
+#endif // OPTIMISATION_SHADERPARAMS
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
+#if OPTIMISATION_SHADERPARAMS
+            cmd.SetGlobalTexture(kColor, m_Color.nameID);
+            cmd.SetGlobalTexture(kDepth, m_Depth.nameID);
+#else
             cmd.SetGlobalTexture(m_Color.name, m_Color.nameID);
             cmd.SetGlobalTexture(m_Depth.name, m_Depth.nameID);
+#endif // OPTIMISATION_SHADERPARAMS
+
             ConfigureTarget(m_Color, m_Depth);
             ConfigureClear(ClearFlag.Color | ClearFlag.Depth, Color.black);
 

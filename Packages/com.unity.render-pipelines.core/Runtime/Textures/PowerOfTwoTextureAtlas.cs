@@ -291,10 +291,15 @@ namespace UnityEngine.Rendering
         /// <returns>True if all textures have successfully been re-inserted in the atlas</returns>
         public bool RelayoutEntries()
         {
+#if OPTIMISATION
+            var entries = new List<(int instanceId, Vector2Int size)>(m_RequestedTextures.Count);
+#else
             var entries = new List<(int instanceId, Vector2Int size)>();
+#endif // OPTIMISATION
 
             foreach (var entry in m_RequestedTextures)
                 entries.Add((entry.Key, entry.Value));
+
             ResetAllocator();
 
             // Sort entries from biggest to smallest

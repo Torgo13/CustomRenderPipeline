@@ -4,10 +4,20 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 
+// SLZ MODIFIED
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/GlobalSamplers.hlsl"
+// END SLZ MODIFIED
+
 TEXTURE2D (_BlitTexture);
 TEXTURE2D (_InputDepthTexture);
+
+// SLZ MODIFIED
+/*
 SamplerState sampler_PointClamp;
 SamplerState sampler_LinearClamp;
+*/
+// END SLZ MODIFIED
+
 uniform float4 _BlitScaleBias;
 uniform float _BlitMipLevel;
 

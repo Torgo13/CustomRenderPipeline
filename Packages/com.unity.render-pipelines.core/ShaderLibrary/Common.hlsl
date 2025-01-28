@@ -1486,12 +1486,35 @@ bool HasFlag(uint bitfield, uint flag)
     return (bitfield & flag) != 0;
 }
 
+// SLZ MODIFIED // don't cast float to half on return if the input vector is a float3
+
+// Normalize that account for vectors with zero length
+real3 SafeNormalize(real3 inVec)
+{
+    float dp3 = max(REAL_MIN, dot(inVec, inVec));
+    return inVec * rsqrt(dp3);
+}
+
+#if REAL_IS_HALF
+float3 SafeNormalize(float3 inVec)
+{
+    float dp3 = max(FLT_MIN, dot(inVec, inVec));
+    return inVec * rsqrt(dp3);
+}
+#endif
+
+// ELSE SLZ MODIFIED
+
+/*
 // Normalize that account for vectors with zero length
 real3 SafeNormalize(float3 inVec)
 {
     float dp3 = max(FLT_MIN, dot(inVec, inVec));
     return inVec * rsqrt(dp3);
 }
+*/
+
+// END SLZ MODIFIED
 
 // Checks if a vector is normalized
 bool IsNormalized(float3 inVec)

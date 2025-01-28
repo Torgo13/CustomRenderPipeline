@@ -54,12 +54,15 @@ namespace UnityEngine.Rendering.Universal.Internal
             renderPassEvent = evt;
 
             // Find sampler passes by name
+#if OPTIMISATION_ENUM
+            const int blitTypeCore = (int)BlitType.Core;
+#endif // OPTIMISATION_ENUM
             const int blitTypeCount = (int)BlitType.Count;
             m_BlitMaterialData = new BlitMaterialData[blitTypeCount];
             for (int i = 0; i < blitTypeCount; ++i)
             {
 #if OPTIMISATION_ENUM
-                m_BlitMaterialData[i].material = i == Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(BlitType.Core) ? blitMaterial : blitHDRMaterial;
+                m_BlitMaterialData[i].material = i == blitTypeCore ? blitMaterial : blitHDRMaterial;
 #else
                 m_BlitMaterialData[i].material = i == (int)BlitType.Core ? blitMaterial : blitHDRMaterial;
 #endif // OPTIMISATION_ENUM
