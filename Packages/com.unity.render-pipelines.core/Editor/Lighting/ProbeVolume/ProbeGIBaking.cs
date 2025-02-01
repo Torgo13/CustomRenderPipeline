@@ -846,7 +846,11 @@ namespace UnityEngine.Rendering
             ModifyPhysicsComponentsForBaking();
 
             // Fetch results of all cells
+#if OPTIMISATION
+            var fetchScope = new BakingCompleteProfiling(BakingCompleteProfiling.Stages.FetchResults);
+#else
             using var fetchScope = new BakingCompleteProfiling(BakingCompleteProfiling.Stages.FetchResults);
+#endif // OPTIMISATION
             BakingCompleteProfiling.GetProgressRange(out float progress0, out float progress1);
             for (int c = 0; c < numCells; ++c)
             {
@@ -1011,10 +1015,7 @@ namespace UnityEngine.Rendering
                 m_BakedCells[cell.index] = cell;
             }
 
-#if OPTIMISATION
-#else
             fetchScope.Dispose();
-#endif // OPTIMISATION
 
             RestorePhysicsComponentsAfterBaking();
             CleanupOccluders();
@@ -1030,7 +1031,11 @@ namespace UnityEngine.Rendering
                 ExtractBakingCells();
             }
 
+#if OPTIMISATION
+            var writeScope = new BakingCompleteProfiling(BakingCompleteProfiling.Stages.WriteBakedData);
+#else
             using var writeScope = new BakingCompleteProfiling(BakingCompleteProfiling.Stages.WriteBakedData);
+#endif // OPTIMISATION
 
             // Map from each scene to its per scene data, and create a new asset for each scene
             var scene2Data = new Dictionary<Scene, ProbeVolumePerSceneData>();
@@ -1084,10 +1089,7 @@ namespace UnityEngine.Rendering
                 data.ResolveSharedCellData();
             }
 
-#if OPTIMISATION
-#else
             writeScope.Dispose();
-#endif // OPTIMISATION
 
             var probeVolumes = GetProbeVolumeList();
             foreach (var probeVolume in probeVolumes)

@@ -335,10 +335,15 @@ namespace UnityEngine.Rendering
         internal void ReplaceData(VolumeStack stack)
         {
             var resetParameters = stack.defaultParameters;
+#if OPTIMISATION // Support resetParameters being a List or Array
+            foreach (var resetParam in resetParameters)
+            {
+#else
             var resetParametersCount = resetParameters.Length;
             for (int i = 0; i < resetParametersCount; i++)
             {
                 var resetParam = resetParameters[i];
+#endif // OPTIMISATION
                 var targetParam = resetParam.parameter;
                 targetParam.overrideState = false;
                 targetParam.SetValue(resetParam.defaultValue);

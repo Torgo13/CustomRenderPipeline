@@ -253,7 +253,7 @@ namespace UnityEngine.Rendering.Universal
         }
 
 #if OPTIMISATION_IEQUATABLE
-        public bool Equals(Int128 other)
+        public readonly bool Equals(Int128 other)
         {
             return this == other;
         }
@@ -406,12 +406,12 @@ namespace UnityEngine.Rendering.Universal
         }
 
 #if OPTIMISATION_IEQUATABLE
-        public bool Equals(IntPoint other)
+        public readonly bool Equals(IntPoint other)
         {
             return this == other;
         }
 
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             if (obj is IntPoint a)
                 return this == a;

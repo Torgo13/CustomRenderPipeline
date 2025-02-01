@@ -144,9 +144,6 @@ namespace UnityEngine.Rendering.Universal
         RTHandle m_XRTargetHandleAlias;
         internal RTHandle m_CameraDepthAttachment_D3d_11;
         internal RTHandle m_DepthTexture;
-#if CUSTOM_URP
-        public
-#endif // CUSTOM_URP
         RTHandle m_NormalsTexture;
         RTHandle m_DecalLayersTexture;
         RTHandle m_OpaqueColor;
@@ -155,9 +152,6 @@ namespace UnityEngine.Rendering.Universal
 
         ForwardLights m_ForwardLights;
         DeferredLights m_DeferredLights;
-#if CUSTOM_URP
-        public
-#endif // CUSTOM_URP
         RenderingMode m_RenderingMode;
         DepthPrimingMode m_DepthPrimingMode;
         CopyDepthMode m_CopyDepthMode;

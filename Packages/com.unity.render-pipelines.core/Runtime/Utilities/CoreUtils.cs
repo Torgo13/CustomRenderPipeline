@@ -1232,7 +1232,7 @@ namespace UnityEngine.Rendering
             Mesh mesh = new Mesh();
 
 #if OPTIMISATION_LISTPOOL
-            using var _0 = UnityEngine.Pool.ListPool<Vector3>.Get(out var vertices);
+            var vertices = UnityEngine.Pool.ListPool<Vector3>.Get();
             if (vertices.Capacity < 8)
                 vertices.Capacity = 8;
 
@@ -1246,8 +1246,9 @@ namespace UnityEngine.Rendering
             vertices.Add(new Vector3(min.x, max.y, max.z));
 
             mesh.SetVertices(vertices);
+            UnityEngine.Pool.ListPool<Vector3>.Release(vertices);
 
-            using var _1 = UnityEngine.Pool.ListPool<int>.Get(out var triangles);
+            var triangles = UnityEngine.Pool.ListPool<int>.Get();
             if (triangles.Capacity < 36)
                 triangles.Capacity = 36;
 
@@ -1265,6 +1266,7 @@ namespace UnityEngine.Rendering
             triangles.Add(4); triangles.Add(0); triangles.Add(1);
 
             mesh.SetTriangles(triangles, 0);
+            UnityEngine.Pool.ListPool<int>.Release(triangles);
 #else
             Vector3[] vertices = new Vector3[8];
 

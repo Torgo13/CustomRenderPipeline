@@ -15,7 +15,11 @@ namespace UnityEngine.Rendering
         internal readonly Dictionary<Type, VolumeComponent> components = new();
 
         // Holds the default value for every volume parameter for faster per-frame stack reset.
+#if OPTIMISATION
+        internal List<(VolumeParameter parameter, VolumeParameter defaultValue)> defaultParameters;
+#else
         internal (VolumeParameter parameter, VolumeParameter defaultValue)[] defaultParameters;
+#endif // OPTIMISATION
 
         internal bool requiresReset = true;
 
@@ -47,11 +51,14 @@ namespace UnityEngine.Rendering
 
             requiresReset = true;
 
-#if OPTIMISATION_LISTPOOL
-            using var _0 = UnityEngine.Pool.ListPool<(VolumeParameter parameter, VolumeParameter defaultValue)>.Get(out var defaultParametersList);
+#if OPTIMISATION
+            if (defaultParameters == null)
+                defaultParameters = new List<(VolumeParameter parameter, VolumeParameter defaultValue)>(componentDefaultStates.Count);
+            else
+                defaultParameters.Clear();
 #else
             List<(VolumeParameter parameter, VolumeParameter defaultValue)> defaultParametersList = new();
-#endif // OPTIMISATION_LISTPOOL
+#endif // OPTIMISATION
 
             foreach (var defaultVolumeComponent in componentDefaultStates)
             {
@@ -61,7 +68,11 @@ namespace UnityEngine.Rendering
                 
                 for (int i = 0; i < component.parameterList.Count; i++)
                 {
+#if OPTIMISATION
+                    defaultParameters.Add(new()
+#else
                     defaultParametersList.Add(new()
+#endif // OPTIMISATION
                     {
                         parameter = component.parameters[i],
                         defaultValue = defaultVolumeComponent.parameterList[i].Clone() as VolumeParameter,
@@ -69,7 +80,10 @@ namespace UnityEngine.Rendering
                 }
             }
 
+#if OPTIMISATION
+#else
             defaultParameters = defaultParametersList.ToArray();
+#endif // OPTIMISATION
         }
 
         /// <summary>
