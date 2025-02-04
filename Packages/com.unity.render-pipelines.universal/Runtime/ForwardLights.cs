@@ -38,13 +38,15 @@ namespace UnityEngine.Rendering.Universal.Internal
         private static readonly ProfilingSampler m_ProfilingSamplerFPSetup = new ProfilingSampler("Forward+ Setup");
         private static readonly ProfilingSampler m_ProfilingSamplerFPComplete = new ProfilingSampler("Forward+ Complete");
         private static readonly ProfilingSampler m_ProfilingSamplerFPUpload = new ProfilingSampler("Forward+ Upload");
+
 #if OPTIMISATION_SHADERPARAMS
-        private static readonly int k_URP_ZBinBuffer = Shader.PropertyToID("URP_ZBinBuffer");
-        private static readonly int k_urp_TileBuffer = Shader.PropertyToID("urp_TileBuffer");
-        private static readonly int k_FPParams0 = Shader.PropertyToID("_FPParams0");
-        private static readonly int k_FPParams1 = Shader.PropertyToID("_FPParams1");
-        private static readonly int k_FPParams2 = Shader.PropertyToID("_FPParams2");
+        private readonly int k_URP_ZBinBuffer;
+        private readonly int k_urp_TileBuffer;
+        private readonly int k_FPParams0;
+        private readonly int k_FPParams1;
+        private readonly int k_FPParams2;
 #endif // OPTIMISATION_SHADERPARAMS
+
         MixedLightingSetup m_MixedLightingSetup;
 
         Vector4[] m_AdditionalLightPositions;
@@ -141,6 +143,14 @@ namespace UnityEngine.Rendering.Universal.Internal
 
             if (m_UseForwardPlus)
             {
+#if OPTIMISATION_SHADERPARAMS
+                k_URP_ZBinBuffer = Shader.PropertyToID("URP_ZBinBuffer");
+                k_urp_TileBuffer = Shader.PropertyToID("urp_TileBuffer");
+                k_FPParams0 = Shader.PropertyToID("_FPParams0");
+                k_FPParams1 = Shader.PropertyToID("_FPParams1");
+                k_FPParams2 = Shader.PropertyToID("_FPParams2");
+#endif // OPTIMISATION_SHADERPARAMS
+
                 CreateForwardPlusBuffers();
                 m_ReflectionProbeManager = ReflectionProbeManager.Create();
             }

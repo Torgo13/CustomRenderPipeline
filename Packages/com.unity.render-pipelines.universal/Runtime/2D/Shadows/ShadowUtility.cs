@@ -199,9 +199,21 @@ namespace UnityEngine.Rendering.Universal
             tessI.Tessellate(WindingRule.EvenOdd, ElementType.Polygons, 3, InterpCustomVertexData);
 
 #if OPTIMISATION
-            var indicesI = tessI.Elements.Select(i => i);
-            var verticesI = tessI.Vertices.Select(v => new Vector3(v.Position.X, v.Position.Y, 0));
-            var extrusionI = tessI.Vertices.Select(v => new Color(((Color)v.Data).r, ((Color)v.Data).g, ((Color)v.Data).b, ((Color)v.Data).a));
+            var indicesI = tessI.Elements;
+            using var _4 = UnityEngine.Pool.ListPool<Vector3>.Get(out var verticesI);
+            using var _5 = UnityEngine.Pool.ListPool<Color>.Get(out var extrusionI);
+
+            if (verticesI.Capacity < tessI.Vertices.Length)
+                verticesI.Capacity = tessI.Vertices.Length;
+
+            if (extrusionI.Capacity < tessI.Vertices.Length)
+                extrusionI.Capacity = tessI.Vertices.Length;
+
+            foreach (var v in tessI.Vertices)
+            {
+                verticesI.Add(new Vector3(v.Position.X, v.Position.Y, 0));
+                extrusionI.Add(new Color(((Color)v.Data).r, ((Color)v.Data).g, ((Color)v.Data).b, ((Color)v.Data).a));
+            }
 #else
             var indicesI = tessI.Elements.Select(i => i).ToArray();
             var verticesI = tessI.Vertices.Select(v => new Vector3(v.Position.X, v.Position.Y, 0)).ToArray();
@@ -215,7 +227,7 @@ namespace UnityEngine.Rendering.Universal
             InitializeTangents(vertices.Count, tangents);
 
 #if OPTIMISATION_LISTPOOL
-            using var _4 = UnityEngine.Pool.ListPool<Edge>.Get(out var edges);
+            using var _6 = UnityEngine.Pool.ListPool<Edge>.Get(out var edges);
 #else
             List<Edge> edges = new List<Edge>();
 #endif // OPTIMISATION_LISTPOOL

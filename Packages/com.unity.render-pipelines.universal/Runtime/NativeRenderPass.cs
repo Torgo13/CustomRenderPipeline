@@ -194,7 +194,11 @@ namespace UnityEngine.Rendering.Universal
                 int[] currentMergeablePasses = m_MergeableRenderPassesMap[currentPassHash];
 
                 // Not the first pass
+#if OPTIMISATION
+                if (currentMergeablePasses == null || currentMergeablePasses.Length == 0 || currentMergeablePasses[0] != currentPassIndex)
+#else
                 if (currentMergeablePasses.First() != currentPassIndex)
+#endif // OPTIMISATION
                     return;
 
                 m_RenderPassesAttachmentCount[currentPassHash] = 0;
@@ -291,7 +295,11 @@ namespace UnityEngine.Rendering.Universal
                 int[] currentMergeablePasses = m_MergeableRenderPassesMap[currentPassHash];
 
                 // Skip if not the first pass
+#if OPTIMISATION
+                if (currentMergeablePasses == null || currentMergeablePasses.Length == 0 || currentMergeablePasses[0] != currentPassIndex)
+#else
                 if (currentMergeablePasses.First() != currentPassIndex)
+#endif // OPTIMISATION
                     return;
 
                 m_RenderPassesAttachmentCount[currentPassHash] = 0;

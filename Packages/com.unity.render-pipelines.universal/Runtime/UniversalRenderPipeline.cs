@@ -279,8 +279,17 @@ namespace UnityEngine.Rendering.Universal
         // non-GC resources to avoid leaking them.
         private void DisposeAdditionalCameraData()
         {
+#if OPTIMISATION
+            var allCamerasCount = Camera.allCamerasCount;
+            var cameras = System.Buffers.ArrayPool<Camera>.Shared.Rent(allCamerasCount);
+            Camera.GetAllCameras(cameras);
+            for (int i = 0; i < allCamerasCount; i++)
+            {
+                var c = cameras[i];
+#else
             foreach (var c in Camera.allCameras)
             {
+#endif // OPTIMISATION
                 if (c.TryGetComponent<UniversalAdditionalCameraData>(out var acd))
                 {
                     acd.taaPersistentData?.DeallocateTargets();
@@ -290,6 +299,10 @@ namespace UnityEngine.Rendering.Universal
                 };
 #endif // BUGFIX
             }
+
+#if OPTIMISATION
+            System.Buffers.ArrayPool<Camera>.Shared.Return(cameras, clearArray: true);
+#endif // OPTIMISATION
         }
 
 #if UNITY_2021_1_OR_NEWER

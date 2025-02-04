@@ -182,7 +182,6 @@ namespace UnityEngine.Rendering.Universal
             // Constants
             private const int k_FinalTexID = 3;
 #if OPTIMISATION_SHADERPARAMS
-            private static readonly int k_SSAOTextureName = Shader.PropertyToID("_ScreenSpaceOcclusionTexture");
 #else
             private const string k_SSAOTextureName = "_ScreenSpaceOcclusionTexture";
             private const string k_AmbientOcclusionParamName = "_AmbientOcclusionParam";
@@ -190,6 +189,7 @@ namespace UnityEngine.Rendering.Universal
 
             // Statics
 #if OPTIMISATION_SHADERPARAMS
+            internal static readonly int k_SSAOTextureName = Shader.PropertyToID("_ScreenSpaceOcclusionTexture");
             internal static readonly int s_AmbientOcclusionParamID = Shader.PropertyToID("_AmbientOcclusionParam");
 #else
             internal static readonly int s_AmbientOcclusionParamID = Shader.PropertyToID(k_AmbientOcclusionParamName);

@@ -387,9 +387,12 @@ namespace UnityEngine.Rendering.Universal
             bias = -distanceFadeNear / (fadeDistance - distanceFadeNear);
         }
 
+#if OPTIMISATION_SHADERPARAMS
+#else
         private static int _ShadowBias = Shader.PropertyToID("_ShadowBias");
         private static int _LightDirection = Shader.PropertyToID("_LightDirection");
         private static int _LightPosition = Shader.PropertyToID("_LightPosition");
+#endif // OPTIMISATION_SHADERPARAMS
 
         /// <summary>
         /// Sets up the shadow bias, light direction and position for rendering.
@@ -583,12 +586,12 @@ namespace UnityEngine.Rendering.Universal
 
         internal static bool SupportsPerLightSoftShadowQuality()
         {
-            #if ENABLE_VR && ENABLE_VR_MODULE
-            #if PLATFORM_WINRT || PLATFORM_ANDROID
+#if ENABLE_VR && ENABLE_VR_MODULE
+#if PLATFORM_WINRT || PLATFORM_ANDROID
                 // We are using static branches on Quest2 + HL for performance reasons
                 return !PlatformAutoDetect.isXRMobile;
-            #endif
-            #endif
+#endif
+#endif
             return true;
         }
 

@@ -114,7 +114,7 @@ namespace UnityEngine.Rendering.Universal
     internal class DecalUpdateCachedSystem
     {
 #if OPTIMISATION_SHADERPARAMS
-        private static readonly int k_DrawOrder = Shader.PropertyToID("_DrawOrder");
+        private readonly int k_DrawOrder = Shader.PropertyToID("_DrawOrder");
 #endif // OPTIMISATION_SHADERPARAMS
         private DecalEntityManager m_EntityManager;
         private ProfilingSampler m_Sampler;

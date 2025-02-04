@@ -51,6 +51,7 @@ namespace UnityEngine.Rendering.Universal
         const int k_AfterFinalBlitPassQueueOffset = k_FinalBlitPassQueueOffset + 1;
 
         static readonly List<ShaderTagId> k_DepthNormalsOnly = new List<ShaderTagId> { new ShaderTagId("DepthNormalsOnly") };
+
 #if OPTIMISATION_SHADERPARAMS
         static readonly int k_CameraColorTexture = Shader.PropertyToID("_CameraColorTexture");
         static readonly int k_AfterPostProcessTexture = Shader.PropertyToID("_AfterPostProcessTexture");
