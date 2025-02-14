@@ -809,7 +809,7 @@ namespace UnityEngine.Rendering.Universal
             int currentIndex = 0;
 
             // find the index of the renderPassEvent in the values array
-            for(int i = 0; i < numEvents; ++i)
+            for (int i = 0; i < numEvents; ++i)
             {
 #if OPTIMISATION_ENUM
                 if (RenderPassEventsEnumValues.values[currentIndex] == Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(renderPassEvent))

@@ -161,6 +161,7 @@ namespace UnityEngine.Rendering.Universal
                 int i = 0;
                 if (maxVal[1] - minVal[1] > maxVal[0] - minVal[0]) { i = 1; }
                 if (maxVal[2] - minVal[2] > maxVal[i] - minVal[i]) { i = 2; }
+
                 if (minVal[i] >= maxVal[i])
                 {
                     // All vertices are the same -- normal doesn't matter
@@ -209,8 +210,10 @@ namespace UnityEngine.Rendering.Universal
                     {
                         continue;
                     }
+
                     area += MeshUtils.FaceArea(f);
                 }
+
                 if (area < 0.0f)
                 {
                     // Reverse the orientation by flipping all the t-coordinates
@@ -218,6 +221,7 @@ namespace UnityEngine.Rendering.Universal
                     {
                         v._t = -v._t;
                     }
+
                     Vec3.Neg(ref _tUnit);
                 }
             }
@@ -250,6 +254,7 @@ namespace UnityEngine.Rendering.Universal
                     Vec3.Dot(ref v._coords, ref _sUnit, out v._s);
                     Vec3.Dot(ref v._coords, ref _tUnit, out v._t);
                 }
+
                 if (computedNormal)
                 {
                     CheckOrientation();
@@ -329,6 +334,7 @@ namespace UnityEngine.Rendering.Universal
                         {
                             lo = _mesh.Connect(lo._Lnext, lo)._Sym;
                         }
+
                         lo = lo._Lprev;
                     }
                     else
@@ -339,6 +345,7 @@ namespace UnityEngine.Rendering.Universal
                         {
                             up = _mesh.Connect(up, up._Lprev)._Sym;
                         }
+
                         up = up._Lnext;
                     }
                 }
@@ -486,6 +493,7 @@ namespace UnityEngine.Rendering.Universal
                             v._n = maxVertexCount;
                             maxVertexCount++;
                         }
+
                         faceVerts++;
                         edge = edge._Lnext;
                     }
@@ -745,6 +753,7 @@ namespace UnityEngine.Rendering.Universal
                 {
                     _mesh.Free();
                 }
+
                 _mesh = null;
             }
         }

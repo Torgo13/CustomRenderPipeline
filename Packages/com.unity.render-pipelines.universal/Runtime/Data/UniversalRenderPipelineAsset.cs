@@ -950,6 +950,7 @@ namespace UnityEngine.Rendering.Universal
                 {
                     list[i] = new GUIContent($"{(i - 1).ToString()}: {RendererDataDisplayName(m_RendererDataList[i - 1])}");
                 }
+
                 return list;
             }
         }
