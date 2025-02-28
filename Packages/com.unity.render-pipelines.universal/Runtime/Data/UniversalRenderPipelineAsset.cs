@@ -1732,33 +1732,6 @@ namespace UnityEngine.Rendering.Universal
         }
 
         /// <summary>
-        /// Returns the terrain detail lit shader that this asset uses.
-        /// </summary>
-        /// <returns>Returns the terrain detail lit shader that this asset uses.</returns>
-        public override Shader terrainDetailLitShader
-        {
-            get { return editorResources?.shaders.terrainDetailLitPS; }
-        }
-
-        /// <summary>
-        /// Returns the terrain detail grass shader that this asset uses.
-        /// </summary>
-        /// <returns>Returns the terrain detail grass shader that this asset uses.</returns>
-        public override Shader terrainDetailGrassShader
-        {
-            get { return editorResources?.shaders.terrainDetailGrassPS; }
-        }
-
-        /// <summary>
-        /// Returns the terrain detail grass billboard shader that this asset uses.
-        /// </summary>
-        /// <returns>Returns the terrain detail grass billboard shader that this asset uses.</returns>
-        public override Shader terrainDetailGrassBillboardShader
-        {
-            get { return editorResources?.shaders.terrainDetailGrassBillboardPS; }
-        }
-
-        /// <summary>
         /// Returns the default SpeedTree7 shader that this asset uses.
         /// </summary>
         /// <returns>Returns the default SpeedTree7 shader that this asset uses.</returns>
@@ -1779,6 +1752,57 @@ namespace UnityEngine.Rendering.Universal
         /// <inheritdoc/>
         public override string renderPipelineShaderTag => UniversalRenderPipeline.k_ShaderTagName;
 #endif
+
+        /// <summary>
+        /// Returns the terrain detail lit shader that this asset uses.
+        /// </summary>
+        public override Shader terrainDetailLitShader
+        {
+            get
+            {
+                foreach (var data in m_RendererDataList)
+                {
+                    if (data is UniversalRendererData universalData)
+                        return universalData.shaders.terrainDetailLitPS;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns the terrain detail grass shader that this asset uses.
+        /// </summary>
+        public override Shader terrainDetailGrassShader
+        {
+            get
+            {
+                foreach (var data in m_RendererDataList)
+                {
+                    if (data is UniversalRendererData universalData)
+                        return universalData.shaders.terrainDetailGrassPS;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns the terrain detail grass billboard shader that this asset uses.
+        /// </summary>
+        public override Shader terrainDetailGrassBillboardShader
+        {
+            get
+            {
+                foreach (var data in m_RendererDataList)
+                {
+                    if (data is UniversalRendererData universalData)
+                        return universalData.shaders.terrainDetailGrassBillboardPS;
+                }
+
+                return null;
+            }
+        }
 
         /// <summary>Names used for display of rendering layer masks.</summary>
         public override string[] renderingLayerMaskNames => UniversalRenderPipelineGlobalSettings.instance.renderingLayerMaskNames;
