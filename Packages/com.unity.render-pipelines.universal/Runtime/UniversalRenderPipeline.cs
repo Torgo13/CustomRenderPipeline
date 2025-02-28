@@ -136,6 +136,9 @@ namespace UnityEngine.Rendering.Universal
         {
             get
             {
+#if OPTIMISATION // Only the main light and four vertex lights will be rendered to keep to a single pass
+                return 4;
+#else
                 // Must match: Input.hlsl, MAX_VISIBLE_LIGHTS
                 bool isMobile = GraphicsSettings.HasShaderDefine(BuiltinShaderDefine.SHADER_API_MOBILE);
                 if (isMobile && (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 || (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3 && Graphics.minOpenGLESVersion <= OpenGLESVersion.OpenGLES30)))
@@ -144,6 +147,7 @@ namespace UnityEngine.Rendering.Universal
                 // GLES can be selected as platform on Windows (not a mobile platform) but uniform buffer size so we must use a low light count.
                 return (isMobile || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3)
                     ? ShaderOptions.k_MaxVisibleLightCountMobile : ShaderOptions.k_MaxVisibleLightCountDesktop;
+#endif // OPTIMISATION
             }
         }
 

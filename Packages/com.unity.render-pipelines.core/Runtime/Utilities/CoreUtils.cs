@@ -1232,21 +1232,17 @@ namespace UnityEngine.Rendering
             Mesh mesh = new Mesh();
 
 #if OPTIMISATION_LISTPOOL
-            var vertices = UnityEngine.Pool.ListPool<Vector3>.Get();
-            if (vertices.Capacity < 8)
-                vertices.Capacity = 8;
-
-            vertices.Add(new Vector3(min.x, min.y, min.z));
-            vertices.Add(new Vector3(max.x, min.y, min.z));
-            vertices.Add(new Vector3(max.x, max.y, min.z));
-            vertices.Add(new Vector3(min.x, max.y, min.z));
-            vertices.Add(new Vector3(min.x, min.y, max.z));
-            vertices.Add(new Vector3(max.x, min.y, max.z));
-            vertices.Add(new Vector3(max.x, max.y, max.z));
-            vertices.Add(new Vector3(min.x, max.y, max.z));
+            var vertices = new Unity.Collections.NativeArray<Vector3>(8, Unity.Collections.Allocator.Temp);
+            vertices[0] = new Vector3(min.x, min.y, min.z);
+            vertices[1] = new Vector3(max.x, min.y, min.z);
+            vertices[2] = new Vector3(max.x, max.y, min.z);
+            vertices[3] = new Vector3(min.x, max.y, min.z);
+            vertices[4] = new Vector3(min.x, min.y, max.z);
+            vertices[5] = new Vector3(max.x, min.y, max.z);
+            vertices[6] = new Vector3(max.x, max.y, max.z);
+            vertices[7] = new Vector3(min.x, max.y, max.z);
 
             mesh.SetVertices(vertices);
-            UnityEngine.Pool.ListPool<Vector3>.Release(vertices);
 
             var triangles = UnityEngine.Pool.ListPool<int>.Get();
             if (triangles.Capacity < 36)
