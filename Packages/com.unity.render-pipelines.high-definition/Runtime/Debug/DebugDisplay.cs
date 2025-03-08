@@ -474,7 +474,7 @@ namespace UnityEngine.Rendering.HighDefinition
             {
                 if (UnityEditor.Selection.activeGameObject == null)
                     return 0;
-                var light = UnityEditor.Selection.activeGameObject.GetComponent<HDAdditionalLightData>();
+                var light = UnityEditor.Selection.activeGameObject.GetComponent<UniversalAdditionalLightData>();
                 if (light == null)
                     return 0;
 

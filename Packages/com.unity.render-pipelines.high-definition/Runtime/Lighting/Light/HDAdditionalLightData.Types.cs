@@ -221,7 +221,7 @@ namespace UnityEngine.Rendering.HighDefinition
         AreaLightShape m_AreaLightShape = AreaLightShape.Rectangle;
 
         //Not to be used in render loop instead as we can add on the fly an
-        //HDAdditionalLightData that is not really added to the GameObject
+        //UniversalAdditionalLightData that is not really added to the GameObject
         //In this case, use ComputeLightType directly.
         //This is for scripting and case where the HDAdditionnalLightData is existing
         /// <summary>
@@ -513,7 +513,7 @@ namespace UnityEngine.Rendering.HighDefinition
         }
 
         //To use in render loop instead of type as we can add on the fly an
-        //HDAdditionalLightData that is not really added to the GameObject
+        //UniversalAdditionalLightData that is not really added to the GameObject
         //In this case, the type property will return a false value as this will
         //be base on a default(HDAdditionnalData) which will have a point type
         internal HDLightType ComputeLightType(Light attachedLight)
@@ -524,7 +524,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             HDLightType hdLightType = TranslateLightType(attachedLight.type, m_PointlightHDType);
 
-            if (attachedLight.type == LightType.Rectangle && this != HDUtils.s_DefaultHDAdditionalLightData)
+            if (attachedLight.type == LightType.Rectangle && this != HDUtils.s_DefaultUniversalAdditionalLightData)
             {
                 legacyLight.type = LightType.Point;
                 m_PointlightHDType = PointLightHDType.Area;

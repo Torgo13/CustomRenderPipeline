@@ -392,8 +392,8 @@ namespace UnityEngine.Rendering.HighDefinition
             for (int lightIdx = 0; lightIdx < lightEntities.lightCount; ++lightIdx)
             {
                 HDLightRenderEntity lightRenderEntity = lightEntities.lightEntities[lightIdx];
-                HDAdditionalLightData hdLight = lightEntities.hdAdditionalLightData[lightIdx];
-                if (hdLight != null && hdLight.enabled && hdLight != HDUtils.s_DefaultHDAdditionalLightData)
+                UniversalAdditionalLightData hdLight = lightEntities.universalAdditionalLightData[lightIdx];
+                if (hdLight != null && hdLight.enabled && hdLight != HDUtils.s_DefaultUniversalAdditionalLightData)
                 {
                     Light light = hdLight.gameObject.GetComponent<Light>();
                     // If the light is null or disabled, skip it

@@ -22,6 +22,7 @@ using RendererList = UnityEngine.Rendering.RendererList;
 using RendererListDesc = UnityEngine.Rendering.RendererUtils.RendererListDesc;
 
 using UnityEngine.Rendering.Universal;
+using NUnit.Framework;
 
 namespace UnityEngine.Rendering.HighDefinition
 {
@@ -38,6 +39,14 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             Render(context, new List<Camera>(cameras));
         }
+
+        private HDRenderPipelineGlobalSettings m_GlobalSettings;
+        /// <summary>
+        /// Accessor to the active Global Settings for the HD Render Pipeline.
+        /// </summary>
+        public override RenderPipelineGlobalSettings defaultSettings => m_GlobalSettings;
+
+        internal HDRenderPipelineRuntimeResources defaultResources { get { return m_GlobalSettings.renderPipelineResources; } }
     }
 #endif // HDRP_1_OR_NEWER
 
@@ -1224,7 +1233,7 @@ namespace UnityEngine.Rendering.HighDefinition
         }
 
         void SetupDLSSForCameraDataAndDynamicResHandler(
-            in HDAdditionalCameraData hdCam,
+            in UniversalAdditionalCameraData hdCam,
             Camera camera,
             XRPass xrPass,
             bool cameraRequestedDynamicRes,
@@ -1580,9 +1589,9 @@ namespace UnityEngine.Rendering.HighDefinition
                 foreach (var terrain in m_ActiveTerrains)
                     terrain.SetKeepUnusedCameraRenderingResources(camera.GetInstanceID(), true);
 
-                if (!camera.TryGetComponent<HDAdditionalCameraData>(out var additionalCameraData))
+                if (!camera.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData))
                 {
-                    additionalCameraData = camera.gameObject.AddComponent<HDAdditionalCameraData>();
+                    additionalCameraData = camera.gameObject.AddComponent<UniversalAdditionalCameraData>();
                     additionalCameraData.hasPersistentHistory = true;
                     additionalCameraData.clearDepth = true;
                 }
@@ -1659,11 +1668,11 @@ namespace UnityEngine.Rendering.HighDefinition
 
                 hdCamera.SetParentCamera(hdParentCamera, useFetchedGpuExposure, fetchedGpuExposure); // Used to inherit the properties of the view
 
-                HDAdditionalCameraData hdCam;
-                camera.TryGetComponent<HDAdditionalCameraData>(out hdCam);
+                UniversalAdditionalCameraData hdCam;
+                camera.TryGetComponent<UniversalAdditionalCameraData>(out hdCam);
                 hdCam.flipYMode = visibleProbe.type == ProbeSettings.ProbeType.ReflectionProbe
-                    ? HDAdditionalCameraData.FlipYMode.ForceFlipY
-                    : HDAdditionalCameraData.FlipYMode.Automatic;
+                    ? UniversalAdditionalCameraData.FlipYMode.ForceFlipY
+                    : UniversalAdditionalCameraData.FlipYMode.Automatic;
 
                 if (!visibleProbe.realtimeTexture.IsCreated())
                     visibleProbe.realtimeTexture.Create();
@@ -2069,7 +2078,7 @@ namespace UnityEngine.Rendering.HighDefinition
 #endif
 
                     bool cameraRequestedDynamicRes = false;
-                    HDAdditionalCameraData hdCam = null;
+                    UniversalAdditionalCameraData hdCam = null;
                     var drsSettings = m_Asset.currentPlatformRenderPipelineSettings.dynamicResolutionSettings;
 
                     #region DRS Setup
@@ -2079,7 +2088,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     // First step we tell the DRS handler that we will be using the scaler set by the user. Note DLSS can set a system slot in case it wants to provide
                     // the scale.
                     DynamicResolutionHandler.SetActiveDynamicScalerSlot(DynamicResScalerSlot.User);
-                    if (camera.TryGetComponent<HDAdditionalCameraData>(out hdCam))
+                    if (camera.TryGetComponent<UniversalAdditionalCameraData>(out hdCam))
                     {
                         cameraRequestedDynamicRes = hdCam.allowDynamicResolution && camera.cameraType == CameraType.Game;
 
@@ -2239,7 +2248,7 @@ namespace UnityEngine.Rendering.HighDefinition
             {
                 if (ssShadowData.valid)
                 {
-                    HDAdditionalLightData currentAdditionalLightData = ssShadowData.additionalLightData;
+                    var currentAdditionalLightData = ssShadowData.additionalLightData;
                     m_ScreenSpaceShadowsUnion.Add(currentAdditionalLightData);
                 }
             }
@@ -2253,7 +2262,7 @@ namespace UnityEngine.Rendering.HighDefinition
         void PropagateScreenSpaceShadowData()
         {
             // For every unique light that has been registered, update the previous transform
-            foreach (HDAdditionalLightData lightData in m_ScreenSpaceShadowsUnion)
+            foreach (var lightData in m_ScreenSpaceShadowsUnion)
             {
                 lightData.previousTransform = lightData.transform.localToWorldMatrix;
             }
@@ -2467,7 +2476,7 @@ namespace UnityEngine.Rendering.HighDefinition
         bool TryCalculateFrameParameters(
             Camera camera,
             XRPass xrPass,
-            out HDAdditionalCameraData additionalCameraData,
+            out UniversalAdditionalCameraData additionalCameraData,
             out HDCamera hdCamera,
             out ScriptableCullingParameters cullingParams
         )

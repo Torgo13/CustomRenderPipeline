@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Experimental.Rendering.RenderGraphModule;
 using Unity.Collections;
+
 using UnityEngine.Rendering.Universal;
 
 namespace UnityEngine.Rendering.HighDefinition
@@ -68,7 +69,7 @@ namespace UnityEngine.Rendering.HighDefinition
 #endif // HDRP_1_OR_NEWER
 
 #if HDRP_1_OR_NEWER
-    using AntialiasingMode = HDAdditionalCameraData.AntialiasingMode;
+    using AntialiasingMode = UniversalAdditionalCameraData.AntialiasingMode;
 
     // This holds all the matrix data we need for rendering, including data from the previous frame
     // (which is the main reason why we need to keep them around for a minimum of one frame).
@@ -516,12 +517,12 @@ namespace UnityEngine.Rendering.HighDefinition
             return CoreUtils.IsSceneFilteringEnabled() && camera.cameraType == CameraType.SceneView;
         }
 
-        internal HDAdditionalCameraData.ClearColorMode clearColorMode
+        internal UniversalAdditionalCameraData.ClearColorMode clearColorMode
         {
             get
             {
                 if (CameraIsSceneFiltering())
-                    return HDAdditionalCameraData.ClearColorMode.Color;
+                    return UniversalAdditionalCameraData.ClearColorMode.Color;
 
                 if (m_AdditionalCameraData != null)
                 {
@@ -529,15 +530,15 @@ namespace UnityEngine.Rendering.HighDefinition
                 }
 
                 if (camera.clearFlags == CameraClearFlags.Skybox)
-                    return HDAdditionalCameraData.ClearColorMode.Sky;
+                    return UniversalAdditionalCameraData.ClearColorMode.Sky;
                 else if (camera.clearFlags == CameraClearFlags.SolidColor)
-                    return HDAdditionalCameraData.ClearColorMode.Color;
+                    return UniversalAdditionalCameraData.ClearColorMode.Color;
                 else // None
-                    return HDAdditionalCameraData.ClearColorMode.None;
+                    return UniversalAdditionalCameraData.ClearColorMode.None;
             }
         }
 
-        HDAdditionalCameraData.ClearColorMode m_PreviousClearColorMode = HDAdditionalCameraData.ClearColorMode.None;
+        UniversalAdditionalCameraData.ClearColorMode m_PreviousClearColorMode = UniversalAdditionalCameraData.ClearColorMode.None;
 
 
         internal Color backgroundColorHDR
@@ -554,13 +555,13 @@ namespace UnityEngine.Rendering.HighDefinition
             }
         }
 
-        internal HDAdditionalCameraData.FlipYMode flipYMode
+        internal UniversalAdditionalCameraData.FlipYMode flipYMode
         {
             get
             {
                 if (m_AdditionalCameraData != null)
                     return m_AdditionalCameraData.flipYMode;
-                return HDAdditionalCameraData.FlipYMode.Automatic;
+                return UniversalAdditionalCameraData.FlipYMode.Automatic;
             }
         }
 
@@ -713,8 +714,8 @@ namespace UnityEngine.Rendering.HighDefinition
         // game view / scene view / preview in the editor, it's handled automatically
         internal AntialiasingMode antialiasing { get; private set; } = AntialiasingMode.None;
 
-        internal HDAdditionalCameraData.SMAAQualityLevel SMAAQuality { get; private set; } = HDAdditionalCameraData.SMAAQualityLevel.Medium;
-        internal HDAdditionalCameraData.TAAQualityLevel TAAQuality { get; private set; } = HDAdditionalCameraData.TAAQualityLevel.Medium;
+        internal UniversalAdditionalCameraData.SMAAQualityLevel SMAAQuality { get; private set; } = UniversalAdditionalCameraData.SMAAQualityLevel.Medium;
+        internal UniversalAdditionalCameraData.TAAQualityLevel TAAQuality { get; private set; } = UniversalAdditionalCameraData.TAAQualityLevel.Medium;
 
         internal bool resetPostProcessingHistory = true;
         internal bool didResetPostProcessingHistoryInLastFrame = false;
@@ -740,14 +741,14 @@ namespace UnityEngine.Rendering.HighDefinition
             ? m_AdditionalCameraData.probeCustomFixedExposure
             : 1.0f;
 
-        internal bool ValidShadowHistory(HDAdditionalLightData lightData, int screenSpaceShadowIndex, GPULightType lightType)
+        internal bool ValidShadowHistory(UniversalAdditionalLightData lightData, int screenSpaceShadowIndex, GPULightType lightType)
         {
             return shadowHistoryUsage[screenSpaceShadowIndex].lightInstanceID == lightData.GetInstanceID()
                 && (shadowHistoryUsage[screenSpaceShadowIndex].frameCount == (cameraFrameCount - 1))
                 && (shadowHistoryUsage[screenSpaceShadowIndex].lightType == lightType);
         }
 
-        internal void PropagateShadowHistory(HDAdditionalLightData lightData, int screenSpaceShadowIndex, GPULightType lightType)
+        internal void PropagateShadowHistory(UniversalAdditionalLightData lightData, int screenSpaceShadowIndex, GPULightType lightType)
         {
             shadowHistoryUsage[screenSpaceShadowIndex].lightInstanceID = lightData.GetInstanceID();
             shadowHistoryUsage[screenSpaceShadowIndex].frameCount = cameraFrameCount;
@@ -941,9 +942,9 @@ namespace UnityEngine.Rendering.HighDefinition
                 }
             }
 
-            // store a shortcut on HDAdditionalCameraData (done here and not in the constructor as
+            // store a shortcut on UniversalAdditionalCameraData (done here and not in the constructor as
             // we don't create HDCamera at every frame and user can change the HDAdditionalData later (Like when they create a new scene).
-            camera.TryGetComponent<HDAdditionalCameraData>(out m_AdditionalCameraData);
+            camera.TryGetComponent<UniversalAdditionalCameraData>(out m_AdditionalCameraData);
 
             globalMipBias = m_AdditionalCameraData == null ? 0.0f : m_AdditionalCameraData.materialMipBias;
 
@@ -1564,7 +1565,7 @@ namespace UnityEngine.Rendering.HighDefinition
         static Dictionary<(Camera, int), HDCamera> s_Cameras = new Dictionary<(Camera, int), HDCamera>();
         static List<(Camera, int)> s_Cleanup = new List<(Camera, int)>(); // Recycled to reduce GC pressure
 
-        HDAdditionalCameraData m_AdditionalCameraData = null; // Init in Update
+        UniversalAdditionalCameraData m_AdditionalCameraData = null; // Init in Update
         BufferedRTHandleSystem m_HistoryRTSystem = new BufferedRTHandleSystem();
         int m_HistoryViewCount = 0; // Used to track view count change if XR is enabled/disabled
         int m_NumVolumetricBuffersAllocated = 0;
@@ -1886,7 +1887,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     bool needFallback = true;
                     if (mainCamera != null)
                     {
-                        if (mainCamera.TryGetComponent<HDAdditionalCameraData>(out var mainCamAdditionalData))
+                        if (mainCamera.TryGetComponent<UniversalAdditionalCameraData>(out var mainCamAdditionalData))
                         {
                             volumeLayerMask = mainCamAdditionalData.volumeLayerMask;
                             volumeAnchor = mainCamAdditionalData.volumeAnchorOverride;

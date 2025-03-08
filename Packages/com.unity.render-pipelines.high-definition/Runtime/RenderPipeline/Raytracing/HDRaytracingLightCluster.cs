@@ -261,7 +261,7 @@ namespace UnityEngine.Rendering.HighDefinition
             for (int lightIdx = 0; lightIdx < rayTracingLights.hdLightEntityArray.Count; ++lightIdx)
             {
                 int dataIndex = lightEntities.GetEntityDataIndex(rayTracingLights.hdLightEntityArray[lightIdx]);
-                HDAdditionalLightData currentLight = lightEntities.hdAdditionalLightData[dataIndex];
+                var currentLight = lightEntities.universalAdditionalLightData[dataIndex];
 
                 // When the user deletes a light source in the editor, there is a single frame where the light is null before the collection of light in the scene is triggered
                 // the workaround for this is simply to not add it if it is null for that invalid frame
@@ -493,7 +493,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             // Grab the shadow settings
             var hdShadowSettings = hdCamera.volumeStack.GetComponent<HDShadowSettings>();
-            BoolScalableSetting contactShadowScalableSetting = HDAdditionalLightData.ScalableSettings.UseContactShadow(m_RenderPipeline.asset);
+            BoolScalableSetting contactShadowScalableSetting = UniversalAdditionalLightData.ScalableSettings.UseContactShadow(m_RenderPipeline.asset);
 
             // Build the data for every light
             HDLightRenderDatabase lightEntities = HDLightRenderDatabase.instance;
@@ -509,7 +509,7 @@ namespace UnityEngine.Rendering.HighDefinition
             {
                 // Grab the additinal light data to process
                 int dataIndex = lightEntities.GetEntityDataIndex(rayTracingLights.hdLightEntityArray[lightIdx]);
-                HDAdditionalLightData additionalLightData = lightEntities.hdAdditionalLightData[dataIndex];
+                var additionalLightData = lightEntities.universalAdditionalLightData[dataIndex];
 
                 LightData lightData = new LightData();
                 // When the user deletes a light source in the editor, there is a single frame where the light is null before the collection of light in the scene is triggered
@@ -831,7 +831,7 @@ namespace UnityEngine.Rendering.HighDefinition
             for (int lightIdx = 0; lightIdx < rayTracingLights.hdLightEntityArray.Count; ++lightIdx)
             {
                 int dataIndex = lightEntities.GetEntityDataIndex(rayTracingLights.hdLightEntityArray[lightIdx]);
-                HDAdditionalLightData additionalLightData = lightEntities.hdAdditionalLightData[dataIndex];
+                var additionalLightData = lightEntities.universalAdditionalLightData[dataIndex];
                 // Grab the additional light data to process
                 // Fetch the light component for this light
                 additionalLightData.gameObject.TryGetComponent(out lightComponent);

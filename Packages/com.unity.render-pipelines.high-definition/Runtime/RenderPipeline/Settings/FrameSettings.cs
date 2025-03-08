@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Linq;
 using UnityEngine.Experimental.Rendering.RenderGraphModule;
 
+using UnityEngine.Rendering.Universal;
+
 namespace UnityEngine.Rendering.HighDefinition
 {
     /// <summary>Helper to handle Deferred or Forward but not both</summary>
@@ -937,7 +939,7 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <param name="camera">The camera rendering.</param>
         /// <param name="additionalData">Additional data of the camera rendering.</param>
         /// <param name="hdrpAsset">HDRenderPipelineAsset contening default FrameSettings.</param>
-        internal static void AggregateFrameSettings(ref FrameSettings aggregatedFrameSettings, Camera camera, HDAdditionalCameraData additionalData, HDRenderPipelineAsset hdrpAsset)
+        internal static void AggregateFrameSettings(ref FrameSettings aggregatedFrameSettings, Camera camera, UniversalAdditionalCameraData additionalData, HDRenderPipelineAsset hdrpAsset)
             => AggregateFrameSettings(
                 ref aggregatedFrameSettings,
                 camera,
@@ -954,7 +956,7 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <param name="additionalData">Additional data of the camera rendering.</param>
         /// <param name="defaultFrameSettings">Base framesettings to copy prior any override.</param>
         /// <param name="supportedFeatures">Currently supported feature for the sanitization pass.</param>
-        internal static void AggregateFrameSettings(ref FrameSettings aggregatedFrameSettings, Camera camera, HDAdditionalCameraData additionalData, ref FrameSettings defaultFrameSettings, RenderPipelineSettings supportedFeatures)
+        internal static void AggregateFrameSettings(ref FrameSettings aggregatedFrameSettings, Camera camera, UniversalAdditionalCameraData additionalData, ref FrameSettings defaultFrameSettings, RenderPipelineSettings supportedFeatures)
         {
             aggregatedFrameSettings = defaultFrameSettings; //fallback on Camera for SceneCamera and PreviewCamera
 #if HDRP_1_OR_NEWER

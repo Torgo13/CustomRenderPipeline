@@ -1,3 +1,5 @@
+using UnityEngine.Rendering.Universal;
+
 namespace UnityEngine.Rendering.HighDefinition
 {
     /// <summary>
@@ -9,13 +11,13 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <param name="camera">The Camera to check</param>
         /// <returns>True if it is compatible, false otherwise</returns>
         public static bool IsHDCamera(Camera camera)
-            => camera.GetComponent<HDAdditionalCameraData>() != null;
+            => camera.GetComponent<UniversalAdditionalCameraData>() != null;
 
         /// <summary> Check if the provided light is compatible with High-Definition Render Pipeline </summary>
         /// <param name="light">The Light to check</param>
         /// <returns>True if it is compatible, false otherwise</returns>
         public static bool IsHDLight(Light light)
-            => light.GetComponent<HDAdditionalLightData>() != null;
+            => light.GetComponent<UniversalAdditionalLightData>() != null;
 
         /// <summary> Check if the provided reflection probe is compatible with High-Definition Render Pipeline </summary>
         /// <param name="reflectionProbe">The ReflectionProbe to check</param>

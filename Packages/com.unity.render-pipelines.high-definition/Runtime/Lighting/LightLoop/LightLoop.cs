@@ -558,13 +558,13 @@ namespace UnityEngine.Rendering.HighDefinition
         // Following is an array of material of size eight for all combination of keyword: OUTPUT_SPLIT_LIGHTING - LIGHTLOOP_DISABLE_TILE_AND_CLUSTER - SHADOWS_SHADOWMASK - USE_FPTL_LIGHTLIST/USE_CLUSTERED_LIGHTLIST - DEBUG_DISPLAY
         Material[] m_deferredLightingMaterial;
 
-        HashSet<HDAdditionalLightData> m_ScreenSpaceShadowsUnion = new HashSet<HDAdditionalLightData>();
+        HashSet<UniversalAdditionalLightData> m_ScreenSpaceShadowsUnion = new HashSet<UniversalAdditionalLightData>();
 
         // Directional light
         Light m_CurrentSunLight;
         int m_CurrentSunLightDataIndex = -1;
         int m_CurrentShadowSortedSunLightIndex = -1;
-        HDAdditionalLightData m_CurrentSunLightAdditionalLightData;
+        UniversalAdditionalLightData m_CurrentSunLightAdditionalLightData;
         HDProcessedVisibleLightsBuilder.ShadowMapFlags m_CurrentSunShadowMapFlags = HDProcessedVisibleLightsBuilder.ShadowMapFlags.None;
         DirectionalLightData m_CurrentSunLightDirectionalLightData;
 
@@ -577,7 +577,7 @@ namespace UnityEngine.Rendering.HighDefinition
         // Screen space shadow data
         internal struct ScreenSpaceShadowData
         {
-            public HDAdditionalLightData additionalLightData;
+            public UniversalAdditionalLightData additionalLightData;
             public int lightDataIndex;
             public bool valid;
         }
@@ -1418,7 +1418,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         uint sortKey = m_ProcessedLightsBuilder.sortKeys[i];
                         HDGpuLightsBuilder.UnpackLightSortKey(sortKey, out var _, out var _, out var _, out var lightIndex);
                         HDProcessedVisibleLight processedLightEntity = m_ProcessedLightsBuilder.processedEntities[lightIndex];
-                        HDAdditionalLightData additionalLightData = lightEntities.hdAdditionalLightData[processedLightEntity.dataIndex];
+                        UniversalAdditionalLightData additionalLightData = lightEntities.universalAdditionalLightData[processedLightEntity.dataIndex];
                         if (additionalLightData == null)
                             continue;
 
@@ -1810,7 +1810,7 @@ namespace UnityEngine.Rendering.HighDefinition
             return m_EnableBakeShadowMask;
         }
 
-        internal void ReserveCookieAtlasTexture(HDAdditionalLightData hdLightData, Light light, HDLightType lightType)
+        internal void ReserveCookieAtlasTexture(UniversalAdditionalLightData hdLightData, Light light, HDLightType lightType)
         {
             // Note: light component can be null if a Light is used for shuriken particle lighting.
             lightType = light == null ? HDLightType.Point : lightType;
@@ -1899,17 +1899,17 @@ namespace UnityEngine.Rendering.HighDefinition
             return (uint)logVolume << 12 | (uint)lightVolumeType << 9 | listType << 8 | ((uint)probeIndex & 0xFF);
         }
 
-        HDAdditionalLightData GetHDAdditionalLightData(Light light)
+        UniversalAdditionalLightData GetUniversalAdditionalLightData(Light light)
         {
-            HDAdditionalLightData add = null;
+            UniversalAdditionalLightData add = null;
 
             // Light reference can be null for particle lights.
             if (light != null)
-                light.TryGetComponent<HDAdditionalLightData>(out add);
+                light.TryGetComponent<UniversalAdditionalLightData>(out add);
 
-            // Light should always have additional data, however preview light right don't have, so we must handle the case by assigning HDUtils.s_DefaultHDAdditionalLightData
+            // Light should always have additional data, however preview light right don't have, so we must handle the case by assigning HDUtils.s_DefaultUniversalAdditionalLightData
             if (add == null)
-                add = HDUtils.s_DefaultHDAdditionalLightData;
+                add = HDUtils.DefaultUniversalAdditionalLightData;
 
             return add;
         }
@@ -1935,7 +1935,7 @@ namespace UnityEngine.Rendering.HighDefinition
             cb._EnvLightCount = (uint)m_lightList.envLights.Count;
             cb._DirectionalLightCount = (uint)m_GpuLightsBuilder.directionalLightCount;
             cb._DecalCount = (uint)DecalSystem.m_DecalDatasCount;
-            HDAdditionalLightData sunLightData = GetHDAdditionalLightData(m_CurrentSunLight);
+            var sunLightData = GetUniversalAdditionalLightData(m_CurrentSunLight);
             bool sunLightShadow = sunLightData != null && m_CurrentShadowSortedSunLightIndex >= 0;
             cb._DirectionalShadowIndex = sunLightShadow ? m_CurrentShadowSortedSunLightIndex : -1;
             cb._EnableLightLayers = hdCamera.frameSettings.IsEnabled(FrameSettingsField.LightLayers) ? 1u : 0u;
@@ -2011,13 +2011,13 @@ namespace UnityEngine.Rendering.HighDefinition
         // The first rendered 24 lights that have contact shadow enabled have a mask used to select the bit that contains
         // the contact shadow shadowed information (occluded or not). Otherwise -1 is written
         // 8 bits are reserved for the fading.
-        void GetContactShadowMask(HDAdditionalLightData hdAdditionalLightData, BoolScalableSetting contactShadowEnabled, HDCamera hdCamera, bool isRasterization, ref int contactShadowMask, ref float rayTracingShadowFlag)
+        void GetContactShadowMask(UniversalAdditionalLightData universalAdditionalLightData, BoolScalableSetting contactShadowEnabled, HDCamera hdCamera, bool isRasterization, ref int contactShadowMask, ref float rayTracingShadowFlag)
         {
             contactShadowMask = 0;
             rayTracingShadowFlag = 0.0f;
             // If contact shadows are not enabled or we already reached the manimal number of contact shadows
             // or this is not rasterization
-            if ((!hdAdditionalLightData.useContactShadow.Value(contactShadowEnabled))
+            if ((!universalAdditionalLightData.useContactShadow.Value(contactShadowEnabled))
                 || m_ContactShadowIndex >= LightDefinitions.s_ContactShadowMaskMask
                 || !isRasterization)
                 return;
@@ -2026,7 +2026,7 @@ namespace UnityEngine.Rendering.HighDefinition
             contactShadowMask = 1 << m_ContactShadowIndex++;
 
             // If this light has ray traced contact shadow
-            if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing) && hdAdditionalLightData.rayTraceContactShadow)
+            if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing) && universalAdditionalLightData.rayTraceContactShadow)
                 rayTracingShadowFlag = 1.0f;
         }
 

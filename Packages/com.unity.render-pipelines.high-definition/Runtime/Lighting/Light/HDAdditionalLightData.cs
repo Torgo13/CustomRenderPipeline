@@ -2919,7 +2919,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         // As we have our own default value, we need to initialize the light intensity correctly
         /// <summary>
-        /// Initialize an HDAdditionalLightData that have just beeing created.
+        /// Initialize the HDAdditionalLightData that has just been created.
         /// </summary>
         /// <param name="lightData"></param>
         public static void InitDefaultHDAdditionalLightData(HDAdditionalLightData lightData)

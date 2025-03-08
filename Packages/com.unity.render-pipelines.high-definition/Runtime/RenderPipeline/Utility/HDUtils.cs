@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using UnityEditor.SceneManagement;
 #endif
 
+using UnityEngine.Rendering.Universal;
+
 namespace UnityEngine.Rendering.HighDefinition
 {
     /// <summary>
@@ -34,10 +36,10 @@ namespace UnityEngine.Rendering.HighDefinition
 
         /// <summary>Default HDAdditionalReflectionData</summary>
         static internal HDAdditionalReflectionData s_DefaultHDAdditionalReflectionData { get { return ComponentSingleton<HDAdditionalReflectionData>.instance; } }
-        /// <summary>Default HDAdditionalLightData</summary>
-        static internal HDAdditionalLightData s_DefaultHDAdditionalLightData { get { return ComponentSingleton<HDAdditionalLightData>.instance; } }
-        /// <summary>Default HDAdditionalCameraData</summary>
-        static internal HDAdditionalCameraData s_DefaultHDAdditionalCameraData { get { return ComponentSingleton<HDAdditionalCameraData>.instance; } }
+        /// <summary>Default UniversalAdditionalLightData</summary>
+        static internal UniversalAdditionalLightData s_DefaultUniversalAdditionalLightData { get { return ComponentSingleton<UniversalAdditionalLightData>.instance; } }
+        /// <summary>Default UniversalAdditionalCameraData</summary>
+        static internal UniversalAdditionalCameraData s_DefaultUniversalAdditionalCameraData { get { return ComponentSingleton<UniversalAdditionalCameraData>.instance; } }
 
 #if HDRP_1_OR_NEWER
         static List<CustomPassVolume> m_TempCustomPassVolumeList = new List<CustomPassVolume>();
@@ -567,8 +569,8 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             if (camera.cameraType == CameraType.Preview)
             {
-                camera.TryGetComponent<HDAdditionalCameraData>(out var additionalCameraData);
-                return (additionalCameraData == null) || !additionalCameraData.isEditorCameraPreview;
+                camera.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData);
+                return (additionalCameraData == null); //|| !additionalCameraData.isEditorCameraPreview;
             }
             return false;
         }
@@ -1110,15 +1112,15 @@ namespace UnityEngine.Rendering.HighDefinition
 #endif
         }
 
-        internal static HDAdditionalCameraData TryGetAdditionalCameraDataOrDefault(Camera camera)
+        internal static UniversalAdditionalCameraData TryGetAdditionalCameraDataOrDefault(Camera camera)
         {
             if (camera == null || camera.Equals(null))
-                return s_DefaultHDAdditionalCameraData;
+                return s_DefaultUniversalAdditionalCameraData;
 
-            if (camera.TryGetComponent<HDAdditionalCameraData>(out var hdCamera))
+            if (camera.TryGetComponent<UniversalAdditionalCameraData>(out var hdCamera))
                 return hdCamera;
 
-            return s_DefaultHDAdditionalCameraData;
+            return s_DefaultUniversalAdditionalCameraData;
         }
 
         static Dictionary<GraphicsFormat, int> graphicsFormatSizeCache = new Dictionary<GraphicsFormat, int>
@@ -1223,8 +1225,8 @@ namespace UnityEngine.Rendering.HighDefinition
         internal static void ReleaseComponentSingletons()
         {
             ComponentSingleton<HDAdditionalReflectionData>.Release();
-            ComponentSingleton<HDAdditionalLightData>.Release();
-            ComponentSingleton<HDAdditionalCameraData>.Release();
+            ComponentSingleton<UniversalAdditionalLightData>.Release();
+            ComponentSingleton<UniversalAdditionalCameraData>.Release();
         }
 
         internal static float InterpolateOrientation(float fromValue, float toValue, float t)
