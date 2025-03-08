@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
-using UnityEngine.Rendering.Universal;
-
 #if UNITY_EDITOR
 using System.Linq;
 using UnityEditorInternal;
 #endif
+
+using UnityEngine.Rendering.Universal;
+
 namespace UnityEngine.Rendering.HighDefinition
 {
 #if HDRP_1_OR_NEWER
@@ -150,10 +151,6 @@ namespace UnityEngine.Rendering.HighDefinition
 
         /// <summary>Default material quality level for this asset.</summary>
         public MaterialQuality defaultMaterialQualityLevel { get => m_DefaultMaterialQualityLevel; }
-
-        [SerializeField]
-        [Obsolete("Use HDRP Global Settings' diffusionProfileSettingsList instead")]
-        internal DiffusionProfileSettings diffusionProfileSettings;
 
         /// <summary>Names used for display of rendering layer masks.</summary>
         public override string[] renderingLayerMaskNames

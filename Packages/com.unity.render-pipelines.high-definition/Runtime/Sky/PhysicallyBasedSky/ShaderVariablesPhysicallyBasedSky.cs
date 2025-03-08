@@ -1,4 +1,3 @@
-#if HDRP_1_OR_NEWER
 namespace UnityEngine.Rendering.HighDefinition
 {
     [GenerateHLSL]
@@ -56,4 +55,3 @@ namespace UnityEngine.Rendering.HighDefinition
         public float _Unused2;
     }
 }
-#endif // HDRP_1_OR_NEWER

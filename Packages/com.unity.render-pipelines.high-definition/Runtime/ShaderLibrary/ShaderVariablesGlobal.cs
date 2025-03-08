@@ -1,4 +1,3 @@
-#if HDRP_1_OR_NEWER
 using UnityEngine.Experimental.Rendering;
 
 namespace UnityEngine.Rendering.HighDefinition
@@ -270,4 +269,3 @@ namespace UnityEngine.Rendering.HighDefinition
         public Vector4 _ColorPyramidUvScaleAndLimitPrevFrame;
     }
 }
-#endif // HDRP_1_OR_NEWER

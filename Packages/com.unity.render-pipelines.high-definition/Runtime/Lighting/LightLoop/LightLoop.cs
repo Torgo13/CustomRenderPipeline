@@ -221,13 +221,6 @@ namespace UnityEngine.Rendering.HighDefinition
         EnvironmentAndAreaAndPunctual = Environment | Area | Punctual,
         /// <summary>Decals.</summary>
         Decal = (1 << LightCategory.Decal),
-        /// <summary>Local Volumetric Fog.</summary>
-        [Obsolete("Unused")]
-        LocalVolumetricFog = 0,
-        /// <summary>Local Volumetric Fog.</summary>
-        [Obsolete("Unused", true)]
-        [InspectorName("Local Volumetric Fog")]
-        DensityVolumes = LocalVolumetricFog
     };
 
     [GenerateHLSL(needAccessors = false, generateCBuffer = true)]

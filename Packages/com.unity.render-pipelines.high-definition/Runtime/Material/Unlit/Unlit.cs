@@ -1,4 +1,3 @@
-#if HDRP_1_OR_NEWER
 using UnityEngine.Rendering.HighDefinition.Attributes;
 
 //-----------------------------------------------------------------------------
@@ -44,4 +43,3 @@ namespace UnityEngine.Rendering.HighDefinition
         };
     }
 }
-#endif // HDRP_1_OR_NEWER

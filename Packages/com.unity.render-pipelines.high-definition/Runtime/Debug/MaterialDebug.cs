@@ -1,4 +1,3 @@
-#if HDRP_1_OR_NEWER
 using System.Collections.Generic;
 using System;
 using System.Reflection;
@@ -316,9 +315,11 @@ namespace UnityEngine.Rendering.HighDefinition
                 // Properties debug
                 FillWithPropertiesEnum(typeof(DebugViewProperties), ref debugViewMaterialPropertiesStringsList, ref debugViewMaterialPropertiesValuesList, "");
 
+#if HDRP_1_OR_NEWER
                 // Gbuffer debug
                 FillWithPropertiesEnum(typeof(DebugViewGbuffer), ref debugViewMaterialGBufferStringsList, ref debugViewMaterialGBufferValuesList, "");
                 FillWithProperties(typeof(Lit.BSDFData), ref debugViewMaterialGBufferStringsList, ref debugViewMaterialGBufferValuesList);
+#endif // HDRP_1_OR_NEWER
 
                 // Convert to array for UI
                 debugViewEngineStrings = debugViewEngineStringsList.ToArray();
@@ -349,6 +350,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     { MaterialSharedProperty.Alpha, new List<int>() },
                 };
 
+#if HDRP_1_OR_NEWER
                 // builtins parameters
                 Type builtin = typeof(Builtin.BuiltinData);
                 var generateHLSLAttribute = builtin.GetCustomAttribute<GenerateHLSL>();
@@ -415,6 +417,7 @@ namespace UnityEngine.Rendering.HighDefinition
                             localIndex += surfaceAttributes[0].displayNames.Length;
                     }
                 }
+#endif // HDRP_1_OR_NEWER
 
                 foreach (var key in materialPropertyMap.Keys)
                 {
@@ -435,9 +438,11 @@ namespace UnityEngine.Rendering.HighDefinition
                 debugViewMaterialStringsList.Add(new GUIContent("None"));
                 debugViewMaterialValuesList.Add(0);
 
+#if HDRP_1_OR_NEWER
                 FillWithProperties(typeof(Builtin.BuiltinData), ref debugViewMaterialStringsList, ref debugViewMaterialValuesList, "Common/");
                 foreach (MaterialItem item in materialItems)
                     FillWithProperties(item.surfaceDataType, ref debugViewMaterialStringsList, ref debugViewMaterialValuesList, item.className);
+#endif // HDRP_1_OR_NEWER
 
                 debugViewMaterialStrings = debugViewMaterialStringsList.ToArray();
                 debugViewMaterialValues = debugViewMaterialValuesList.ToArray();
@@ -647,4 +652,3 @@ namespace UnityEngine.Rendering.HighDefinition
         }
     }
 }
-#endif // HDRP_1_OR_NEWER

@@ -1,4 +1,3 @@
-#if HDRP_1_OR_NEWER
 //-----------------------------------------------------------------------------
 // structure definition
 //-----------------------------------------------------------------------------
@@ -107,4 +106,3 @@ namespace UnityEngine.Rendering.HighDefinition
         }
     }
 }
-#endif // HDRP_1_OR_NEWER

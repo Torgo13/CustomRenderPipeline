@@ -1,4 +1,3 @@
-#if HDRP_1_OR_NEWER
 namespace UnityEngine.Rendering.HighDefinition
 {
     [GenerateHLSL(needAccessors = false, generateCBuffer = true, constantRegister = (int)ConstantRegister.RayTracingLightLoop)]
@@ -12,4 +11,3 @@ namespace UnityEngine.Rendering.HighDefinition
         public uint _EnvLightCountRT;
     }
 }
-#endif // HDRP_1_OR_NEWER

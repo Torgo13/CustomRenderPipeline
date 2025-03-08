@@ -1,4 +1,3 @@
-#if HDRP_1_OR_NEWER
 using System;
 using System.Diagnostics;
 
@@ -35,4 +34,3 @@ namespace UnityEngine.Rendering.HighDefinition
         Volumetric = 3,
     }
 }
-#endif // HDRP_1_OR_NEWER

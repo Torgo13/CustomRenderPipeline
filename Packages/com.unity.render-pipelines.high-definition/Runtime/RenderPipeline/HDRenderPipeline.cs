@@ -20,8 +20,8 @@ using UnityEngine.Rendering.VirtualTexturing;
 // Resove the ambiguity in the RendererList name (pick the in-engine version)
 using RendererList = UnityEngine.Rendering.RendererList;
 using RendererListDesc = UnityEngine.Rendering.RendererUtils.RendererListDesc;
-using UnityEngine.Rendering.Universal;
 
+using UnityEngine.Rendering.Universal;
 
 namespace UnityEngine.Rendering.HighDefinition
 {
@@ -30,9 +30,14 @@ namespace UnityEngine.Rendering.HighDefinition
     /// <summary>
     /// High Definition Render Pipeline class.
     /// </summary>
-    public partial class HDRenderPipeline
+    public partial class HDRenderPipeline : RenderPipeline
     {
         public static RenderPipelineAsset currentAsset => UniversalRenderPipeline.asset;
+
+        protected override void Render(ScriptableRenderContext context, Camera[] cameras)
+        {
+            Render(context, new List<Camera>(cameras));
+        }
     }
 #endif // HDRP_1_OR_NEWER
 
@@ -407,15 +412,6 @@ namespace UnityEngine.Rendering.HighDefinition
 #endif
 
         internal bool reflectionProbeBaking { get; set; }
-
-        /// <summary>
-        /// HDRenderPipeline constructor.
-        /// </summary>
-        /// <param name="asset">Source HDRenderPipelineAsset.</param>
-        /// <param name="obsolete_defaultAsset">Default HDRenderPipelineAsset. [Obsolete]</param>
-        public HDRenderPipeline(HDRenderPipelineAsset asset, HDRenderPipelineAsset obsolete_defaultAsset) : this(asset)
-        {
-        }
 
         /// <summary>
         /// HDRenderPipeline constructor.

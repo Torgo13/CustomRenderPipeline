@@ -209,13 +209,6 @@ namespace UnityEngine.Rendering.HighDefinition
         [Range(0.1f, 1.0f)]
         public float taaJitterScale = 1.0f;
 
-        /// <summary>Physical camera parameters.</summary>
-        [ValueCopy] // reference should not be same. only content.
-        [Obsolete("Physical camera properties have been migrated to Camera.", false)]
-#pragma warning disable CS0618
-        public HDPhysicalCamera physicalParameters = HDPhysicalCamera.GetDefaults();
-#pragma warning restore CS0618
-
         /// <summary>Vertical flip mode.</summary>
         public FlipYMode flipYMode;
 

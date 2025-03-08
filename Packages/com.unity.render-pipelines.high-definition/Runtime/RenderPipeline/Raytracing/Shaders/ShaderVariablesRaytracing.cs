@@ -1,4 +1,3 @@
-#if HDRP_1_OR_NEWER
 namespace UnityEngine.Rendering.HighDefinition
 {
     [GenerateHLSL(needAccessors = false, generateCBuffer = true, constantRegister = (int)ConstantRegister.RayTracing)]
@@ -58,4 +57,3 @@ namespace UnityEngine.Rendering.HighDefinition
         public int _PaddingRT0;
     }
 }
-#endif // HDRP_1_OR_NEWER

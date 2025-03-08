@@ -17,15 +17,6 @@ namespace UnityEngine.Rendering.HighDefinition
     {
         internal const SortingCriteria k_OpaqueSortingCriteria = SortingCriteria.CommonOpaque & (~SortingCriteria.QuantizedFrontToBack);
 
-        /// <summary>Returns the render configuration for baked static lighting, this value can be used in a RendererListDesc call to render Lit objects.</summary>
-        /// <returns></returns>
-        [Obsolete("Use GetRendererConfiguration() instead. #from(23.2).")]
-        public static PerObjectData GetBakedLightingRenderConfig() => PerObjectData.LightProbe | PerObjectData.Lightmaps | PerObjectData.LightProbeProxyVolume;
-        /// <summary>Returns the render configuration for baked static lighting with shadow masks, this value can be used in a RendererListDesc call to render Lit objects when shadow masks are enabled.</summary>
-        /// <returns></returns>
-        [Obsolete("Use GetRendererConfiguration() instead. #from(23.2).")]
-        public static PerObjectData GetBakedLightingWithShadowMaskRenderConfig() => GetBakedLightingRenderConfig() | PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume | PerObjectData.ShadowMask;
-
         /// <summary>
         /// Returns the render configuration that should be used in a RendererListDesc call to render Lit objects.
         /// </summary>
@@ -1017,18 +1008,6 @@ namespace UnityEngine.Rendering.HighDefinition
             color.a = 1;
 
             return color;
-        }
-
-        /// <summary>
-        /// Draw a renderer list.
-        /// </summary>
-        /// <param name="renderContext">Current Scriptable Render Context.</param>
-        /// <param name="cmd">Command Buffer used for rendering.</param>
-        /// <param name="rendererList">Renderer List to render.</param>
-        [Obsolete("Please use CoreUtils.DrawRendererList instead.")]
-        public static void DrawRendererList(ScriptableRenderContext renderContext, CommandBuffer cmd, UnityEngine.Rendering.RendererList rendererList)
-        {
-            CoreUtils.DrawRendererList(renderContext, cmd, rendererList);
         }
 
         // $"HDProbe RenderCamera ({probeName}: {face:00} for viewer '{viewerName}')"
