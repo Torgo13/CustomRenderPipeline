@@ -360,7 +360,7 @@ namespace UnityEngine.Rendering
         }
 
         /// <summary>
-        /// Gets an <see cref="DebugUI.Widget[]"/> matching the given <see cref="DebugUI.Flags"/>
+        /// Gets an <see cref="DebugUI.Widget"/>[] matching the given <see cref="DebugUI.Flags"/>
         /// </summary>
         /// <param name="flags">The flags of the widget</param>
         /// <returns>Reference to the requested debug item.</returns>

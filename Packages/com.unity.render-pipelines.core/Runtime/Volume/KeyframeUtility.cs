@@ -13,7 +13,7 @@ namespace UnityEngine.Rendering
     /// <summary>
     /// A helper function for interpolating AnimationCurves together. In general, curves can not be directly blended
     /// because they will have keypoints at different places. InterpAnimationCurve traverses through the keypoints.
-    /// If both curves have a keypoint at the same time, they keypoints are trivially lerped together. However
+    /// If both curves have a keypoint at the same time, they keypoints are trivially lerped together. However,
     /// if one curve has a keypoint at a time that is missing in the other curve (which is the most common case),
     /// InterpAnimationCurve calculates a synthetic keypoint at that time based on value and derivative, and interpolates
     /// the resulting keys.
@@ -97,7 +97,7 @@ namespace UnityEngine.Rendering
             return currKey;
         }
 
-        /// Fetch a key from the keys list. If index<0, then expand the first key backwards to startTime. If index>=keys.length,
+        /// Fetch a key from the keys list. If index&lt;0, then expand the first key backwards to startTime. If index&gt;=keys.length,
         /// then extend the last key to endTime. Keys must be a valid array with at least one element.
         static private Keyframe FetchKeyFromIndexClampEdge([DisallowNull] NativeArray<Keyframe> keys, int index, float segmentStartTime, float segmentEndTime)
         {
@@ -107,7 +107,7 @@ namespace UnityEngine.Rendering
             float startValue = keys[0].value;
             float endValue = keys[keys.Length - 1].value;
 
-            // In practice, we are lerping animcurves for post processing curves that are always clamping at the beginning and the end,
+            // In practice, we are lerping animcurves for post-processing curves that are always clamping at the beginning and the end,
             // so we are not implementing the other wrap modes like Loop, PingPong, etc.
             Keyframe ret;
             if (index < 0)
@@ -130,7 +130,7 @@ namespace UnityEngine.Rendering
         }
 
 
-        /// Given a desiredTime, interpoloate between two keys to find the value and derivative. This function assumes that lhsKey.time <= desiredTime <= rhsKey.time,
+        /// Given a desiredTime, interpolate between two keys to find the value and derivative. This function assumes that lhsKey.time &lt;= desiredTime &lt;= rhsKey.time,
         /// but will return a reasonable float value if that's not the case.
         static private void EvalCurveSegmentAndDeriv(out float dstValue, out float dstDeriv, Keyframe lhsKey, Keyframe rhsKey, float desiredTime)
         {
@@ -151,7 +151,7 @@ namespace UnityEngine.Rendering
             float d1 = m1 * dx;
             float d2 = m2 * dx;
 
-            // Note: The coeffecients are calculated to match what the editor does internally. These coeffeceients expect a
+            // Note: The coefficients are calculated to match what the editor does internally. These coefficients expect a
             // t in the range of [0,dx]. We could change the function to accept a range between [0,1], but then this logic would
             // be different from internal editor logic which could cause subtle bugs later.
 
@@ -186,7 +186,7 @@ namespace UnityEngine.Rendering
         /// in the curve, this method will create a new curve from the union of times between both curves. However, to avoid creating
         /// garbage, this function will always replace the keys of lhsAndResultCurve with the final result, and return lhsAndResultCurve.
         /// </summary>
-        /// <param name="lhsAndResultCurve">The start value. Additionaly, this instance will be reused and returned as the result.</param>
+        /// <param name="lhsAndResultCurve">The start value. Additionally, this instance will be reused and returned as the result.</param>
         /// <param name="rhsCurve">The end value.</param>
         /// <param name="t">The interpolation factor in range [0,1].</param>
         static public void InterpAnimationCurve(ref AnimationCurve lhsAndResultCurve, [DisallowNull] AnimationCurve rhsCurve, float t)
@@ -242,7 +242,7 @@ namespace UnityEngine.Rendering
                     bool rhsValid = rhsKeyCurr < rhsCurveKeys.Length;
 
                     // it's actually impossible for lhsKey/rhsKey to be uninitialized, but have to
-                    // add initialize here to prevent compiler erros
+                    // add initialize here to prevent compiler errors
                     var lhsKey = new Keyframe();
                     var rhsKey = new Keyframe();
                     if (lhsValid && rhsValid)

@@ -139,6 +139,7 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// Configure the pass
         /// </summary>
+        /// <param name="cameraData">Struct that holds settings related to camera.</param>
         /// <param name="hdrdebugMode">Active DebugMode for HDR.</param>
         public void Setup(ref CameraData cameraData, HDRDebugMode hdrdebugMode)
         {

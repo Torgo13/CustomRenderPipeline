@@ -1358,7 +1358,11 @@ namespace UnityEngine.Rendering.Universal
         public float cascade2Split
         {
             get { return m_Cascade2Split; }
+#if CUSTOM_URP
+            set { m_Cascade2Split = value; }
+#else
             internal set { m_Cascade2Split = value; }
+#endif // CUSTOM_URP
         }
 
         /// <summary>
@@ -1368,7 +1372,11 @@ namespace UnityEngine.Rendering.Universal
         public Vector2 cascade3Split
         {
             get { return m_Cascade3Split; }
+#if CUSTOM_URP
+            set { m_Cascade3Split = value; }
+#else
             internal set { m_Cascade3Split = value; }
+#endif // CUSTOM_URP
         }
 
         /// <summary>
@@ -1378,7 +1386,11 @@ namespace UnityEngine.Rendering.Universal
         public Vector3 cascade4Split
         {
             get { return m_Cascade4Split; }
+#if CUSTOM_URP
+            set { m_Cascade4Split = value; }
+#else
             internal set { m_Cascade4Split = value; }
+#endif // CUSTOM_URP
         }
 
         /// <summary>

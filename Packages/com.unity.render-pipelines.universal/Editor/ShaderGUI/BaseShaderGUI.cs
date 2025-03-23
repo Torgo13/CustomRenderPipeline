@@ -1210,7 +1210,7 @@ namespace UnityEditor
         /// <param name="properties">Array of properties to search in.</param>
         /// <param name="propertyIsMandatory">Should throw exception if property is not found</param>
         /// <returns>A MaterialProperty instance for the property.</returns>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="System.ArgumentException"></exception>
         public new static MaterialProperty FindProperty(string propertyName, MaterialProperty[] properties, bool propertyIsMandatory)
         {
             for (int index = 0; index < properties.Length; ++index)

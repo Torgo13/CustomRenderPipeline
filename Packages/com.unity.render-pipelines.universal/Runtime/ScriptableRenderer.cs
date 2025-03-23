@@ -134,7 +134,7 @@ namespace UnityEngine.Rendering.Universal
         /// Additionally this will also set <c>unity_CameraProjection</c> and <c>unity_CameraProjection</c>.
         /// If <c>setInverseMatrices</c> is set to true this function will also set <c>UNITY_MATRIX_I_V</c> and <c>UNITY_MATRIX_I_VP</c>.
         /// This function has no effect when rendering in stereo. When in stereo rendering you cannot override camera matrices.
-        /// If you need to set general purpose view and projection matrices call <see cref="SetViewAndProjectionMatrices(CommandBuffer, Matrix4x4, Matrix4x4, bool)"/> instead.
+        /// If you need to set general purpose view and projection matrices call <see cref="RenderingUtils.SetViewAndProjectionMatrices(CommandBuffer, Matrix4x4, Matrix4x4, bool)"/> instead.
         /// </summary>
         /// <param name="cmd">CommandBuffer to submit data to GPU.</param>
         /// <param name="cameraData">CameraData containing camera matrices information.</param>
@@ -160,7 +160,7 @@ namespace UnityEngine.Rendering.Universal
             Matrix4x4 projectionMatrix = cameraData.GetProjectionMatrix(); // Jittered, non-gpu
 
             // TODO: Investigate why SetViewAndProjectionMatrices is causing y-flip / winding order issue
-            // for now using cmd.SetViewProjecionMatrices
+            // for now using cmd.SetViewProjectionMatrices
             //SetViewAndProjectionMatrices(cmd, viewMatrix, cameraData.GetDeviceProjectionMatrix(), setInverseMatrices);
 
             // Set the default view/projection, note: projectionMatrix will be set as a gpu-projection (gfx api adjusted) for rendering.
@@ -788,6 +788,7 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// Override this method to record the RenderGraph passes to be used by the RenderGraph render path.
         /// </summary>
+        /// <param name="renderGraph">This class is the main entry point of the Render Graph system.</param>
         /// <param name="context">Use this render context to issue any draw commands during execution.</param>
         /// <param name="renderingData">Current render state information.</param>
         internal virtual void OnRecordRenderGraph(RenderGraph renderGraph, ScriptableRenderContext context, ref RenderingData renderingData)
@@ -913,6 +914,7 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// TODO RENDERGRAPH
         /// </summary>
+        /// <param name="renderGraph"></param>
         /// <param name="color"></param>
         /// <param name="depth"></param>
         /// <param name="gizmoSubset"></param>
@@ -1020,6 +1022,7 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// TODO RENDERGRAPH
         /// </summary>
+        /// <param name="renderGraph"></param>
         /// <param name="context"></param>
         /// <param name="renderingData"></param>
         internal void RecordRenderGraph(RenderGraph renderGraph, ScriptableRenderContext context, ref RenderingData renderingData)
@@ -1062,6 +1065,7 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// TODO RENDERGRAPH
         /// </summary>
+        /// <param name="renderGraph"></param>
         /// <param name="context"></param>
         /// <param name="renderingData"></param>
         /// <param name="injectionPoint"></param>

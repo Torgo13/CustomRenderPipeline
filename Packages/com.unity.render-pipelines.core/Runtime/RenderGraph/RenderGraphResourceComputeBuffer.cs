@@ -40,6 +40,9 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
     /// Descriptor used to create compute buffer resources
     /// </summary>
     public struct ComputeBufferDesc
+#if OPTIMISATION_IEQUATABLE
+        : System.IEquatable<ComputeBufferDesc>
+#endif // OPTIMISATION_IEQUATABLE
     {
         ///<summary>Number of elements in the buffer..</summary>
         public int count;
@@ -89,6 +92,28 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
             hashCode.Append((int)type);
             return hashCode.value;
         }
+
+#if OPTIMISATION_IEQUATABLE
+        public bool Equals(ComputeBufferDesc other)
+        {
+            return count == other.count && stride == other.stride && type == other.type && name == other.name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ComputeBufferDesc other && Equals(other);
+        }
+
+        public static bool operator ==(ComputeBufferDesc left, ComputeBufferDesc right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ComputeBufferDesc left, ComputeBufferDesc right)
+        {
+            return !left.Equals(right);
+        }
+#endif // OPTIMISATION_IEQUATABLE
     }
 
 

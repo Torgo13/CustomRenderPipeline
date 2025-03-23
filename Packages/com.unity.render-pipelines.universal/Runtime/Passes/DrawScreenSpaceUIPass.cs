@@ -19,6 +19,7 @@ namespace UnityEngine.Rendering.Universal
         /// Creates a new <c>DrawScreenSpaceUIPass</c> instance.
         /// </summary>
         /// <param name="evt">The <c>RenderPassEvent</c> to use.</param>
+        /// <param name="renderOffscreen">Whether to render on an offscreen render texture or on the current active render target.</param>
         /// <seealso cref="RenderPassEvent"/>
         public DrawScreenSpaceUIPass(RenderPassEvent evt, bool renderOffscreen)
         {

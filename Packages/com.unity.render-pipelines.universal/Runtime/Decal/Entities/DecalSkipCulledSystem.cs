@@ -3,7 +3,7 @@ using System;
 namespace UnityEngine.Rendering.Universal
 {
     /// <summary>
-    /// System used for skipping culling. It is used with <see cref="Graphics.DrawMesh"/> as it already handles culling.
+    /// System used for skipping culling. It is used with <see cref="Graphics.DrawMesh(Mesh, Matrix4x4)"/> as it already handles culling.
     /// </summary>
     internal class DecalSkipCulledSystem
     {

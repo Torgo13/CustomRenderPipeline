@@ -441,7 +441,7 @@ namespace UnityEditor.Rendering.Universal
         /// Updates keywords for the standard shader.
         /// </summary>
         /// <param name="material">The material to update.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public static void UpdateStandardMaterialKeywords(Material material)
         {
             if (material == null)
@@ -470,7 +470,7 @@ namespace UnityEditor.Rendering.Universal
         /// Updates keywords for the standard specular shader.
         /// </summary>
         /// <param name="material">The material to update.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public static void UpdateStandardSpecularMaterialKeywords(Material material)
         {
             if (material == null)
@@ -533,7 +533,7 @@ namespace UnityEditor.Rendering.Universal
         /// Constructor for the StandardUpgrader class.
         /// </summary>
         /// <param name="oldShaderName">The name of the old shader.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public StandardUpgrader(string oldShaderName)
         {
             if (oldShaderName == null)
@@ -663,7 +663,7 @@ namespace UnityEditor.Rendering.Universal
         /// Constructor for the particle upgrader.
         /// </summary>
         /// <param name="oldShaderName">The name of the old shader.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public ParticleUpgrader(string oldShaderName)
         {
             if (oldShaderName == null)

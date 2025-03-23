@@ -13,6 +13,9 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
     }
 
     internal struct ResourceHandle
+#if OPTIMISATION_IEQUATABLE
+        : System.IEquatable<ResourceHandle>
+#endif // OPTIMISATION_IEQUATABLE
     {
         // Note on handles validity.
         // PassData classes used during render graph passes are pooled and because of that, when users don't fill them completely,
@@ -23,10 +26,18 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
         const uint kValidityMask = 0xFFFF0000;
         const uint kIndexMask = 0xFFFF;
 
+#if OPTIMISATION
+        readonly
+#endif // OPTIMISATION
         uint m_Value;
 
         static uint s_CurrentValidBit = 1 << 16;
+        
+#if OPTIMISATION
+        const uint s_SharedResourceValidBit = 0x7FFF << 16;
+#else
         static uint s_SharedResourceValidBit = 0x7FFF << 16;
+#endif // OPTIMISATION
 
         public int index { get { return (int)(m_Value & kIndexMask); } }
         public RenderGraphResourceType type { get; private set; }
@@ -65,6 +76,33 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
                 s_CurrentValidBit = (value << 16);
             }
         }
+
+#if OPTIMISATION_IEQUATABLE
+        public bool Equals(ResourceHandle other)
+        {
+            return m_Value == other.m_Value && type == other.type;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ResourceHandle other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(m_Value, (int)type);
+        }
+
+        public static bool operator ==(ResourceHandle left, ResourceHandle right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ResourceHandle left, ResourceHandle right)
+        {
+            return !left.Equals(right);
+        }
+#endif // OPTIMISATION_IEQUATABLE
     }
 
     class IRenderGraphResource

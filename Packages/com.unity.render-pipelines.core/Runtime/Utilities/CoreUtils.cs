@@ -242,7 +242,7 @@ namespace UnityEngine.Rendering
         }
 
         // We use -1 as a default value because when doing SPI for XR, it will bind the full texture array by default (and has no effect on 2D textures)
-        // Unfortunately, for cubemaps, passing -1 does not work for faces other than the first one, so we fall back to 0 in this case.
+        // Unfortunately, for CubeMaps, passing -1 does not work for faces other than the first one, so we fall back to 0 in this case.
         private static int FixupDepthSlice(int depthSlice, RTHandle buffer)
         {
             // buffer.rt can be null in case the RTHandle is constructed from a RenderTextureIdentifier.
@@ -551,8 +551,8 @@ namespace UnityEngine.Rendering
         private static void SetViewportAndClear(CommandBuffer cmd, RTHandle buffer, ClearFlag clearFlag, Color clearColor)
         {
             // Clearing a partial viewport currently does not go through the hardware clear.
-            // Instead it goes through a quad rendered with a specific shader.
-            // When enabling wireframe mode in the scene view, unfortunately it overrides this shader thus breaking every clears.
+            // Instead, it goes through a quad rendered with a specific shader.
+            // When enabling wireframe mode in the scene view, unfortunately it overrides this shader thus breaking every clear.
             // That's why in the editor we don't set the viewport before clearing (it's set to full screen by the previous SetRenderTarget) but AFTER so that we benefit from un-bugged hardware clear.
             // We consider that the small loss in performance is acceptable in the editor.
             // A refactor of wireframe is needed before we can fix this properly (with not doing anything!)
@@ -569,7 +569,7 @@ namespace UnityEngine.Rendering
         // This will automatically set the viewport based on the RTHandle System reference size and the RTHandle scaling info.
 
         /// <summary>
-        /// Setup the current render texture using an RTHandle
+        /// Set up the current render texture using an RTHandle
         /// </summary>
         /// <param name="cmd">CommandBuffer used for rendering commands</param>
         /// <param name="buffer">Color buffer RTHandle</param>
@@ -586,7 +586,7 @@ namespace UnityEngine.Rendering
         }
 
         /// <summary>
-        /// Setup the current render texture using an RTHandle
+        /// Set up the current render texture using an RTHandle
         /// </summary>
         /// <param name="cmd">CommandBuffer used for rendering commands</param>
         /// <param name="buffer">Color buffer RTHandle</param>
@@ -598,7 +598,7 @@ namespace UnityEngine.Rendering
             => SetRenderTarget(cmd, buffer, clearFlag, Color.clear, miplevel, cubemapFace, depthSlice);
 
         /// <summary>
-        /// Setup the current render texture using an RTHandle
+        /// Set up the current render texture using an RTHandle
         /// </summary>
         /// <param name="cmd">CommandBuffer used for rendering commands</param>
         /// <param name="colorBuffer">Color buffer RTHandle</param>
@@ -622,7 +622,7 @@ namespace UnityEngine.Rendering
         }
 
         /// <summary>
-        /// Setup the current render texture using an RTHandle
+        /// Set up the current render texture using an RTHandle
         /// </summary>
         /// <param name="cmd">CommandBuffer used for rendering commands</param>
         /// <param name="colorBuffer">Color buffer RTHandle</param>
@@ -647,7 +647,7 @@ namespace UnityEngine.Rendering
         }
 
         /// <summary>
-        /// Setup the current render texture using an RTHandle
+        /// Set up the current render texture using an RTHandle
         /// </summary>
         /// <param name="cmd">CommandBuffer used for rendering commands</param>
         /// <param name="colorBuffer">Color buffer RTHandle</param>
@@ -768,10 +768,10 @@ namespace UnityEngine.Rendering
         // In the context of SRP, every auto-scaled RT is scaled against the maximum RTHandles reference size (that can only grow).
         // When we render using a camera whose viewport is smaller than the RTHandles reference size (and thus smaller than the RT actual size), we need to set it explicitly (otherwise, native code will set the viewport at the size of the RT)
         // For auto-scaled RTs (like for example a half-resolution RT), we need to scale this viewport accordingly.
-        // For non scaled RTs we just do nothing, the native code will set the viewport at the size of the RT anyway.
+        // For non-scaled RTs we just do nothing, the native code will set the viewport at the size of the RT anyway.
 
         /// <summary>
-        /// Setup the viewport to the size of the provided RTHandle.
+        /// Set up the viewport to the size of the provided RTHandle.
         /// </summary>
         /// <param name="cmd">CommandBuffer used for rendering commands.</param>
         /// <param name="target">RTHandle from which to compute the proper viewport.</param>
@@ -795,7 +795,7 @@ namespace UnityEngine.Rendering
         /// <param name="mips">True if the texture has mip maps.</param>
         /// <param name="enableMSAA">True if the texture is multisampled.</param>
         /// <param name="msaaSamples">Number of MSAA samples.</param>
-        /// <returns>Generated names bassed on the provided parameters.</returns>
+        /// <returns>Generated names based on the provided parameters.</returns>
         public static string GetRenderTargetAutoName(int width, int height, int depth, RenderTextureFormat format, string name, bool mips = false, bool enableMSAA = false, MSAASamples msaaSamples = MSAASamples.None)
             => GetRenderTargetAutoName(width, height, depth, format.ToString(), TextureDimension.None, name, mips, enableMSAA, msaaSamples, dynamicRes: false);
 
@@ -810,7 +810,7 @@ namespace UnityEngine.Rendering
         /// <param name="mips">True if the texture has mip maps.</param>
         /// <param name="enableMSAA">True if the texture is multisampled.</param>
         /// <param name="msaaSamples">Number of MSAA samples.</param>
-        /// <returns>Generated names bassed on the provided parameters.</returns>
+        /// <returns>Generated names based on the provided parameters.</returns>
         public static string GetRenderTargetAutoName(int width, int height, int depth, GraphicsFormat format, string name, bool mips = false, bool enableMSAA = false, MSAASamples msaaSamples = MSAASamples.None)
             => GetRenderTargetAutoName(width, height, depth, format.ToString(), TextureDimension.None, name, mips, enableMSAA, msaaSamples, dynamicRes: false);
 
@@ -827,7 +827,7 @@ namespace UnityEngine.Rendering
         /// <param name="enableMSAA">True if the texture is multisampled.</param>
         /// <param name="msaaSamples">Number of MSAA samples.</param>
         /// <param name="dynamicRes">True if the texture uses dynamic resolution.</param>
-        /// <returns>Generated names bassed on the provided parameters.</returns>
+        /// <returns>Generated names based on the provided parameters.</returns>
         public static string GetRenderTargetAutoName(int width, int height, int depth, GraphicsFormat format, TextureDimension dim, string name, bool mips = false, bool enableMSAA = false, MSAASamples msaaSamples = MSAASamples.None, bool dynamicRes = false)
             => GetRenderTargetAutoName(width, height, depth, format.ToString(), dim, name, mips, enableMSAA, msaaSamples, dynamicRes);
 
@@ -1056,11 +1056,16 @@ namespace UnityEngine.Rendering
         /// <returns>A new Material instance using the provided shader.</returns>
         public static Material CreateEngineMaterial(Shader shader)
         {
+#if OPTIMISATION_NULL
+            Debug.Assert(shader != null,
+                "Cannot create required material because shader is null");
+#else
             if (shader == null)
             {
                 Debug.LogError("Cannot create required material because shader is null");
                 return null;
             }
+#endif // OPTIMISATION_NULL
 
             var mat = new Material(shader)
             {
@@ -1110,7 +1115,7 @@ namespace UnityEngine.Rendering
 
         // Caution: such a call should not be use interlaced with command buffer command, as it is immediate
         /// <summary>
-        /// Set a keyword immediatly on a Material.
+        /// Set a keyword immediately on a Material.
         /// </summary>
         /// <param name="material">Material on which to set the keyword.</param>
         /// <param name="keyword">Keyword to set on the material.</param>
@@ -1375,7 +1380,7 @@ namespace UnityEngine.Rendering
             }
 
             // IMHO, a better solution would be:
-            // A window invokes a camera render. The camera knows which window called it, so it can query its properies
+            // A window invokes a camera render. The camera knows which window called it, so it can query its properties
             // (such as animated materials). This camera provides the space-time position. It should also be able
             // to access the rendering settings somehow. Using this information, it is then able to construct the
             // primary view with information about camera-relative rendering, LOD, time, rendering passes/features
@@ -1595,7 +1600,7 @@ namespace UnityEngine.Rendering
 #if UNITY_EDITOR
         // This is required in Runtime assembly between #if UNITY_EDITOR
         /// <summary>
-        /// AssetDataBase.FindAssets("t:<type>") load all asset in project to check the type.
+        /// AssetDataBase.FindAssets("t:&lt;type&gt;") load all asset in project to check the type.
         /// This utility function will try to filter at much possible before loading anything.
         /// This also works with Interface and inherited types.
         /// This will not find embedded sub assets.
@@ -1613,7 +1618,11 @@ namespace UnityEngine.Rendering
 
             bool isInterface = typeof(T).IsInterface;
             if (!typeof(UnityEngine.Object).IsAssignableFrom(typeof(T)) && !isInterface)
+#if SPELLING
+                throw new Exception("T must be an interface or inherited UnityEngine.Object.");
+#else
                 throw new Exception("T must be an interface or inherite UnityEngine.Object.");
+#endif // SPELLING
 
             Func<Type, bool> needsLoad = (allowSubTypes || isInterface)
                 ? (type) => typeof(T).IsAssignableFrom(type)
@@ -1633,7 +1642,7 @@ namespace UnityEngine.Rendering
         /// Create any missing folder in the file path given.
         /// Path must use '/' separator
         /// </summary>
-        /// <param name="filePath">Path to a file or to a folder (ending with '/') to ensure existance of each sub folder in it. </param>
+        /// <param name="filePath">Path to a file or to a folder (ending with '/') to ensure existence of each sub folder in it. </param>
         public static void EnsureFolderTreeInAssetFilePath(string filePath)
         {
             void Recurse(string _folderPath)

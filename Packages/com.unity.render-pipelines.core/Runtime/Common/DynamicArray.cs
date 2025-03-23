@@ -295,7 +295,7 @@ namespace UnityEngine.Rendering
         /// pick it up as IEnumerable but at the same time avoids generating Garbage.
         /// For more info, see the C# language specification of the <c>foreach</c> statement.
         /// </remarks>
-        /// <seealso cref="RangeIterator"/>
+        /// <seealso cref="RangeEnumerable.RangeIterator"/>
         public struct Iterator
         {
             private readonly DynamicArray<T> owner;
@@ -308,7 +308,7 @@ namespace UnityEngine.Rendering
             /// Creates an iterator to iterate over an array.
             /// </summary>
             /// <param name="setOwner">The array to iterate over.</param>
-            /// <exception cref="ArgumentNullException">Thrown if the array is null.</exception>
+            /// <exception cref="System.ArgumentNullException">Thrown if the array is null.</exception>
             public Iterator(DynamicArray<T> setOwner)
             {
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
@@ -416,7 +416,7 @@ namespace UnityEngine.Rendering
                 /// <param name="setOwner">The array to iterate over.</param>
                 /// <param name="first">The index of the first item in the array.</param>
                 /// <param name="numItems">The number of array members to iterate through.</param>
-                /// <exception cref="ArgumentNullException">Thrown if the array is null.</exception>
+                /// <exception cref="System.ArgumentNullException">Thrown if the array is null.</exception>
                 public RangeIterator(DynamicArray<T> setOwner, int first, int numItems)
                 {
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
@@ -504,7 +504,7 @@ namespace UnityEngine.Rendering
         /// <param name="first">The index of the first item</param>
         /// <param name="numItems">The number of items to iterate</param>
         /// <returns><c>RangeEnumerable</c> that can be used to enumerate the given range.</returns>
-        /// <seealso cref="RangeIterator"/>
+        /// <seealso cref="RangeEnumerable.RangeIterator"/>
         public RangeEnumerable SubRange(int first, int numItems)
         {
             RangeEnumerable r = new RangeEnumerable { iterator = new RangeEnumerable.RangeIterator(this, first, numItems) };

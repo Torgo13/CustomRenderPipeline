@@ -224,7 +224,11 @@ namespace UnityEngine.Rendering.Universal.Internal
 #if ENABLE_VR && ENABLE_XR_MODULE
                 var viewCount = cameraData.xr.enabled && cameraData.xr.singlePassEnabled ? 2 : 1;
 #else
+#if OPTIMISATION
+                const int viewCount = 1;
+#else
                 var viewCount = 1;
+#endif // OPTIMISATION
 #endif
 
                 m_LightCount = renderingData.lightData.visibleLights.Length;
@@ -633,7 +637,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             int globalDirectionalLightsCount = 0;
             int additionalLightsCount = 0;
 
-            // Disable all directional lights from the perobject light indices
+            // Disable all directional lights from the per-object light indices
             // Pipeline handles main light globally and there's no support for additional directional lights atm.
             int maxVisibleAdditionalLightsCount = UniversalRenderPipeline.maxVisibleAdditionalLights;
             int len = lightData.visibleLights.Length;

@@ -89,6 +89,9 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
     /// Descriptor used to create texture resources
     /// </summary>
     public struct TextureDesc
+#if OPTIMISATION_IEQUATABLE
+        : System.IEquatable<TextureDesc>
+#endif // OPTIMISATION_IEQUATABLE
     {
         ///<summary>Texture sizing mode.</summary>
         public TextureSizeMode sizeMode;
@@ -96,7 +99,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
         public int width;
         ///<summary>Texture height.</summary>
         public int height;
-        ///<summary>Number of texture slices..</summary>
+        ///<summary>Number of texture slices.</summary>
         public int slices;
         ///<summary>Texture scale.</summary>
         public Vector2 scale;
@@ -140,10 +143,10 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
         ///<summary>Descriptor to determine how the texture will be in fast memory on platform that supports it.</summary>
         public FastMemoryDesc fastMemoryDesc;
 #endif
-        ///<summary>Determines whether the texture will fallback to a black texture if it is read without ever writing to it.</summary>
+        ///<summary>Determines whether the texture will fall back to a black texture if it is read without ever writing to it.</summary>
         public bool fallBackToBlackTexture;
         ///<summary>
-        ///If all passes writing to a texture are culled by Dynamic Render Pass Culling, it will automatically fallback to a similar preallocated texture.\n
+        ///If all passes writing to a texture are culled by Dynamic Render Pass Culling, it will automatically fall back to a similar preallocated texture.\n
         ///Set this to false to force the allocation.
         ///</summary>
         public bool disableFallBackToImportedTexture;
@@ -293,6 +296,40 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
 #endif
             return hashCode.value;
         }
+
+#if OPTIMISATION_IEQUATABLE
+        public bool Equals(TextureDesc other)
+        {
+            return sizeMode == other.sizeMode && width == other.width && height == other.height
+                   && slices == other.slices && scale.Equals(other.scale) && Equals(func, other.func)
+                   && depthBufferBits == other.depthBufferBits && colorFormat == other.colorFormat
+                   && filterMode == other.filterMode && wrapMode == other.wrapMode && dimension == other.dimension
+                   && enableRandomWrite == other.enableRandomWrite && useMipMap == other.useMipMap
+                   && autoGenerateMips == other.autoGenerateMips && isShadowMap == other.isShadowMap
+                   && anisoLevel == other.anisoLevel && mipMapBias.Equals(other.mipMapBias)
+                   && msaaSamples == other.msaaSamples && bindTextureMS == other.bindTextureMS
+                   && useDynamicScale == other.useDynamicScale && memoryless == other.memoryless
+                   && vrUsage == other.vrUsage && name == other.name && fastMemoryDesc.Equals(other.fastMemoryDesc)
+                   && fallBackToBlackTexture == other.fallBackToBlackTexture
+                   && disableFallBackToImportedTexture == other.disableFallBackToImportedTexture
+                   && clearBuffer == other.clearBuffer && clearColor.Equals(other.clearColor);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TextureDesc other && Equals(other);
+        }
+
+        public static bool operator ==(TextureDesc left, TextureDesc right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(TextureDesc left, TextureDesc right)
+        {
+            return !left.Equals(right);
+        }
+#endif // OPTIMISATION_IEQUATABLE
     }
 
     [DebuggerDisplay("TextureResource ({desc.name})")]
@@ -420,7 +457,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
 
         // Another C# nicety.
         // We need to re-implement the whole thing every time because:
-        // - obj.resource.Release is Type specific so it cannot be called on a generic (and there's no shared interface for resources like RTHandle, ComputeBuffers etc)
+        // - obj.resource.Release is Type specific so it cannot be called on a generic (and there's no shared interface for resources like RTHandle, ComputeBuffers etc.)
         // - We can't use a virtual release function because it will capture 'this' in the lambda for RemoveAll generating GCAlloc in the process.
         override public void PurgeUnusedResources(int currentFrameIndex)
         {

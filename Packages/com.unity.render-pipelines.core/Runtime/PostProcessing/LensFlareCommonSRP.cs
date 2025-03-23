@@ -513,9 +513,13 @@ namespace UnityEngine.Rendering
                 LensFlareComponentSRP comp = info.comp;
                 LensFlareDataSRP data = comp.lensFlareData;
 
+#if OPTIMISATION
+                if (IsLensFlareSRPHidden(cam, comp, data))
+#else
                 if (IsLensFlareSRPHidden(cam, comp, data) ||
                     !comp.useOcclusion ||
                     (comp.useOcclusion && comp.sampleCount == 0))
+#endif // OPTIMISATION
                     continue;
 
                 if (comp.useBackgroundCloudOcclusion)
@@ -685,9 +689,13 @@ namespace UnityEngine.Rendering
                 LensFlareComponentSRP comp = info.comp;
                 LensFlareDataSRP data = comp.lensFlareData;
 
+#if OPTIMISATION
+                if (IsLensFlareSRPHidden(cam, comp, data))
+#else
                 if (IsLensFlareSRPHidden(cam, comp, data) ||
                     !comp.useOcclusion ||
                     (comp.useOcclusion && comp.sampleCount == 0))
+#endif // OPTIMISATION
                     continue;
 
 #if UNITY_EDITOR

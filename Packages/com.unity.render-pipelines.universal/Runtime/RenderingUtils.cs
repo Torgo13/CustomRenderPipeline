@@ -514,13 +514,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         /// <param name="handle">RTHandle to check (can be null)</param>
         /// <param name="descriptor">Descriptor for the RTHandle to match</param>
-        /// <param name="filterMode">Filtering mode of the RTHandle.</param>
-        /// <param name="wrapMode">Addressing mode of the RTHandle.</param>
-        /// <param name="isShadowMap">Set to true if the depth buffer should be used as a shadow map.</param>
-        /// <param name="anisoLevel">Anisotropic filtering level.</param>
-        /// <param name="mipMapBias">Bias applied to mipmaps during filtering.</param>
-        /// <param name="name">Name of the RTHandle.</param>
-        /// <param name="scaled">Check if the RTHandle has auto scaling enabled if not, check the widths and heights</param>
+        /// <param name="scaled">Check if the RTHandle has auto-scaling enabled if not, check the widths and heights</param>
         /// <returns></returns>
         internal static bool RTHandleNeedsReAlloc(
             RTHandle handle,

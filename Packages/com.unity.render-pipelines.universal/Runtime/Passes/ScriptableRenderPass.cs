@@ -12,7 +12,7 @@ namespace UnityEngine.Rendering.Universal
     /// <summary>
     /// Input requirements for <c>ScriptableRenderPass</c>.
     /// </summary>
-    /// <seealso cref="ConfigureInput"/>
+    /// <seealso cref="ScriptableRenderPass.ConfigureInput"/>
     [Flags]
     public enum ScriptableRenderPassInput
     {
@@ -451,7 +451,7 @@ namespace UnityEngine.Rendering.Universal
         /// Resets render targets to default.
         /// This method effectively reset changes done by ConfigureTarget.
         /// </summary>
-        /// <seealso cref="ConfigureTarget"/>
+        /// <seealso cref="ConfigureTarget(RTHandle)"/>
         public void ResetTarget()
         {
             overrideCameraTarget = false;
@@ -629,11 +629,11 @@ namespace UnityEngine.Rendering.Universal
         /// This method is called by the renderer before rendering a camera
         /// Override this method if you need to to configure render targets and their clear state, and to create temporary render target textures.
         /// If a render pass doesn't override this method, this render pass renders to the active Camera's render target.
-        /// You should never call CommandBuffer.SetRenderTarget. Instead call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
+        /// You should never call CommandBuffer.SetRenderTarget. Instead, call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
         /// </summary>
         /// <param name="cmd">CommandBuffer to enqueue rendering commands. This will be executed by the pipeline.</param>
         /// <param name="renderingData">Current rendering state information</param>
-        /// <seealso cref="ConfigureTarget"/>
+        /// <seealso cref="ConfigureTarget(RTHandle)"/>
         /// <seealso cref="ConfigureClear"/>
         public virtual void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
         { }
@@ -642,11 +642,11 @@ namespace UnityEngine.Rendering.Universal
         /// This method is called by the renderer before executing the render pass.
         /// Override this method if you need to to configure render targets and their clear state, and to create temporary render target textures.
         /// If a render pass doesn't override this method, this render pass renders to the active Camera's render target.
-        /// You should never call CommandBuffer.SetRenderTarget. Instead call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
+        /// You should never call CommandBuffer.SetRenderTarget. Instead, call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
         /// </summary>
         /// <param name="cmd">CommandBuffer to enqueue rendering commands. This will be executed by the pipeline.</param>
         /// <param name="cameraTextureDescriptor">Render texture descriptor of the camera render target.</param>
-        /// <seealso cref="ConfigureTarget"/>
+        /// <seealso cref="ConfigureTarget(RTHandle)"/>
         /// <seealso cref="ConfigureClear"/>
         public virtual void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         { }
