@@ -28,12 +28,14 @@ namespace UnityEngine.Rendering.UI
             if (elements == null)
                 return;
 
-            var elementsArray = elements.ToArray();
-#if OPTIMISATION
-            var count = elementsArray.Length;
+#if OPTIMISATION_LISTPOOL
+            using var _0 = UnityEngine.Pool.ListPool<Object>.Get(out var elementsArray);
+            elementsArray.AddRange(elements);
+            var count = elementsArray.Count;
 #else
+            var elementsArray = elements.ToArray();
             var count = elementsArray.Count();
-#endif // OPTIMISATION
+#endif // OPTIMISATION_LISTPOOL
 
             if (m_Index >= count)
             {
