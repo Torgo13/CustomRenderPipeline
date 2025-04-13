@@ -120,6 +120,7 @@ namespace UnityEngine.Rendering.Universal
             LensFlareCommonSRP.mergeNeeded = 0;
             LensFlareCommonSRP.maxLensFlareWithOcclusionTemporalSample = 1;
             LensFlareCommonSRP.Initialize();
+            Light2DManager.Initialize();
         }
 
         protected override void Dispose(bool disposing)
@@ -133,6 +134,7 @@ namespace UnityEngine.Rendering.Universal
             m_FinalBlitPass?.Dispose();
             m_DrawOffscreenUIPass?.Dispose();
             m_DrawOverlayUIPass?.Dispose();
+            Light2DManager.Dispose();
 
             CoreUtils.Destroy(m_BlitMaterial);
             CoreUtils.Destroy(m_BlitHDRMaterial);
@@ -404,7 +406,7 @@ namespace UnityEngine.Rendering.Universal
             // Don't resolve during post processing if there are passes after or pixel perfect camera is used
             bool pixelPerfectCameraEnabled = ppc != null && ppc.enabled;
             bool hasCaptureActions = cameraData.captureActions != null && lastCameraInStack;
-            bool resolvePostProcessingToCameraTarget = !hasCaptureActions && !hasPassesAfterPostProcessing && !requireFinalPostProcessPass && !pixelPerfectCameraEnabled;
+            bool resolvePostProcessingToCameraTarget = lastCameraInStack && !hasCaptureActions && !hasPassesAfterPostProcessing && !requireFinalPostProcessPass && !pixelPerfectCameraEnabled;
 
             if (hasPostProcess)
             {
