@@ -105,12 +105,12 @@ namespace UnityEditor.Rendering.LookDev
                 return;
 
             SceneManager.MoveGameObjectToScene(gameObject, m_PreviewScene);
-#if OPTIMISATION
+#if OPTIMISATION_UNITY
             gameObject.transform.SetPositionAndRotation(position, rotation);
 #else
             gameObject.transform.position = position;
             gameObject.transform.rotation = rotation;
-#endif // OPTIMISATION
+#endif // OPTIMISATION_UNITY
             if (persistent)
                 m_PersistentGameObjects.Add(gameObject);
             else

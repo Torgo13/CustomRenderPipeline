@@ -60,7 +60,7 @@ namespace UnityEngine.Rendering.Universal
         public override int SupportedCameraStackingTypes()
         {
 #if OPTIMISATION_ENUM
-            return 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Base) | 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Overlay);
+            return 1 << CameraRenderType.Base.ToInt() | 1 << CameraRenderType.Overlay.ToInt();
 #else
             return 1 << (int)CameraRenderType.Base | 1 << (int)CameraRenderType.Overlay;
 #endif // OPTIMISATION_ENUM
@@ -203,7 +203,7 @@ namespace UnityEngine.Rendering.Universal
 
             var colorDescriptor = cameraTargetDescriptor;
 #if OPTIMISATION_ENUM
-            colorDescriptor.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None);
+            colorDescriptor.depthBufferBits = DepthBits.None.ToInt();
 #else
             colorDescriptor.depthBufferBits = (int)DepthBits.None;
 #endif // OPTIMISATION_ENUM

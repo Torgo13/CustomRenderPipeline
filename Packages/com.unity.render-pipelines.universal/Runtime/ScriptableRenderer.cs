@@ -80,7 +80,7 @@ namespace UnityEngine.Rendering.Universal
         public bool SupportsCameraStackingType(CameraRenderType cameraRenderType)
         {
 #if OPTIMISATION_ENUM
-            return (SupportedCameraStackingTypes() & 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(cameraRenderType)) != 0;
+            return (SupportedCameraStackingTypes() & 1 << cameraRenderType.ToInt()) != 0;
 #else
             return (SupportedCameraStackingTypes() & 1 << (int)cameraRenderType) != 0;
 #endif // OPTIMISATION_ENUM
@@ -1073,7 +1073,7 @@ namespace UnityEngine.Rendering.Universal
         {
             int range = ScriptableRenderPass.GetRenderPassEventRange(injectionPoint);
 #if OPTIMISATION_ENUM
-            int nextValue = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(injectionPoint) + range;
+            int nextValue = injectionPoint.ToInt() + range;
 #else
             int nextValue = (int) injectionPoint + range;
 #endif // OPTIMISATION_ENUM
@@ -1081,7 +1081,7 @@ namespace UnityEngine.Rendering.Universal
             foreach (ScriptableRenderPass pass in m_ActiveRenderPassQueue)
             {
 #if OPTIMISATION_ENUM
-                if (pass.renderPassEvent >= injectionPoint && Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(pass.renderPassEvent) < nextValue)
+                if (pass.renderPassEvent >= injectionPoint && pass.renderPassEvent.ToInt() < nextValue)
 #else
                 if (pass.renderPassEvent >= injectionPoint && (int) pass.renderPassEvent < nextValue)
 #endif // OPTIMISATION_ENUM

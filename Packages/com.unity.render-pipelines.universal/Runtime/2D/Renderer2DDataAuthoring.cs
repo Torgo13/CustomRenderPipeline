@@ -87,7 +87,7 @@ namespace UnityEngine.Rendering.Universal
 
                     // Custom blend mode (99) now falls back to Multiply.
 #if OPTIMISATION_ENUM
-                    if (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(blendStyle.blendMode) == 99)
+                    if (blendStyle.blendMode.ToInt() == 99)
 #else
                     if ((int)blendStyle.blendMode == 99)
 #endif // OPTIMISATION_ENUM

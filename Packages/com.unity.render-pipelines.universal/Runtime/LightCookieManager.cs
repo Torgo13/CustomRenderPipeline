@@ -1019,7 +1019,7 @@ namespace UnityEngine.Rendering.Universal
 
                 // Update the (cpu) data
 #if OPTIMISATION_ENUM
-                lightTypes[bufIndex] = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(visLight.lightType);
+                lightTypes[bufIndex] = visLight.lightType.ToInt();
 #else
                 lightTypes[bufIndex] = (int)visLight.lightType;
 #endif // OPTIMISATION_ENUM

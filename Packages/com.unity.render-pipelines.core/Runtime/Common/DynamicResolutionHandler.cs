@@ -333,7 +333,7 @@ namespace UnityEngine.Rendering
         static public void SetDynamicResScaler(PerformDynamicRes scaler, DynamicResScalePolicyType scalerType = DynamicResScalePolicyType.ReturnsMinMaxLerpFactor)
         {
 #if OPTIMISATION_ENUM
-            s_ScalerContainers[Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DynamicResScalerSlot.User)] = new ScalerContainer() { type = scalerType, method = scaler };
+            s_ScalerContainers[DynamicResScalerSlot.User.ToInt()] = new ScalerContainer() { type = scalerType, method = scaler };
 #else
             s_ScalerContainers[(int)DynamicResScalerSlot.User] = new ScalerContainer() { type = scalerType, method = scaler };
 #endif // OPTIMISATION_ENUM
@@ -347,7 +347,7 @@ namespace UnityEngine.Rendering
         static public void SetSystemDynamicResScaler(PerformDynamicRes scaler, DynamicResScalePolicyType scalerType = DynamicResScalePolicyType.ReturnsMinMaxLerpFactor)
         {
 #if OPTIMISATION_ENUM
-            s_ScalerContainers[Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DynamicResScalerSlot.System)] = new ScalerContainer() { type = scalerType, method = scaler };
+            s_ScalerContainers[DynamicResScalerSlot.System.ToInt()] = new ScalerContainer() { type = scalerType, method = scaler };
 #else
             s_ScalerContainers[(int)DynamicResScalerSlot.System] = new ScalerContainer() { type = scalerType, method = scaler };
 #endif // OPTIMISATION_ENUM
@@ -382,7 +382,7 @@ namespace UnityEngine.Rendering
         {
             var cameraID = camera.GetInstanceID();
 
-#if OPTIMISATION
+#if OPTIMISATION_DICTIONARY
             s_CameraUpscaleFilters[cameraID] = filter;
 #else
             if (s_CameraUpscaleFilters.ContainsKey(cameraID))
@@ -393,7 +393,7 @@ namespace UnityEngine.Rendering
             {
                 s_CameraUpscaleFilters.Add(cameraID, filter);
             }
-#endif // OPTIMISATION
+#endif // OPTIMISATION_DICTIONARY
         }
 
         /// <summary>
@@ -451,7 +451,7 @@ namespace UnityEngine.Rendering
             if (!m_ForcingRes)
             {
 #if OPTIMISATION_ENUM
-                ref ScalerContainer scaler = ref s_ScalerContainers[Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(s_ActiveScalerSlot)];
+                ref ScalerContainer scaler = ref s_ScalerContainers[s_ActiveScalerSlot.ToInt()];
 #else
                 ref ScalerContainer scaler = ref s_ScalerContainers[(int)s_ActiveScalerSlot];
 #endif // OPTIMISATION_ENUM

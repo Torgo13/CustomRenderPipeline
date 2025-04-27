@@ -493,12 +493,12 @@ namespace UnityEngine.Rendering.Universal
                     cachedChunks[i] = combinedChunk.cachedChunk;
                     culledChunks[i] = combinedChunk.culledChunk;
                     drawCallChunks[i] = combinedChunk.drawCallChunk;
-#if OPTIMISATION
+#if OPTIMISATION_DICTIONARY
                     m_MaterialToChunkIndex.TryAdd(entityChunks[i].material, i);
 #else
                     if (!m_MaterialToChunkIndex.ContainsKey(entityChunks[i].material))
                         m_MaterialToChunkIndex.Add(entityChunks[i].material, i);
-#endif // OPTIMISATION
+#endif // OPTIMISATION_DICTIONARY
                     m_CombinedChunkRemmap[combinedChunk.previousChunkIndex] = i;
                     count++;
                 }

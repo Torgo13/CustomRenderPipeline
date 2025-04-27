@@ -104,17 +104,7 @@ namespace UnityEngine.Rendering
         public void RenderWireframe(Matrix4x4 trs, CompareFunction depthTest = CompareFunction.LessEqual, string gizmoName = null)
             => DrawMesh(trs, wireMaterial, MeshTopology.Lines, depthTest, gizmoName);
 
-#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-#else
-        public void Dispose()
-#endif // OPTIMISATION_IDISPOSABLE
         {
             CoreUtils.Destroy(mesh);
         }

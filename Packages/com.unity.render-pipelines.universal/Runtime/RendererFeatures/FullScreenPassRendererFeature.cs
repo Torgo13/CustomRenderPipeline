@@ -148,7 +148,7 @@ public partial class FullScreenPassRendererFeature : ScriptableRendererFeature
         {
             desc.msaaSamples = 1;
 #if OPTIMISATION_ENUM
-            desc.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None);
+            desc.depthBufferBits = DepthBits.None.ToInt();
 #else
             desc.depthBufferBits = (int)DepthBits.None;
 #endif // OPTIMISATION_ENUM

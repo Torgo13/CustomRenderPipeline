@@ -373,17 +373,7 @@ namespace UnityEditor.Rendering.LookDev
                 cursorFollower.style.top = windowLocalPosition.y - cursorOffset.y;
             }
 
-#if OPTIMISATION_IDISPOSABLE
             public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-#else
-            public void Dispose()
-#endif // OPTIMISATION_IDISPOSABLE
             {
                 if (windowContent.Contains(cursorFollower))
                     windowContent.Remove(cursorFollower);

@@ -40,20 +40,20 @@ namespace UnityEditor.Rendering.Universal
             {
                 var transform = go.transform;
                 Undo.SetTransformParent(transform, parentTransform.transform, "Reparenting");
-#if OPTIMISATION
+#if OPTIMISATION_UNITY
                 transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 #else
                 transform.localPosition = Vector3.zero;
                 transform.localRotation = Quaternion.identity;
-#endif // OPTIMISATION
+#endif // OPTIMISATION_UNITY
 
                 transform.localScale = Vector3.one;
 
-#if OPTIMISATION
+#if OPTIMISATION_UNITY
                 go.layer = parentTransform.layer;
 #else
                 go.layer = parentTransform.gameObject.layer;
-#endif // OPTIMISATION
+#endif // OPTIMISATION_UNITY
 
                 if (parentTransform.GetComponent<RectTransform>())
                     ObjectFactory.AddComponent<RectTransform>(go);

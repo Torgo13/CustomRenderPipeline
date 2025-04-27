@@ -221,7 +221,7 @@ namespace UnityEngine.Rendering.Universal
             {
                 get => m_Quality;
 #if OPTIMISATION_ENUM
-                set => m_Quality = (TemporalAAQuality)Mathf.Clamp(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(value), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(TemporalAAQuality.VeryLow), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(TemporalAAQuality.VeryHigh));
+                set => m_Quality = (TemporalAAQuality)Mathf.Clamp(value.ToInt(), TemporalAAQuality.VeryLow.ToInt(), TemporalAAQuality.VeryHigh.ToInt());
 #else
                 set => m_Quality = (TemporalAAQuality)Mathf.Clamp((int)value, (int)TemporalAAQuality.VeryLow, (int)TemporalAAQuality.VeryHigh);
 #endif // OPTIMISATION_ENUM
@@ -471,7 +471,7 @@ namespace UnityEngine.Rendering.Universal
                 }
 
 #if OPTIMISATION_ENUM
-                Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, taaMaterial, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(taa.quality));
+                Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, taaMaterial, taa.quality.ToInt());
 #else
                 Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, taaMaterial, (int)taa.quality);
 #endif // OPTIMISATION_ENUM
@@ -535,7 +535,7 @@ namespace UnityEngine.Rendering.Universal
 
                 passData.material = taaMaterial;
 #if OPTIMISATION_ENUM
-                passData.passIndex = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(taa.quality);
+                passData.passIndex = taa.quality.ToInt();
 #else
                 passData.passIndex = (int)taa.quality;
 #endif // OPTIMISATION_ENUM

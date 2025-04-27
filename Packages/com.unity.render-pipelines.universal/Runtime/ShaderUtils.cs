@@ -94,7 +94,7 @@ namespace UnityEngine.Rendering.Universal
         public static string GetShaderPath(ShaderPathID id)
         {
 #if OPTIMISATION_ENUM
-            int index = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(id);
+            int index = id.ToInt();
 #else
             int index = (int)id;
 #endif // OPTIMISATION_ENUM
@@ -151,7 +151,7 @@ namespace UnityEngine.Rendering.Universal
         public static string GetShaderGUID(ShaderPathID id)
         {
 #if OPTIMISATION_ENUM
-            int index = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(id);
+            int index = id.ToInt();
 #else
             int index = (int)id;
 #endif // OPTIMISATION_ENUM

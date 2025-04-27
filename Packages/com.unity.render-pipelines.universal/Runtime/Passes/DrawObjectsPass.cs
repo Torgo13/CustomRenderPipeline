@@ -22,21 +22,12 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         public void Setup(RTHandle colorAttachment, RTHandle renderingLayersTexture, RTHandle depthAttachment)
         {
-#if SAFETY
-            if (colorAttachment == null)
-                throw new ArgumentException("Color attachment can not be null", nameof(colorAttachment));
-            if (renderingLayersTexture == null)
-                throw new ArgumentException("Rendering layers attachment can not be null", nameof(renderingLayersTexture));
-            if (depthAttachment == null)
-                throw new ArgumentException("Depth attachment can not be null", nameof(depthAttachment));
-#else
             if (colorAttachment == null)
                 throw new ArgumentException("Color attachment can not be null", "colorAttachment");
             if (renderingLayersTexture == null)
                 throw new ArgumentException("Rendering layers attachment can not be null", "renderingLayersTexture");
             if (depthAttachment == null)
                 throw new ArgumentException("Depth attachment can not be null", "depthAttachment");
-#endif // SAFETY
 
             m_ColorTargetIndentifiers[0] = colorAttachment;
             m_ColorTargetIndentifiers[1] = renderingLayersTexture;

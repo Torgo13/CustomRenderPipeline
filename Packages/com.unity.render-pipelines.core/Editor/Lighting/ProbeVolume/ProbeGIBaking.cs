@@ -183,21 +183,7 @@ namespace UnityEngine.Rendering
             public BakingSetupProfiling(Stages stage) : base(stage, ref currentStage) { }
             public override Stages GetLastStep() => Stages.None;
             public static void GetProgressRange(out float progress0, out float progress1) { float s = 1/(float)Stages.None; progress0 = (float)currentStage*s; progress1 = progress0+s; }
-
-#if OPTIMISATION_IDISPOSABLE
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                OnDispose(ref currentStage);
-            }
-#else
             public void Dispose() { OnDispose(ref currentStage); }
-#endif // OPTIMISATION_IDISPOSABLE
         }
         public class BakingCompleteProfiling : BakingProfiling<BakingCompleteProfiling.Stages>, IDisposable
         {
@@ -217,21 +203,7 @@ namespace UnityEngine.Rendering
             public BakingCompleteProfiling(Stages stage) : base(stage, ref currentStage) { }
             public override Stages GetLastStep() => Stages.None;
             public static void GetProgressRange(out float progress0, out float progress1) { float s = 1/(float)Stages.None; progress0 = (float)currentStage*s; progress1 = progress0+s; }
-
-#if OPTIMISATION_IDISPOSABLE
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                OnDispose(ref currentStage);
-            }
-#else
             public void Dispose() { OnDispose(ref currentStage); }
-#endif // OPTIMISATION_IDISPOSABLE
         }
 
 
@@ -846,11 +818,7 @@ namespace UnityEngine.Rendering
             ModifyPhysicsComponentsForBaking();
 
             // Fetch results of all cells
-#if OPTIMISATION
-            var fetchScope = new BakingCompleteProfiling(BakingCompleteProfiling.Stages.FetchResults);
-#else
             using var fetchScope = new BakingCompleteProfiling(BakingCompleteProfiling.Stages.FetchResults);
-#endif // OPTIMISATION
             BakingCompleteProfiling.GetProgressRange(out float progress0, out float progress1);
             for (int c = 0; c < numCells; ++c)
             {
@@ -1014,7 +982,6 @@ namespace UnityEngine.Rendering
 
                 m_BakedCells[cell.index] = cell;
             }
-
             fetchScope.Dispose();
 
             RestorePhysicsComponentsAfterBaking();
@@ -1031,11 +998,7 @@ namespace UnityEngine.Rendering
                 ExtractBakingCells();
             }
 
-#if OPTIMISATION
-            var writeScope = new BakingCompleteProfiling(BakingCompleteProfiling.Stages.WriteBakedData);
-#else
             using var writeScope = new BakingCompleteProfiling(BakingCompleteProfiling.Stages.WriteBakedData);
-#endif // OPTIMISATION
 
             // Map from each scene to its per scene data, and create a new asset for each scene
             var scene2Data = new Dictionary<Scene, ProbeVolumePerSceneData>();

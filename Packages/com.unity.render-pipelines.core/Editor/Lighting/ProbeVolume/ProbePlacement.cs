@@ -102,17 +102,7 @@ namespace UnityEngine.Rendering
                 brickPositions = new Vector3[maxBrickCountPerAxisInSubCell * maxBrickCountPerAxisInSubCell * maxBrickCountPerAxisInSubCell];
             }
 
-#if OPTIMISATION_IDISPOSABLE
             public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-#else
-            public void Dispose()
-#endif // OPTIMISATION_IDISPOSABLE
             {
                 RenderTexture.ReleaseTemporary(sceneSDF);
                 RenderTexture.ReleaseTemporary(sceneSDF2);
@@ -271,13 +261,13 @@ namespace UnityEngine.Rendering
 
                 bool IsParentBrickInProbeVolume(Vector3Int parentSubCellPos, float minBrickSize, int brickSize)
                 {
-#if OPTIMISATION
+#if OPTIMISATION_MATHS
                     Vector3 center = (Vector3)parentSubCellPos * minBrickSize + brickSize * minBrickSize * Vector3.one / 2.0f;
                     Bounds parentAABB = new Bounds(center, brickSize * minBrickSize * Vector3.one);
 #else
                     Vector3 center = (Vector3)parentSubCellPos * minBrickSize + Vector3.one * brickSize * minBrickSize / 2.0f;
                     Bounds parentAABB = new Bounds(center, Vector3.one * brickSize * minBrickSize);
-#endif // OPTIMISATION
+#endif // OPTIMISATION_MATHS
 
                     bool generateParentBrick = false;
                     foreach (var probeVolume in probeVolumes)

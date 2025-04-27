@@ -54,7 +54,7 @@ namespace UnityEngine.Rendering.Universal
             descriptor.autoGenerateMips = false;
             descriptor.useDynamicScale = true;
 #if OPTIMISATION_ENUM
-            descriptor.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None);
+            descriptor.depthBufferBits = DepthBits.None.ToInt();
 #else
             descriptor.depthBufferBits = (int)DepthBits.None;
 #endif // OPTIMISATION_ENUM
@@ -119,7 +119,7 @@ namespace UnityEngine.Rendering.Universal
                 data.material.SetVector(ShaderConstants._HDRDebugParamsId, debugParameters);
                 data.material.SetVector(ShaderPropertyId.hdrOutputLuminanceParams, data.luminanceParameters);
 #if OPTIMISATION_ENUM
-                data.material.SetInteger(ShaderConstants._DebugHDRModeId, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(data.hdrDebugMode));
+                data.material.SetInteger(ShaderConstants._DebugHDRModeId, data.hdrDebugMode.ToInt());
 #else
                 data.material.SetInteger(ShaderConstants._DebugHDRModeId, (int)data.hdrDebugMode);
 #endif // OPTIMISATION_ENUM

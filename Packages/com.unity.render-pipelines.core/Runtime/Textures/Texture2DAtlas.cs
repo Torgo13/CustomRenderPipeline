@@ -332,15 +332,15 @@ namespace UnityEngine.Rendering
                 // Single channel swizzle
 #if OPTIMISATION_ENUM
                 var srcSwizzle =
-                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleA(source.graphicsFormat)) & 0x7)) << 24) |
-                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleB(source.graphicsFormat)) & 0x7)) << 16) |
-                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleG(source.graphicsFormat)) & 0x7)) << 8) |
-                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleR(source.graphicsFormat)) & 0x7)));
+                    ((1 << (GraphicsFormatUtility.GetSwizzleA(source.graphicsFormat).ToInt() & 0x7)) << 24) |
+                    ((1 << (GraphicsFormatUtility.GetSwizzleB(source.graphicsFormat).ToInt() & 0x7)) << 16) |
+                    ((1 << (GraphicsFormatUtility.GetSwizzleG(source.graphicsFormat).ToInt() & 0x7)) << 8) |
+                    ((1 << (GraphicsFormatUtility.GetSwizzleR(source.graphicsFormat).ToInt() & 0x7)));
                 var dstSwizzle =
-                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleA(destination.graphicsFormat)) & 0x7)) << 24) |
-                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleB(destination.graphicsFormat)) & 0x7)) << 16) |
-                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleG(destination.graphicsFormat)) & 0x7)) << 8) |
-                    ((1 << (Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(GraphicsFormatUtility.GetSwizzleR(destination.graphicsFormat)) & 0x7)));
+                    ((1 << (GraphicsFormatUtility.GetSwizzleA(destination.graphicsFormat).ToInt() & 0x7)) << 24) |
+                    ((1 << (GraphicsFormatUtility.GetSwizzleB(destination.graphicsFormat).ToInt() & 0x7)) << 16) |
+                    ((1 << (GraphicsFormatUtility.GetSwizzleG(destination.graphicsFormat).ToInt() & 0x7)) << 8) |
+                    ((1 << (GraphicsFormatUtility.GetSwizzleR(destination.graphicsFormat).ToInt() & 0x7)));
 #else
                 var srcSwizzle =
                     ((1 << ((int)GraphicsFormatUtility.GetSwizzleA(source.graphicsFormat) & 0x7)) << 24) |

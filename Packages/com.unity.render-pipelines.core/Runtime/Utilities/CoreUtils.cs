@@ -1056,16 +1056,11 @@ namespace UnityEngine.Rendering
         /// <returns>A new Material instance using the provided shader.</returns>
         public static Material CreateEngineMaterial(Shader shader)
         {
-#if OPTIMISATION_NULL
-            Debug.Assert(shader != null,
-                "Cannot create required material because shader is null");
-#else
             if (shader == null)
             {
                 Debug.LogError("Cannot create required material because shader is null");
                 return null;
             }
-#endif // OPTIMISATION_NULL
 
             var mat = new Material(shader)
             {

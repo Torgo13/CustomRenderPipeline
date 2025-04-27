@@ -92,7 +92,7 @@ namespace UnityEngine.Rendering.Universal
 
             if (settings.type.value != FilmGrainLookup.Custom)
 #if OPTIMISATION_ENUM
-                texture = data.textures.filmGrainTex[Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(settings.type.value)];
+                texture = data.textures.filmGrainTex[settings.type.value.ToInt()];
 #else
                 texture = data.textures.filmGrainTex[(int)settings.type.value];
 #endif // OPTIMISATION_ENUM

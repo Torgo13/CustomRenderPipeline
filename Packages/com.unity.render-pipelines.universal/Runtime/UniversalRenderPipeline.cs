@@ -220,7 +220,7 @@ namespace UnityEngine.Rendering.Universal
 
             // Configure initial XR settings
 #if OPTIMISATION_ENUM
-            MSAASamples msaaSamples = (MSAASamples)Mathf.Clamp(Mathf.NextPowerOfTwo(QualitySettings.antiAliasing), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(MSAASamples.None), Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(MSAASamples.MSAA8x));
+            MSAASamples msaaSamples = (MSAASamples)Mathf.Clamp(Mathf.NextPowerOfTwo(QualitySettings.antiAliasing), MSAASamples.None.ToInt(), MSAASamples.MSAA8x.ToInt());
 #else
             MSAASamples msaaSamples = (MSAASamples)Mathf.Clamp(Mathf.NextPowerOfTwo(QualitySettings.antiAliasing), (int)MSAASamples.None, (int)MSAASamples.MSAA8x);
 #endif // OPTIMISATION_ENUM
@@ -283,7 +283,7 @@ namespace UnityEngine.Rendering.Universal
         // non-GC resources to avoid leaking them.
         private void DisposeAdditionalCameraData()
         {
-#if OPTIMISATION
+#if OPTIMISATION_LISTPOOL
             var allCamerasCount = Camera.allCamerasCount;
             var cameras = System.Buffers.ArrayPool<Camera>.Shared.Rent(allCamerasCount);
             Camera.GetAllCameras(cameras);
@@ -293,7 +293,7 @@ namespace UnityEngine.Rendering.Universal
 #else
             foreach (var c in Camera.allCameras)
             {
-#endif // OPTIMISATION
+#endif // OPTIMISATION_LISTPOOL
                 if (c.TryGetComponent<UniversalAdditionalCameraData>(out var acd))
                 {
                     acd.taaPersistentData?.DeallocateTargets();
@@ -304,9 +304,9 @@ namespace UnityEngine.Rendering.Universal
 #endif // BUGFIX
             }
 
-#if OPTIMISATION
+#if OPTIMISATION_LISTPOOL
             System.Buffers.ArrayPool<Camera>.Shared.Return(cameras, clearArray: true);
-#endif // OPTIMISATION
+#endif // OPTIMISATION_LISTPOOL
         }
 
 #if UNITY_2021_1_OR_NEWER
@@ -470,7 +470,7 @@ namespace UnityEngine.Rendering.Universal
                 int mipLevel = standardRequest != null ? standardRequest.mipLevel : singleRequest.mipLevel;
                 int slice = standardRequest != null ? standardRequest.slice : singleRequest.slice;
 #if OPTIMISATION_ENUM
-                int face = standardRequest != null ? Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(standardRequest.face) : Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(singleRequest.face);
+                int face = standardRequest != null ? standardRequest.face.ToInt() : singleRequest.face.ToInt();
 #else
                 int face = standardRequest != null ? (int)standardRequest.face : (int)singleRequest.face;
 #endif // OPTIMISATION_ENUM
@@ -808,7 +808,7 @@ namespace UnityEngine.Rendering.Universal
                         var overlayRenderer = data.scriptableRenderer;
                         // Checking if they are the same renderer type but just not supporting Overlay
 #if OPTIMISATION_ENUM
-                        if ((overlayRenderer.SupportedCameraStackingTypes() & 1 << Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Overlay)) == 0)
+                        if ((overlayRenderer.SupportedCameraStackingTypes() & 1 << CameraRenderType.Overlay.ToInt()) == 0)
 #else
                         if ((overlayRenderer.SupportedCameraStackingTypes() & 1 << (int)CameraRenderType.Overlay) == 0)
 #endif // OPTIMISATION_ENUM
@@ -1139,7 +1139,7 @@ namespace UnityEngine.Rendering.Universal
             // Multiple cameras could render into the same XR display and they should share the same MSAA level.
             if (cameraData.xrRendering && rendererSupportsMSAA && camera.targetTexture == null)
 #if OPTIMISATION_ENUM
-                msaaSamples = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(XRSystem.GetDisplayMSAASamples());
+                msaaSamples = XRSystem.GetDisplayMSAASamples().ToInt();
 #else
                 msaaSamples = (int)XRSystem.GetDisplayMSAASamples();
 #endif // OPTIMISATION_ENUM
@@ -1457,7 +1457,7 @@ namespace UnityEngine.Rendering.Universal
                 if (data && (data.additionalLightsShadowResolutionTier == UniversalAdditionalLightData.AdditionalLightsShadowResolutionTierCustom))
                 {
 #if OPTIMISATION_ENUM
-                    m_ShadowResolutionData.Add(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(light.shadowResolution)); // native code does not clamp light.shadowResolution between -1 and 3
+                    m_ShadowResolutionData.Add(light.shadowResolution.ToInt()); // native code does not clamp light.shadowResolution between -1 and 3
 #else
                     m_ShadowResolutionData.Add((int)light.shadowResolution); // native code does not clamp light.shadowResolution between -1 and 3
 #endif // OPTIMISATION_ENUM
@@ -1973,7 +1973,7 @@ namespace UnityEngine.Rendering.Universal
             {
                 case TonemappingMode.Neutral:
 #if OPTIMISATION_ENUM
-                    eetfMode = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(tonemapping.neutralHDRRangeReductionMode.value);
+                    eetfMode = tonemapping.neutralHDRRangeReductionMode.value.ToInt();
 #else
                     eetfMode = (int)tonemapping.neutralHDRRangeReductionMode.value;
 #endif // OPTIMISATION_ENUM
@@ -1982,7 +1982,7 @@ namespace UnityEngine.Rendering.Universal
 
                 case TonemappingMode.ACES:
 #if OPTIMISATION_ENUM
-                    eetfMode = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(tonemapping.acesPreset.value);
+                    eetfMode = tonemapping.acesPreset.value.ToInt();
 #else
                     eetfMode = (int)tonemapping.acesPreset.value;
 #endif // OPTIMISATION_ENUM

@@ -56,17 +56,7 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// Disposes the panel
         /// </summary>
-#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-#else
-        public void Dispose()
-#endif // OPTIMISATION_IDISPOSABLE
         {
             Clear();
         }

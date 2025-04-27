@@ -284,7 +284,7 @@ namespace UnityEngine.Rendering
                 return l * l / (d * (d * d + l * l));
             }
 
-#if OPTIMISATION
+#if OPTIMISATION_UNITY
             Transform camTransform = cam.transform;
             Vector3 right = 0.5f * lightWidth * camTransform.right;
             Vector3 side = 0.5f * lightWidth * lightSide;
@@ -308,7 +308,7 @@ namespace UnityEngine.Rendering
             Vector3 p2World = cam.transform.InverseTransformPoint(p2Global);
             Vector3 p1WorldFront = cam.transform.InverseTransformPoint(p1Front);
             Vector3 p2WorldFront = cam.transform.InverseTransformPoint(p2Front);
-#endif // OPTIMISATION
+#endif // OPTIMISATION_UNITY
 
             float DiffLineIntegral(Vector3 p1, Vector3 p2)
             {

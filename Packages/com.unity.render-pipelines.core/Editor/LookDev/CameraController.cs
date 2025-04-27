@@ -317,11 +317,11 @@ namespace UnityEditor.Rendering.LookDev
                 m_FlySpeedAccelerated = 9;
             else
                 m_FlySpeedAccelerated *= Mathf.Pow(k_FlyAcceleration, deltaTime);
-#if OPTIMISATION
+#if OPTIMISATION_MATHS
             result = deltaTime * m_FlySpeedAccelerated * speed * m_MotionDirection.normalized;
 #else
             result = m_MotionDirection.normalized * m_FlySpeedAccelerated * speed * deltaTime;
-#endif // OPTIMISATION
+#endif // OPTIMISATION_MATHS
             return result;
         }
 

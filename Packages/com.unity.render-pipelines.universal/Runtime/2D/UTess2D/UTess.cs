@@ -142,7 +142,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                 return i;
 
 #if OPTIMISATION_ENUM
-            if (a.type != UnsafeUtility.EnumToInt(UEventType.EVENT_POINT))
+            if (a.type != UEventType.EVENT_POINT.ToInt())
 #else
             if (a.type != (int)UEventType.EVENT_POINT)
 #endif // OPTIMISATION_ENUM

@@ -235,7 +235,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             passData.requireSrgbConversion = renderingData.cameraData.requireSrgbConversion;
 
 #if OPTIMISATION_ENUM
-            passData.blitMaterialData = m_BlitMaterialData[Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(blitType)];
+            passData.blitMaterialData = m_BlitMaterialData[blitType.ToInt()];
 #else
             passData.blitMaterialData = m_BlitMaterialData[(int)blitType];
 #endif // OPTIMISATION_ENUM

@@ -150,7 +150,7 @@ namespace UnityEngine.Rendering.Universal
                 cameraTargetDescriptor.useMipMap = false;
                 cameraTargetDescriptor.autoGenerateMips = false;
 #if OPTIMISATION_ENUM
-                cameraTargetDescriptor.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None);
+                cameraTargetDescriptor.depthBufferBits = DepthBits.None.ToInt();
 #else
                 cameraTargetDescriptor.depthBufferBits = (int)DepthBits.None;
 #endif // OPTIMISATION_ENUM
@@ -215,7 +215,7 @@ namespace UnityEngine.Rendering.Universal
                 var colorDesc = cameraData.cameraTargetDescriptor;
                 colorDesc.graphicsFormat = GraphicsFormat.R16G16_SFloat;
 #if OPTIMISATION_ENUM
-                colorDesc.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None);
+                colorDesc.depthBufferBits = DepthBits.None.ToInt();
 #else
                 colorDesc.depthBufferBits = (int)DepthBits.None;
 #endif // OPTIMISATION_ENUM

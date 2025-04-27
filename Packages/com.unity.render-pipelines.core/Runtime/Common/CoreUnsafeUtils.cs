@@ -737,5 +737,11 @@ namespace UnityEngine.Rendering
             }
             return false;
         }
+
+        [System.Runtime.CompilerServices.MethodImpl(256)]
+        public static int ToInt<T>(this T enumValue) where T : struct, IConvertible
+        {
+            return UnsafeUtility.EnumToInt(enumValue);
+        }
     }
 }

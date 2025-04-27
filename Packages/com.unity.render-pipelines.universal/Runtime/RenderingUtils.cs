@@ -530,7 +530,7 @@ namespace UnityEngine.Rendering.Universal
             return
                 (DepthBits)handle.rt.descriptor.depthBufferBits != descriptor.depthBufferBits ||
 #if OPTIMISATION_ENUM
-                (handle.rt.descriptor.depthBufferBits == Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(DepthBits.None) && !descriptor.isShadowMap && handle.rt.descriptor.graphicsFormat != descriptor.colorFormat) ||
+                (handle.rt.descriptor.depthBufferBits == DepthBits.None.ToInt() && !descriptor.isShadowMap && handle.rt.descriptor.graphicsFormat != descriptor.colorFormat) ||
 #else
                 (handle.rt.descriptor.depthBufferBits == (int)DepthBits.None && !descriptor.isShadowMap && handle.rt.descriptor.graphicsFormat != descriptor.colorFormat) ||
 #endif // OPTIMISATION_ENUM

@@ -538,7 +538,7 @@ namespace UnityEngine.Rendering.Universal
             {
                 if (IsAfterOpaquePass(ref pass))
 #if OPTIMISATION_ENUM
-                    Blitter.BlitCameraTexture(cmd, baseMap, renderer.cameraColorTargetHandle, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store, mat, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(pass));
+                    Blitter.BlitCameraTexture(cmd, baseMap, renderer.cameraColorTargetHandle, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store, mat, pass.ToInt());
 #else
                     Blitter.BlitCameraTexture(cmd, baseMap, renderer.cameraColorTargetHandle, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store, mat, (int)pass);
 #endif // OPTIMISATION_ENUM
@@ -551,7 +551,7 @@ namespace UnityEngine.Rendering.Universal
                     // Will set the correct camera viewport as well.
                     CoreUtils.SetRenderTarget(cmd, target);
 #if OPTIMISATION_ENUM
-                    Blitter.BlitTexture(cmd, baseMap.nameID, viewportScale, mat, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(pass));
+                    Blitter.BlitTexture(cmd, baseMap.nameID, viewportScale, mat, pass.ToInt());
 #else
                     Blitter.BlitTexture(cmd, baseMap.nameID, viewportScale, mat, (int)pass);
 #endif // OPTIMISATION_ENUM
@@ -559,7 +559,7 @@ namespace UnityEngine.Rendering.Universal
 
                 else
 #if OPTIMISATION_ENUM
-                    Blitter.BlitCameraTexture(cmd, baseMap, target, mat, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(pass));
+                    Blitter.BlitCameraTexture(cmd, baseMap, target, mat, pass.ToInt());
 #else
                     Blitter.BlitCameraTexture(cmd, baseMap, target, mat, (int)pass);
 #endif // OPTIMISATION_ENUM

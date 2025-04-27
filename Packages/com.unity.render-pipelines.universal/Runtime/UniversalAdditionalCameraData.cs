@@ -293,9 +293,9 @@ namespace UnityEngine.Rendering.Universal
         public static string GetName(this CameraRenderType type)
         {
 #if OPTIMISATION_ENUM
-            int typeInt = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(type);
+            int typeInt = type.ToInt();
             if (typeInt < 0 || typeInt >= s_CameraTypeNames.Length)
-                typeInt = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(CameraRenderType.Base);
+                typeInt = CameraRenderType.Base.ToInt();
 #else
             int typeInt = (int)type;
             if (typeInt < 0 || typeInt >= s_CameraTypeNames.Length)

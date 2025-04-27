@@ -756,7 +756,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                 evt.b = new float2();
                 evt.idx = i;
 #if OPTIMISATION_ENUM
-                evt.type = UnsafeUtility.EnumToInt(UEventType.EVENT_POINT);
+                evt.type = UEventType.EVENT_POINT.ToInt();
 #else
                 evt.type = (int)UEventType.EVENT_POINT;
 #endif // OPTIMISATION_ENUM
@@ -775,7 +775,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                     _s.b = b;
                     _s.idx = i;
 #if OPTIMISATION_ENUM
-                    _s.type = UnsafeUtility.EnumToInt(UEventType.EVENT_START);
+                    _s.type = UEventType.EVENT_START.ToInt();
 #else
                     _s.type = (int)UEventType.EVENT_START;
 #endif // OPTIMISATION_ENUM
@@ -785,7 +785,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                     _e.b = a;
                     _e.idx = i;
 #if OPTIMISATION_ENUM
-                    _e.type = UnsafeUtility.EnumToInt(UEventType.EVENT_END);
+                    _e.type = UEventType.EVENT_END.ToInt();
 #else
                     _e.type = (int)UEventType.EVENT_END;
 #endif // OPTIMISATION_ENUM
@@ -800,7 +800,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                     _s.b = a;
                     _s.idx = i;
 #if OPTIMISATION_ENUM
-                    _s.type = UnsafeUtility.EnumToInt(UEventType.EVENT_START);
+                    _s.type = UEventType.EVENT_START.ToInt();
 #else
                     _s.type = (int)UEventType.EVENT_START;
 #endif // OPTIMISATION_ENUM
@@ -810,7 +810,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                     _e.b = b;
                     _e.idx = i;
 #if OPTIMISATION_ENUM
-                    _e.type = UnsafeUtility.EnumToInt(UEventType.EVENT_END);
+                    _e.type = UEventType.EVENT_END.ToInt();
 #else
                     _e.type = (int)UEventType.EVENT_END;
 #endif // OPTIMISATION_ENUM

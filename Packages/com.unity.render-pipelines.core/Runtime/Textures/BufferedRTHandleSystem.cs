@@ -73,7 +73,7 @@ namespace UnityEngine.Rendering
         /// <returns>The frame RT or null when the <paramref name="bufferId"/> was not previously allocated (<see cref="BufferedRTHandleSystem.AllocBuffer(int, Func{RTHandleSystem, int, RTHandle}, int)" />).</returns>
         public RTHandle GetFrameRT(int bufferId, int frameIndex)
         {
-#if OPTIMISATION
+#if OPTIMISATION_DICTIONARY
             if (!m_RTHandles.TryGetValue(bufferId, out RTHandle[] handle))
                 return null;
 
@@ -87,7 +87,7 @@ namespace UnityEngine.Rendering
             Assert.IsTrue(frameIndex >= 0 && frameIndex < m_RTHandles[bufferId].Length);
 
             return m_RTHandles[bufferId][frameIndex];
-#endif // OPTIMISATION
+#endif // OPTIMISATION_DICTIONARY
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace UnityEngine.Rendering
         /// <returns>The num of frames allocated</returns>
         public int GetNumFramesAllocated(int bufferId)
         {
-#if OPTIMISATION
+#if OPTIMISATION_DICTIONARY
             if (!m_RTHandles.TryGetValue(bufferId, out RTHandle[] handle))
                 return 0;
 
@@ -173,7 +173,7 @@ namespace UnityEngine.Rendering
                 return 0;
 
             return m_RTHandles[bufferId].Length;
-#endif // OPTIMISATION
+#endif // OPTIMISATION_DICTIONARY
         }
 
         /// <summary>

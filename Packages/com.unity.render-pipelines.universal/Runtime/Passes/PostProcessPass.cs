@@ -326,7 +326,7 @@ namespace UnityEngine.Rendering.Universal
         internal static RenderTextureDescriptor GetCompatibleDescriptor(RenderTextureDescriptor desc, int width, int height, GraphicsFormat format, DepthBits depthBufferBits = DepthBits.None)
         {
 #if OPTIMISATION_ENUM
-            desc.depthBufferBits = Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(depthBufferBits);
+            desc.depthBufferBits = depthBufferBits.ToInt();
 #else
             desc.depthBufferBits = (int)depthBufferBits;
 #endif // OPTIMISATION_ENUM
@@ -1001,7 +1001,7 @@ namespace UnityEngine.Rendering.Universal
             PostProcessUtils.SetSourceSize(cmd, m_Descriptor);
 
 #if OPTIMISATION_ENUM
-            Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, material, Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(m_MotionBlur.quality.value));
+            Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, material, m_MotionBlur.quality.value.ToInt());
 #else
             Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, material, (int)m_MotionBlur.quality.value);
 #endif // OPTIMISATION_ENUM

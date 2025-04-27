@@ -263,13 +263,13 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
             hashCode.Append(mipMapBias);
             hashCode.Append(slices);
 #if OPTIMISATION_ENUM
-            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(depthBufferBits));
-            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(colorFormat));
-            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(filterMode));
-            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(wrapMode));
-            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(dimension));
-            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(memoryless));
-            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(vrUsage));
+            hashCode.Append(depthBufferBits.ToInt());
+            hashCode.Append(colorFormat.ToInt());
+            hashCode.Append(filterMode.ToInt());
+            hashCode.Append(wrapMode.ToInt());
+            hashCode.Append(dimension.ToInt());
+            hashCode.Append(memoryless.ToInt());
+            hashCode.Append(vrUsage.ToInt());
 #else
             hashCode.Append((int) depthBufferBits);
             hashCode.Append((int) colorFormat);
@@ -287,7 +287,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
             hashCode.Append(bindTextureMS);
             hashCode.Append(useDynamicScale);
 #if OPTIMISATION_ENUM
-            hashCode.Append(Unity.Collections.LowLevel.Unsafe.UnsafeUtility.EnumToInt(msaaSamples));
+            hashCode.Append(msaaSamples.ToInt());
 #else
             hashCode.Append((int) msaaSamples);
 #endif // OPTIMISATION_ENUM
