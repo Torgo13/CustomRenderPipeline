@@ -361,7 +361,7 @@ namespace UnityEngine.Rendering
 
         /// <summary>
         /// Returns an enumerator that iterates through of this array.
-        /// See the IEnumerable docs for more info: <see href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable" langword="IEnumarable" />
+        /// See the IEnumerable docs for more info: <see href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable" langword="IEnumerable" />
         /// </summary>
         /// <remarks>
         /// The returned struct intentionally does not explicitly implement the IEnumarable/IEnumerator interfaces it just follows
@@ -377,7 +377,7 @@ namespace UnityEngine.Rendering
 
         /// <summary>
         /// IEnumerable-like struct used to iterate through a subsection of this array.
-        /// See the IEnumerable docs for more info: <see href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable" langword="IEnumarable" />
+        /// See the IEnumerable docs for more info: <see href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable" langword="IEnumerable" />
         /// </summary>
         /// <remarks>
         /// This struct intentionally does not explicitly implement the IEnumarable/IEnumerator interfaces it just follows

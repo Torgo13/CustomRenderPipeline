@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace UnityEngine.Rendering
 {
     /// <summary>
-    /// The format of the delegate used to perofrm dynamic resolution.
+    /// The format of the delegate used to perform dynamic resolution.
     /// </summary>
     public delegate float PerformDynamicRes();
 
@@ -110,7 +110,7 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// By default, dynamic resolution scaling is turned off automatically when the source matches the final viewport (100% scale).
         /// That is, DynamicResolutionEnabled and SoftwareDynamicResIsEnabled will return false if the scale is 100%.
-        /// For certain upscalers, we dont want this behavior since they could possibly include anti aliasing and other quality improving post processes.
+        /// For certain upscalers, we don't want this behavior since they could possibly include antialiasing and other quality improving post processes.
         /// Setting this to true will eliminate this behavior.
         /// Note: when the EdgeAdaptiveScalingUpres (FSR 1.0) filter is set, this will cause this parameter to always be true.
         /// </summary>
@@ -209,21 +209,21 @@ namespace UnityEngine.Rendering
         public enum UpsamplerScheduleType
         {
             /// <summary>
-            /// Indicates that upscaling must happen before post processing.
+            /// Indicates that upscaling must happen before post-processing.
             /// This means that everything runs at the source resolution during rasterization, and post processes will
             /// run at full resolution. Ideal for temporal upscalers.
             /// </summary>
             BeforePost,
 
             /// <summary>
-            /// Indicates that upscaling should happen after depth of field but before other post processing.
+            /// Indicates that upscaling should happen after depth of field but before other post-processing.
             /// This means that everything runs at the source resolution during rasterization and depth of field, and other post processes
             /// will run at full resolution. More performant alternative for temporal upscalers at the expense of reduced image quality.
             /// </summary>
             AfterDepthOfField,
 
             /// <summary>
-            /// Indicates that upscaling must happen after post processing.
+            /// Indicates that upscaling must happen after post-processing.
             /// This means that everything in the frame runs at the source resolution, and upscaling happens after
             /// the final pass. This is ideal for spatial upscalers.
             /// </summary>
@@ -618,7 +618,7 @@ namespace UnityEngine.Rendering
         public float GetLowResMultiplier(float targetLowRes) => GetLowResMultiplier(targetLowRes, m_CachedSettings.lowResTransparencyMinimumThreshold );
 
         /// <summary>
-        /// Returns the resolved low res multiplier based on the a low res threshold.
+        /// Returns the resolved low res multiplier based on the low res threshold.
         /// </summary>
         /// <param name="targetLowRes"> the target low resolution.
         ///     If by any chance thresholding is disabled or clamped, the exact same resolution is returned.

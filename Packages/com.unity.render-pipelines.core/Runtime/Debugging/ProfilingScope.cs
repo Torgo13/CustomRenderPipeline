@@ -2,6 +2,7 @@
 // This could be worked around by using Unsafe but it's not available at the moment.
 // So in the meantime we use a Dictionary with a perf hit...
 //#define USE_UNSAFE
+#define USE_UNSAFE
 
 #if UNITY_2020_1_OR_NEWER
 #define UNITY_USE_RECORDER
@@ -13,6 +14,9 @@ using System.Collections.Generic;
 using UnityEngine.Profiling;
 using Unity.Profiling;
 
+#if USE_UNSAFE
+using Unsafe = Unity.Collections.LowLevel.Unsafe.UnsafeUtility;
+#endif // USE_UNSAFE
 
 namespace UnityEngine.Rendering
 {

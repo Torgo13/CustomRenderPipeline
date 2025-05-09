@@ -104,6 +104,9 @@ namespace UnityEditor.Rendering
             }
 
             // Generate content
+#if OPTIMISATION
+            await
+#endif // OPTIMISATION
             using var writer = File.CreateText(targetFilename);
             writer.NewLine = Environment.NewLine;
 

@@ -1232,6 +1232,8 @@ namespace UnityEngine.Rendering
             Mesh mesh = new Mesh();
 
 #if OPTIMISATION_LISTPOOL
+            mesh.indexFormat = IndexFormat.UInt16;
+
             var vertices = new Unity.Collections.NativeArray<Vector3>(8, Unity.Collections.Allocator.Temp);
             vertices[0] = new Vector3(min.x, min.y, min.z);
             vertices[1] = new Vector3(max.x, min.y, min.z);
@@ -1241,28 +1243,22 @@ namespace UnityEngine.Rendering
             vertices[5] = new Vector3(max.x, min.y, max.z);
             vertices[6] = new Vector3(max.x, max.y, max.z);
             vertices[7] = new Vector3(min.x, max.y, max.z);
-
             mesh.SetVertices(vertices);
 
-            var triangles = UnityEngine.Pool.ListPool<int>.Get();
-            if (triangles.Capacity < 36)
-                triangles.Capacity = 36;
-
-            triangles.Add(0); triangles.Add(2); triangles.Add(1);
-            triangles.Add(0); triangles.Add(3); triangles.Add(2);
-            triangles.Add(1); triangles.Add(6); triangles.Add(5);
-            triangles.Add(1); triangles.Add(2); triangles.Add(6);
-            triangles.Add(5); triangles.Add(7); triangles.Add(4);
-            triangles.Add(5); triangles.Add(6); triangles.Add(7);
-            triangles.Add(4); triangles.Add(3); triangles.Add(0);
-            triangles.Add(4); triangles.Add(7); triangles.Add(3);
-            triangles.Add(3); triangles.Add(6); triangles.Add(2);
-            triangles.Add(3); triangles.Add(7); triangles.Add(6);
-            triangles.Add(4); triangles.Add(1); triangles.Add(5);
-            triangles.Add(4); triangles.Add(0); triangles.Add(1);
-
-            mesh.SetTriangles(triangles, 0);
-            UnityEngine.Pool.ListPool<int>.Release(triangles);
+            var triangles = new Unity.Collections.NativeArray<ushort>(36, Unity.Collections.Allocator.Temp);
+            triangles[0] = 0; triangles[1] = 2; triangles[2] = 1;
+            triangles[3] = 0; triangles[4] = 3; triangles[5] = 2;
+            triangles[6] = 1; triangles[7] = 6; triangles[8] = 5;
+            triangles[9] = 1; triangles[10] = 2; triangles[11] = 6;
+            triangles[12] = 5; triangles[13] = 7; triangles[14] = 4;
+            triangles[15] = 5; triangles[16] = 6; triangles[17] = 7;
+            triangles[18] = 4; triangles[19] = 3; triangles[20] = 0;
+            triangles[21] = 4; triangles[22] = 7; triangles[23] = 3;
+            triangles[24] = 3; triangles[25] = 6; triangles[26] = 2;
+            triangles[27] = 3; triangles[28] = 7; triangles[29] = 6;
+            triangles[30] = 4; triangles[31] = 1; triangles[32] = 5;
+            triangles[33] = 4; triangles[34] = 0; triangles[35] = 1;
+            mesh.SetIndices(triangles, MeshTopology.Triangles, submesh: 0);
 #else
             Vector3[] vertices = new Vector3[8];
 

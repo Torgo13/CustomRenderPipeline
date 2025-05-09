@@ -147,7 +147,11 @@ namespace UnityEngine.Rendering.Universal
                 for (int i = 0; i < list.Count; ++i)
                 {
                     var value = values[i];
+#if SPELLING
+                    sb.AppendFormat("Resource in pool: Name {0} Last active frame index {1} Size {2} x {3} x {4}",
+#else
                     sb.AppendFormat("Resrouce in pool: Name {0} Last active frame index {1} Size {2} x {3} x {4}",
+#endif // SPELLING
                         value.resource.name,
                         value.frameIndex,
                         value.resource.rt.descriptor.width,
