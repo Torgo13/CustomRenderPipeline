@@ -448,10 +448,9 @@ namespace UnityEngine.Rendering.Universal
 
         // Renderer settings
 #if CUSTOM_URP
-        [SerializeField] public ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
-#else
-        [SerializeField] internal ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
+        public ScriptableRendererData[] RendererDataList => m_RendererDataList;
 #endif // CUSTOM_URP
+        [SerializeField] internal ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
         [SerializeField] internal int m_DefaultRendererIndex = 0;
 
         // General settings
