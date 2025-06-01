@@ -352,14 +352,22 @@ namespace UnityEngine.Rendering.Universal
         /// By obtaining the pixelWidth of the camera and taking into account the render scale
         /// The min dimension is 1.
         /// </summary>
+#if BUGFIX
+        public int scaledWidth => camera.allowDynamicResolution ? camera.pixelWidth : Mathf.Max(1, (int)(camera.pixelWidth * renderScale));
+#else
         public int scaledWidth => Mathf.Max(1, (int)(camera.pixelWidth * renderScale));
+#endif // BUGFIX
 
         /// <summary>
         /// Returns the scaled height of the Camera
         /// By obtaining the pixelHeight of the camera and taking into account the render scale
         /// The min dimension is 1.
         /// </summary>
+#if BUGFIX
+        public int scaledHeight => camera.allowDynamicResolution ? camera.pixelHeight : Mathf.Max(1, (int)(camera.pixelHeight * renderScale));
+#else
         public int scaledHeight => Mathf.Max(1, (int)(camera.pixelHeight * renderScale));
+#endif // BUGFIX
 
         /// <summary>
         /// The camera render type used for camera stacking.
@@ -1851,11 +1859,11 @@ namespace UnityEngine.Rendering.Universal
         internal static void Initialize()
         {
             bool isRunningMobile = false;
-            #if ENABLE_VR && ENABLE_VR_MODULE
-                #if PLATFORM_WINRT || PLATFORM_ANDROID
+#if ENABLE_VR && ENABLE_VR_MODULE
+#if PLATFORM_WINRT || PLATFORM_ANDROID
                     isRunningMobile = IsRunningXRMobile();
-                #endif
-            #endif
+#endif
+#endif
 
             isXRMobile = isRunningMobile;
             isShaderAPIMobileDefined = GraphicsSettings.HasShaderDefine(BuiltinShaderDefine.SHADER_API_MOBILE);
@@ -1863,7 +1871,7 @@ namespace UnityEngine.Rendering.Universal
         }
 
 #if ENABLE_VR && ENABLE_VR_MODULE
-    #if PLATFORM_WINRT || PLATFORM_ANDROID
+#if PLATFORM_WINRT || PLATFORM_ANDROID
         // XR mobile platforms are not treated as dedicated mobile platforms in Core. Handle them specially here. (Quest and HL).
         private static List<XR.XRDisplaySubsystem> displaySubsystemList = new List<XR.XRDisplaySubsystem>();
         private static bool IsRunningXRMobile()
@@ -1882,7 +1890,7 @@ namespace UnityEngine.Rendering.Universal
             }
             return false;
         }
-    #endif
+#endif
 #endif
 
         /// <summary>
