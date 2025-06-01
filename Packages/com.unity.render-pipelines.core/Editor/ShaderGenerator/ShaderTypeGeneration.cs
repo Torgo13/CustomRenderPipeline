@@ -8,6 +8,9 @@ using System.Runtime.CompilerServices;
 namespace UnityEditor.Rendering
 {
     internal class ShaderTypeGenerator
+#if OPTIMISATION_IEQUATABLE // URP_17.3.0
+        : IComparable<ShaderTypeGenerator>
+#endif // OPTIMISATION_IEQUATABLE
     {
         public ShaderTypeGenerator(Type type, GenerateHLSL attr)
         {
@@ -15,6 +18,19 @@ namespace UnityEditor.Rendering
             this.attr = attr;
             debugCounter = 0;
         }
+
+#if OPTIMISATION_IEQUATABLE // URP_17.3.0
+        public int CompareTo(ShaderTypeGenerator other)
+        {
+            // Make sure enums are defined first
+            if (type.IsEnum && !other.type.IsEnum)
+                return -1;
+            if (!type.IsEnum && other.type.IsEnum)
+                return 1;
+            // Otherwise sort alphabetically
+            return type.FullName.CompareTo(other.type.FullName);
+        }
+#endif // OPTIMISATION_IEQUATABLE
 
         enum PrimitiveType
         {

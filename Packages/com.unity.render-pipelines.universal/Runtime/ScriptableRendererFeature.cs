@@ -45,12 +45,22 @@ namespace UnityEngine.Rendering.Universal
 
         void OnEnable()
         {
-            Create();
+#if BUGFIX // URP_17.3.0
+            // UUM-44048: If the pipeline is not created, don't call Create() as it may allocate RTHandles or do other
+            // things that require the pipeline to be constructed. This is safe because once the pipeline is constructed,
+            // ScriptableRendererFeature.Create() will be called by ScriptableRenderer constructor.
+            if (RenderPipelineManager.currentPipeline is UniversalRenderPipeline)
+#endif // BUGFIX
+                Create();
         }
 
         void OnValidate()
         {
-            Create();
+#if BUGFIX // URP_17.3.0
+            // See comment in OnEnable.
+            if (RenderPipelineManager.currentPipeline is UniversalRenderPipeline)
+#endif // BUGFIX
+                Create();
         }
 
         /// <summary>

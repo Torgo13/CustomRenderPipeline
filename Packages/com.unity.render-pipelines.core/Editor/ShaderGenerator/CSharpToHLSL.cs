@@ -64,6 +64,11 @@ namespace UnityEditor.Rendering
         {
             var skipFile = false;
 
+#if BUGFIX // URP_17.3.0
+            // Sort elements to have consistent result
+            generators.Sort();
+#endif // BUGFIX
+
             // Emit atomic element for all generators
             foreach (var gen in generators.Where(gen => !gen.Generate()))
             {
