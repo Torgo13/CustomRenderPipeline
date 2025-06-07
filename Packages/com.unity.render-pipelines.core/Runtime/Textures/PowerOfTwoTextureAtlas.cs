@@ -37,7 +37,11 @@ namespace UnityEngine.Rendering
         /// </summary>
         public int mipPadding => m_MipPadding;
 
+#if OPTIMISATION_MATHS
+        public int GetTexturePadding() => 2 << m_MipPadding;
+#else
         int GetTexturePadding() => (int)Mathf.Pow(2, m_MipPadding) * 2;
+#endif // OPTIMISATION_MATHS
 
         /// <summary>
         /// Get location of the actual texture data without padding in the atlas.

@@ -489,8 +489,13 @@ namespace UnityEngine.Rendering.Universal
                 RTDesc.volumeDepth = 1;
                 RTDesc.msaaSamples = destination.descriptor.msaaSamples;
                 RTDesc.dimension = TextureDimension.Tex2D;
+#if OPTIMISATION_MATHS
+                RTDesc.width = destination.width / (1 << mipLevel);
+                RTDesc.height = destination.height / (1 << mipLevel);
+#else
                 RTDesc.width = destination.width / (int)Math.Pow(2, mipLevel);
                 RTDesc.height = destination.height / (int)Math.Pow(2, mipLevel);
+#endif // OPTIMISATION_MATHS
                 RTDesc.width = Mathf.Max(1, RTDesc.width);
                 RTDesc.height = Mathf.Max(1, RTDesc.height);
 
