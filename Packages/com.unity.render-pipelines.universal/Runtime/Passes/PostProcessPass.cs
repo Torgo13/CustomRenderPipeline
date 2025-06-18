@@ -325,11 +325,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal static RenderTextureDescriptor GetCompatibleDescriptor(RenderTextureDescriptor desc, int width, int height, GraphicsFormat format, DepthBits depthBufferBits = DepthBits.None)
         {
-#if OPTIMISATION_ENUM
-            desc.depthBufferBits = depthBufferBits.ToInt();
-#else
             desc.depthBufferBits = (int)depthBufferBits;
-#endif // OPTIMISATION_ENUM
             desc.msaaSamples = 1;
             desc.width = width;
             desc.height = height;
@@ -1000,11 +996,7 @@ namespace UnityEngine.Rendering.Universal
 
             PostProcessUtils.SetSourceSize(cmd, m_Descriptor);
 
-#if OPTIMISATION_ENUM
-            Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, material, m_MotionBlur.quality.value.ToInt());
-#else
             Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, material, (int)m_MotionBlur.quality.value);
-#endif // OPTIMISATION_ENUM
         }
 
         #endregion
@@ -1412,10 +1404,6 @@ namespace UnityEngine.Rendering.Universal
             // FSR is only considered "enabled" when we're performing upscaling. (downscaling uses a linear filter unconditionally)
             bool isFsrEnabled = ((cameraData.imageScalingMode == ImageScalingMode.Upscaling) && (cameraData.upscalingFilter == ImageUpscalingFilter.FSR));
 
-#if CUSTOM_URP
-            bool isSgsrEnabled = ((cameraData.imageScalingMode == ImageScalingMode.Upscaling) && (cameraData.upscalingFilter == ImageUpscalingFilter.SGSR));
-#endif // CUSTOM_URP
-
             // Reuse RCAS pass as an optional standalone post sharpening pass for TAA.
             // This avoids the cost of EASU and is available for other upscaling options.
             // If FSR is enabled then FSR settings override the TAA settings and we perform RCAS only once.
@@ -1429,10 +1417,11 @@ namespace UnityEngine.Rendering.Universal
                 // NOTE: An ideal implementation could inline this color conversion logic into the UberPost pass, but the current code structure would make
                 //       this process very complex. Specifically, we'd need to guarantee that the uber post output is always written to a UNORM format render
                 //       target in order to preserve the precision of specially encoded color data.
-#if CUSTOM_URP
-                bool isSetupRequired = (isFxaaEnabled || isFsrEnabled || isSgsrEnabled);
-#else
                 bool isSetupRequired = (isFxaaEnabled || isFsrEnabled);
+
+#if CUSTOM_URP
+                bool isSgsrEnabled = (cameraData.imageScalingMode == ImageScalingMode.Upscaling) && (cameraData.upscalingFilter == ImageUpscalingFilter.SGSR);
+                isSetupRequired |= isSgsrEnabled;
 #endif // CUSTOM_URP
 
                 // Make sure to remove any MSAA and attached depth buffers from the temporary render targets

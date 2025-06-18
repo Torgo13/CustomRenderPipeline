@@ -332,11 +332,7 @@ namespace UnityEngine.Rendering
         /// <param name="scalerType">The type of scaler that is used, this is used to indicate the return type of the scaler to the dynamic resolution system.</param>
         static public void SetDynamicResScaler(PerformDynamicRes scaler, DynamicResScalePolicyType scalerType = DynamicResScalePolicyType.ReturnsMinMaxLerpFactor)
         {
-#if OPTIMISATION_ENUM
-            s_ScalerContainers[DynamicResScalerSlot.User.ToInt()] = new ScalerContainer() { type = scalerType, method = scaler };
-#else
             s_ScalerContainers[(int)DynamicResScalerSlot.User] = new ScalerContainer() { type = scalerType, method = scaler };
-#endif // OPTIMISATION_ENUM
         }
 
         /// <summary>
@@ -346,11 +342,7 @@ namespace UnityEngine.Rendering
         /// <param name="scalerType">The type of scaler that is used, this is used to indicate the return type of the scaler to the dynamic resolution system.</param>
         static public void SetSystemDynamicResScaler(PerformDynamicRes scaler, DynamicResScalePolicyType scalerType = DynamicResScalePolicyType.ReturnsMinMaxLerpFactor)
         {
-#if OPTIMISATION_ENUM
-            s_ScalerContainers[DynamicResScalerSlot.System.ToInt()] = new ScalerContainer() { type = scalerType, method = scaler };
-#else
             s_ScalerContainers[(int)DynamicResScalerSlot.System] = new ScalerContainer() { type = scalerType, method = scaler };
-#endif // OPTIMISATION_ENUM
         }
 
         /// <summary>
@@ -450,11 +442,7 @@ namespace UnityEngine.Rendering
 
             if (!m_ForcingRes)
             {
-#if OPTIMISATION_ENUM
-                ref ScalerContainer scaler = ref s_ScalerContainers[s_ActiveScalerSlot.ToInt()];
-#else
                 ref ScalerContainer scaler = ref s_ScalerContainers[(int)s_ActiveScalerSlot];
-#endif // OPTIMISATION_ENUM
                 if (scaler.type == DynamicResScalePolicyType.ReturnsMinMaxLerpFactor)
                 {
                     float currLerp = scaler.method();

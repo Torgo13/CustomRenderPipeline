@@ -93,11 +93,7 @@ namespace UnityEngine.Rendering.Universal
         /// <returns>The path to the URP shader.</returns>
         public static string GetShaderPath(ShaderPathID id)
         {
-#if OPTIMISATION_ENUM
-            int index = id.ToInt();
-#else
             int index = (int)id;
-#endif // OPTIMISATION_ENUM
             int arrayLength = s_ShaderPaths.Length;
             if (arrayLength > 0 && index >= 0 && index < arrayLength)
                 return s_ShaderPaths[index];
@@ -150,11 +146,7 @@ namespace UnityEngine.Rendering.Universal
         /// <returns>GUID for the shader.</returns>
         public static string GetShaderGUID(ShaderPathID id)
         {
-#if OPTIMISATION_ENUM
-            int index = id.ToInt();
-#else
             int index = (int)id;
-#endif // OPTIMISATION_ENUM
             int arrayLength = s_ShaderGUIDs.Length;
             if (arrayLength > 0 && index >= 0 && index < arrayLength)
                 return s_ShaderGUIDs[index];

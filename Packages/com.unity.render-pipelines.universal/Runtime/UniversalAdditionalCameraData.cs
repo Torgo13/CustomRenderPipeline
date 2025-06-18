@@ -124,14 +124,16 @@ namespace UnityEngine.Rendering.Universal
         /// Use this to select the high <c>SubpixelMorphologicalAntiAliasing</c> SMAA quality
         /// </summary>
         High
-/*#if CUSTOM_URP
+/*
+#if CUSTOM_URP
         ,
 
         /// <summary>
         /// Use this to select the ultra <c>SubpixelMorphologicalAntiAliasing</c> SMAA quality
         /// </summary>
         Ultra
-#endif // CUSTOM_URP*/
+#endif // CUSTOM_URP
+*/
     }
 
     /// <summary>
@@ -292,15 +294,9 @@ namespace UnityEngine.Rendering.Universal
 
         public static string GetName(this CameraRenderType type)
         {
-#if OPTIMISATION_ENUM
-            int typeInt = type.ToInt();
-            if (typeInt < 0 || typeInt >= s_CameraTypeNames.Length)
-                typeInt = CameraRenderType.Base.ToInt();
-#else
             int typeInt = (int)type;
             if (typeInt < 0 || typeInt >= s_CameraTypeNames.Length)
                 typeInt = (int)CameraRenderType.Base;
-#endif // OPTIMISATION_ENUM
 
             return s_CameraTypeNames[typeInt];
         }

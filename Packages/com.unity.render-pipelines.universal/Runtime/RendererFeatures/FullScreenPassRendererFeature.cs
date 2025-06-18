@@ -147,11 +147,7 @@ public partial class FullScreenPassRendererFeature : ScriptableRendererFeature
         internal void ReAllocate(RenderTextureDescriptor desc)
         {
             desc.msaaSamples = 1;
-#if OPTIMISATION_ENUM
-            desc.depthBufferBits = DepthBits.None.ToInt();
-#else
             desc.depthBufferBits = (int)DepthBits.None;
-#endif // OPTIMISATION_ENUM
             RenderingUtils.ReAllocateIfNeeded(ref m_CopiedColor, desc, name: "_FullscreenPassColorCopy");
         }
 

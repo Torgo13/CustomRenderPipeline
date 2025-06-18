@@ -286,11 +286,7 @@ namespace UnityEngine.Rendering.Universal
             if (m_Version < 3)
             {
                 // SoftShadowQuality.UsePipelineSettings added at index 0. Bump existing serialized values by 1. e.g. Low(0) -> Low(1).
-#if OPTIMISATION_ENUM
-                m_SoftShadowQuality = (SoftShadowQuality)(Math.Clamp(m_SoftShadowQuality.ToInt() + 1, 0, SoftShadowQuality.High.ToInt()));
-#else
                 m_SoftShadowQuality = (SoftShadowQuality)(Math.Clamp((int)m_SoftShadowQuality + 1, 0, (int)SoftShadowQuality.High));
-#endif // OPTIMISATION_ENUM
                 m_Version = 3;
             }
         }

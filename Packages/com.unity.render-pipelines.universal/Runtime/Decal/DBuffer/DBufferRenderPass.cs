@@ -50,11 +50,7 @@ namespace UnityEngine.Rendering.Universal
             m_ShaderTagIdList = new List<ShaderTagId>();
             m_ShaderTagIdList.Add(new ShaderTagId(DecalShaderPassNames.DBufferMesh));
 
-#if OPTIMISATION_ENUM
-            int dBufferCount = settings.surfaceData.ToInt() + 1;
-#else
             int dBufferCount = (int)settings.surfaceData + 1;
-#endif // OPTIMISATION_ENUM
             dBufferColorHandles = new RTHandle[dBufferCount];
         }
 

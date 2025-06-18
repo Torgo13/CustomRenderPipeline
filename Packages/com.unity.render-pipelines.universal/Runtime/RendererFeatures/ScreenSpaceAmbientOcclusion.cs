@@ -537,11 +537,7 @@ namespace UnityEngine.Rendering.Universal
             private static void RenderAndSetBaseMap(ref CommandBuffer cmd, ref RenderingData renderingData, ref ScriptableRenderer renderer, ref Material mat, ref RTHandle baseMap, ref RTHandle target, ShaderPasses pass)
             {
                 if (IsAfterOpaquePass(ref pass))
-#if OPTIMISATION_ENUM
-                    Blitter.BlitCameraTexture(cmd, baseMap, renderer.cameraColorTargetHandle, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store, mat, pass.ToInt());
-#else
                     Blitter.BlitCameraTexture(cmd, baseMap, renderer.cameraColorTargetHandle, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store, mat, (int)pass);
-#endif // OPTIMISATION_ENUM
 
                 else if (baseMap.rt == null)
                 {
@@ -550,19 +546,11 @@ namespace UnityEngine.Rendering.Universal
 
                     // Will set the correct camera viewport as well.
                     CoreUtils.SetRenderTarget(cmd, target);
-#if OPTIMISATION_ENUM
-                    Blitter.BlitTexture(cmd, baseMap.nameID, viewportScale, mat, pass.ToInt());
-#else
                     Blitter.BlitTexture(cmd, baseMap.nameID, viewportScale, mat, (int)pass);
-#endif // OPTIMISATION_ENUM
                 }
 
                 else
-#if OPTIMISATION_ENUM
-                    Blitter.BlitCameraTexture(cmd, baseMap, target, mat, pass.ToInt());
-#else
                     Blitter.BlitCameraTexture(cmd, baseMap, target, mat, (int)pass);
-#endif // OPTIMISATION_ENUM
             }
 
             private static void GetPassOrder(BlurTypes blurType, bool isAfterOpaque, out int[] textureIndices, out ShaderPasses[] shaderPasses)

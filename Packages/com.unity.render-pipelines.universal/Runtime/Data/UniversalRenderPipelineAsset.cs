@@ -977,11 +977,7 @@ namespace UnityEngine.Rendering.Universal
             get
             {
                 GraphicsFormat result = GraphicsFormat.None;
-#if OPTIMISATION_ENUM
-                foreach (var format in s_LightCookieFormatList[m_AdditionalLightsCookieFormat.ToInt()])
-#else
                 foreach (var format in s_LightCookieFormatList[(int)m_AdditionalLightsCookieFormat])
-#endif // OPTIMISATION_ENUM
                 {
                     if (SystemInfo.IsFormatSupported(format, FormatUsage.Render))
                     {
@@ -1004,11 +1000,7 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
-#if OPTIMISATION_ENUM
-        internal Vector2Int additionalLightsCookieResolution => new Vector2Int(m_AdditionalLightsCookieResolution.ToInt(), m_AdditionalLightsCookieResolution.ToInt());
-#else
         internal Vector2Int additionalLightsCookieResolution => new Vector2Int((int)m_AdditionalLightsCookieResolution, (int)m_AdditionalLightsCookieResolution);
-#endif // OPTIMISATION_ENUM
 
         internal int[] rendererIndexList
         {
@@ -1096,11 +1088,7 @@ namespace UnityEngine.Rendering.Universal
         /// <see cref="SampleCount"/>
         public int msaaSampleCount
         {
-#if OPTIMISATION_ENUM
-            get { return m_MSAA.ToInt(); }
-#else
             get { return (int)m_MSAA; }
-#endif // OPTIMISATION_ENUM
             set { m_MSAA = (MsaaQuality)value; }
         }
 
@@ -1207,11 +1195,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public int mainLightShadowmapResolution
         {
-#if OPTIMISATION_ENUM
-            get { return m_MainLightShadowmapResolution.ToInt(); }
-#else
             get { return (int)m_MainLightShadowmapResolution; }
-#endif // OPTIMISATION_ENUM
 
 #if CUSTOM_URP
             set { m_MainLightShadowmapResolution = (ShadowResolution)value; }
@@ -1258,11 +1242,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public int additionalLightsShadowmapResolution
         {
-#if OPTIMISATION_ENUM
-            get { return m_AdditionalLightsShadowmapResolution.ToInt(); }
-#else
             get { return (int)m_AdditionalLightsShadowmapResolution; }
-#endif // OPTIMISATION_ENUM
             internal set { m_AdditionalLightsShadowmapResolution = (ShadowResolution)value; }
         }
 
@@ -1928,11 +1908,7 @@ namespace UnityEngine.Rendering.Universal
                 if (!assetContainsCustomAdditionalLightShadowResolutions)
                 {
                     // if all resolutions are still the default values, we assume that they have never been customized and that it is safe to upgrade them to fit better the Additional Lights Shadow Atlas size
-#if OPTIMISATION_ENUM
-                    m_AdditionalLightsShadowResolutionTierHigh = m_AdditionalLightsShadowmapResolution.ToInt();
-#else
                     m_AdditionalLightsShadowResolutionTierHigh = (int)m_AdditionalLightsShadowmapResolution;
-#endif // OPTIMISATION_ENUM
                     m_AdditionalLightsShadowResolutionTierMedium = Mathf.Max(m_AdditionalLightsShadowResolutionTierHigh / 2, UniversalAdditionalLightData.AdditionalLightsShadowMinimumResolution);
                     m_AdditionalLightsShadowResolutionTierLow = Mathf.Max(m_AdditionalLightsShadowResolutionTierMedium / 2, UniversalAdditionalLightData.AdditionalLightsShadowMinimumResolution);
                 }

@@ -81,10 +81,13 @@ namespace UnityEngine.Rendering
             SetDirty();
         }
 
+#if BUGFIX
+#else
         /// <summary>
         /// Finalizer.
         /// </summary>
         ~TextureCurve() { }
+#endif // BUGFIX
 
         /// <summary>
         /// Cleans up the internal texture resource.

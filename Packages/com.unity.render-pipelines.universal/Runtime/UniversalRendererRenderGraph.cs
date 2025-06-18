@@ -149,11 +149,7 @@ namespace UnityEngine.Rendering.Universal
                 var cameraTargetDescriptor = cameraData.cameraTargetDescriptor;
                 cameraTargetDescriptor.useMipMap = false;
                 cameraTargetDescriptor.autoGenerateMips = false;
-#if OPTIMISATION_ENUM
-                cameraTargetDescriptor.depthBufferBits = DepthBits.None.ToInt();
-#else
                 cameraTargetDescriptor.depthBufferBits = (int)DepthBits.None;
-#endif // OPTIMISATION_ENUM
 
                 RenderingUtils.ReAllocateIfNeeded(ref m_RenderGraphCameraColorHandle, cameraTargetDescriptor, FilterMode.Bilinear, TextureWrapMode.Clamp, name: "_CameraTargetAttachment");
             }
@@ -214,11 +210,7 @@ namespace UnityEngine.Rendering.Universal
 
                 var colorDesc = cameraData.cameraTargetDescriptor;
                 colorDesc.graphicsFormat = GraphicsFormat.R16G16_SFloat;
-#if OPTIMISATION_ENUM
-                colorDesc.depthBufferBits = DepthBits.None.ToInt();
-#else
                 colorDesc.depthBufferBits = (int)DepthBits.None;
-#endif // OPTIMISATION_ENUM
                 colorDesc.msaaSamples = 1;
                 frameResources.motionVectorColor = CreateRenderGraphTexture(renderGraph, colorDesc, "_MotionVectorTexture", true);
 

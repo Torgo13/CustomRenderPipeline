@@ -811,11 +811,7 @@ namespace UnityEngine.Rendering.Universal
             // find the index of the renderPassEvent in the values array
             for (int i = 0; i < numEvents; ++i)
             {
-#if OPTIMISATION_ENUM
-                if (RenderPassEventsEnumValues.values[currentIndex] == renderPassEvent.ToInt())
-#else
                 if (RenderPassEventsEnumValues.values[currentIndex] == (int)renderPassEvent)
-#endif // OPTIMISATION_ENUM
                     break;
 
                 currentIndex++;
@@ -832,11 +828,7 @@ namespace UnityEngine.Rendering.Universal
 
             int nextValue = RenderPassEventsEnumValues.values[currentIndex + 1];
 
-#if OPTIMISATION_ENUM
-            return nextValue - renderPassEvent.ToInt();
-#else
             return nextValue - (int) renderPassEvent;
-#endif // OPTIMISATION_ENUM
         }
     }
 }

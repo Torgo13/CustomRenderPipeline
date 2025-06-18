@@ -529,11 +529,7 @@ namespace UnityEngine.Rendering.Universal
                 return true;
             return
                 (DepthBits)handle.rt.descriptor.depthBufferBits != descriptor.depthBufferBits ||
-#if OPTIMISATION_ENUM
-                (handle.rt.descriptor.depthBufferBits == DepthBits.None.ToInt() && !descriptor.isShadowMap && handle.rt.descriptor.graphicsFormat != descriptor.colorFormat) ||
-#else
                 (handle.rt.descriptor.depthBufferBits == (int)DepthBits.None && !descriptor.isShadowMap && handle.rt.descriptor.graphicsFormat != descriptor.colorFormat) ||
-#endif // OPTIMISATION_ENUM
                 handle.rt.descriptor.dimension != descriptor.dimension ||
                 handle.rt.descriptor.enableRandomWrite != descriptor.enableRandomWrite ||
                 handle.rt.descriptor.useMipMap != descriptor.useMipMap ||

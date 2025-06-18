@@ -755,11 +755,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                 evt.a = points[i];
                 evt.b = new float2();
                 evt.idx = i;
-#if OPTIMISATION_ENUM
-                evt.type = UEventType.EVENT_POINT.ToInt();
-#else
                 evt.type = (int)UEventType.EVENT_POINT;
-#endif // OPTIMISATION_ENUM
                 events[eventCount++] = evt;
             }
 
@@ -774,21 +770,13 @@ namespace UnityEngine.Rendering.Universal.UTess
                     _s.a = a;
                     _s.b = b;
                     _s.idx = i;
-#if OPTIMISATION_ENUM
-                    _s.type = UEventType.EVENT_START.ToInt();
-#else
                     _s.type = (int)UEventType.EVENT_START;
-#endif // OPTIMISATION_ENUM
 
                     UEvent _e = new UEvent();
                     _e.a = b;
                     _e.b = a;
                     _e.idx = i;
-#if OPTIMISATION_ENUM
-                    _e.type = UEventType.EVENT_END.ToInt();
-#else
                     _e.type = (int)UEventType.EVENT_END;
-#endif // OPTIMISATION_ENUM
 
                     events[eventCount++] = _s;
                     events[eventCount++] = _e;
@@ -799,21 +787,13 @@ namespace UnityEngine.Rendering.Universal.UTess
                     _s.a = b;
                     _s.b = a;
                     _s.idx = i;
-#if OPTIMISATION_ENUM
-                    _s.type = UEventType.EVENT_START.ToInt();
-#else
                     _s.type = (int)UEventType.EVENT_START;
-#endif // OPTIMISATION_ENUM
 
                     UEvent _e = new UEvent();
                     _e.a = a;
                     _e.b = b;
                     _e.idx = i;
-#if OPTIMISATION_ENUM
-                    _e.type = UEventType.EVENT_END.ToInt();
-#else
                     _e.type = (int)UEventType.EVENT_END;
-#endif // OPTIMISATION_ENUM
 
                     events[eventCount++] = _s;
                     events[eventCount++] = _e;

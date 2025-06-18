@@ -220,11 +220,7 @@ namespace UnityEngine.Rendering.Universal
             public TemporalAAQuality quality
             {
                 get => m_Quality;
-#if OPTIMISATION_ENUM
-                set => m_Quality = (TemporalAAQuality)Mathf.Clamp(value.ToInt(), TemporalAAQuality.VeryLow.ToInt(), TemporalAAQuality.VeryHigh.ToInt());
-#else
                 set => m_Quality = (TemporalAAQuality)Mathf.Clamp((int)value, (int)TemporalAAQuality.VeryLow, (int)TemporalAAQuality.VeryHigh);
-#endif // OPTIMISATION_ENUM
             }
             /// <summary>
             /// Determines how much the history buffer is blended together with current frame result. Higher values means more history contribution, which leads to better anti aliasing, but also more prone to ghosting.
@@ -470,11 +466,7 @@ namespace UnityEngine.Rendering.Universal
                         break;
                 }
 
-#if OPTIMISATION_ENUM
-                Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, taaMaterial, taa.quality.ToInt());
-#else
                 Blitter.BlitCameraTexture(cmd, source, destination, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, taaMaterial, (int)taa.quality);
-#endif // OPTIMISATION_ENUM
 
                 if (isNewFrame)
                 {
@@ -534,11 +526,7 @@ namespace UnityEngine.Rendering.Universal
                 passData.srcTaaAccumTex = builder.ReadTexture(srcAccumulation);
 
                 passData.material = taaMaterial;
-#if OPTIMISATION_ENUM
-                passData.passIndex = taa.quality.ToInt();
-#else
                 passData.passIndex = (int)taa.quality;
-#endif // OPTIMISATION_ENUM
 
                 passData.taaFrameInfluence = taaInfluence;
                 passData.taaVarianceClampScale = taa.varianceClampScale;

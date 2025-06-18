@@ -91,11 +91,7 @@ namespace UnityEngine.Rendering.Universal
             var texture = settings.texture.value;
 
             if (settings.type.value != FilmGrainLookup.Custom)
-#if OPTIMISATION_ENUM
-                texture = data.textures.filmGrainTex[settings.type.value.ToInt()];
-#else
                 texture = data.textures.filmGrainTex[(int)settings.type.value];
-#endif // OPTIMISATION_ENUM
 
 #if LWRP_DEBUG_STATIC_POSTFX
             float rndOffsetX = 0f;
