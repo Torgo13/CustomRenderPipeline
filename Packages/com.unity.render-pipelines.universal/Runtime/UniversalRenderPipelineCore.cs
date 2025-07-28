@@ -89,6 +89,10 @@ namespace UnityEngine.Rendering.Universal
     /// </summary>
     public struct RenderingData
     {
+#if CUSTOM_URP
+        public readonly CommandBuffer cmd => commandBuffer;
+#endif // CUSTOM_URP
+
         internal CommandBuffer commandBuffer;
 
         /// <summary>

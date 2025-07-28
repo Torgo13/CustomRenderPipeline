@@ -870,11 +870,6 @@ namespace UnityEngine.Rendering.Universal.Internal
         {
             if (m_CreateEmptyShadowmap && !m_EmptyShadowmapNeedsClear)
             {
-#if OPTIMISATION // SLZ
-                // Don't clear if the shadowcaster pass isn't used.
-                ConfigureClear(ClearFlag.None, Color.black);
-#endif // OPTIMISATION
-
                 // Reset pass RTs to null
                 ResetTarget();
                 return;
