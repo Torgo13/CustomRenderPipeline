@@ -13,7 +13,15 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Deprecated.hlsl"
 
 // Must match: UniversalRenderPipeline.maxVisibleAdditionalLights
-/*
+#ifndef OPTIMISATION
+#define OPTIMISATION
+
+#ifdef OPTIMISATION
+
+#define MAX_VISIBLE_LIGHTS 4
+
+#else // OPTIMISATION
+
 #if defined(SHADER_API_MOBILE) && (defined(SHADER_API_GLES) || defined(SHADER_API_GLES30))
     #define MAX_VISIBLE_LIGHTS MAX_VISIBLE_LIGHT_COUNT_LOW_END_MOBILE
 #elif defined(SHADER_API_MOBILE) || (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3) // Workaround because SHADER_API_GLCORE is also defined when SHADER_API_SWITCH is
@@ -21,9 +29,11 @@
 #else
     #define MAX_VISIBLE_LIGHTS MAX_VISIBLE_LIGHT_COUNT_DESKTOP
 #endif
-*/
 
-#define MAX_VISIBLE_LIGHTS 4
+#endif // OPTIMISATION
+
+#undef OPTIMISATION
+#endif // OPTIMISATION
 
 // Match with values in UniversalRenderPipeline.cs
 #define MAX_ZBIN_VEC4S 1024
