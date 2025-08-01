@@ -164,31 +164,35 @@ real3 UnpackNormalTetraEncode(real2 f, uint faceIndex)
     return mul(n, tetraBasisArray[faceIndex]);
 }
 
+// SLZ MODIFIED // Unity's default functions map Z from 1.0 to -1.0 for RGB normal maps used by mobile. This is bad and wrong. Z should only range from 0 to 1
+#ifndef SLZ_MODIFIED
+#define SLZ_MODIFIED
+
 // Unpack from normal map
 real3 UnpackNormalRGB(real4 packedNormal, real scale = 1.0)
 {
     real3 normal;
-// SLZ MODIFIED // Unity's default functions map Z from 1.0 to -1.0 for RGB normal maps used by mobile. This is bad and wrong. Z should only range from 0 to 1
+#ifdef SLZ_MODIFIED
     normal.xyz = real3(packedNormal.rg * 2.0 - 1.0, packedNormal.b);
-// ELSE SLZ MODIFIED
-    /*
+#else // SLZ_MODIFIED
     normal.xyz = packedNormal.rgb * 2.0 - 1.0;
-    */
-// END SLZ MODIFIED
+#endif // SLZ_MODIFIED
     normal.xy *= scale;
     return normal;
 }
 
 real3 UnpackNormalRGBNoScale(real4 packedNormal)
 {
-// SLZ MODIFIED // Unity's default functions map Z from 1.0 to -1.0 for RGB normal maps used by mobile. This is bad and wrong. Z should only range from 0 to 1
+#ifdef SLZ_MODIFIED
     return real3(packedNormal.rg * 2.0 - 1.0, packedNormal.b);
-// ELSE SLZ MODIFIED
-    /*
+#else // SLZ_MODIFIED
     return packedNormal.rgb * 2.0 - 1.0;
-    */
-// END SLZ MODIFIED
+#endif // SLZ_MODIFIED
 }
+
+#undef SLZ_MODIFIED
+#endif // SLZ_MODIFIED
+// END SLZ MODIFIED
 
 real3 UnpackNormalAG(real4 packedNormal, real scale = 1.0)
 {

@@ -41,17 +41,19 @@
     #define MAX_REFLECTION_PROBES 64
 #endif
 
+// SLZ MODIFIED // make normal a half instead of full float
+#ifndef SLZ_MODIFIED
+#define SLZ_MODIFIED
+
 struct InputData
 {
     float3  positionWS;
     float4  positionCS;
-    // SLZ MODIFIED // make normal a half instead of full float
+#ifdef SLZ_MODIFIED
     half3  normalWS;
-    // ELSE SLZ MODIFIED
-    /*
+#else // SLZ_MODIFIED
     float3  normalWS;
-    */
-    // END SLZ MODIFIED
+#endif // SLZ_MODIFIED
     half3   viewDirectionWS;
     float4  shadowCoord;
     half    fogCoord;
@@ -86,6 +88,10 @@ struct InputData
     float4 mipInfo;
     #endif
 };
+
+#undef SLZ_MODIFIED
+#endif // SLZ_MODIFIED
+// END SLZ MODIFIED
 
 ///////////////////////////////////////////////////////////////////////////////
 //                      Constant Buffers                                     //

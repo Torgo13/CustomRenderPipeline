@@ -5,17 +5,23 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 
 // SLZ MODIFIED
+#ifndef SLZ_MODIFIED
+#define SLZ_MODIFIED
+
+#ifdef SLZ_MODIFIED
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/GlobalSamplers.hlsl"
-// END SLZ MODIFIED
+#endif // SLZ_MODIFIED
 
 TEXTURE2D (_BlitTexture);
 TEXTURE2D (_InputDepthTexture);
 
-// SLZ MODIFIED
-/*
+#ifndef SLZ_MODIFIED
 SamplerState sampler_PointClamp;
 SamplerState sampler_LinearClamp;
-*/
+#endif // SLZ_MODIFIED
+
+#undef SLZ_MODIFIED
+#endif // SLZ_MODIFIED
 // END SLZ MODIFIED
 
 uniform float4 _BlitScaleBias;

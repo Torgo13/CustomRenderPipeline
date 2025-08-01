@@ -793,7 +793,24 @@ TEMPLATE_2_REAL(SafePositivePow, base, power, return pow(max(abs(base), real(REA
 
 // Helpers for making shadergraph functions consider precision spec through the same $precision token used for variable types
 TEMPLATE_2_FLT(SafePositivePow_float, base, power, return pow(max(abs(base), float(FLT_EPS)), power))
+
+// SLZ MODIFIED
+#ifndef SLZ_MODIFIED
+#define SLZ_MODIFIED
+
+#ifdef SLZ_MODIFIED
+#if REAL_IS_HALF
+#endif // SLZ_MODIFIED
+
 TEMPLATE_2_HALF(SafePositivePow_half, base, power, return pow(max(abs(base), half(HALF_EPS)), power))
+
+#ifdef SLZ_MODIFIED
+#endif
+#endif // SLZ_MODIFIED
+
+#undef SLZ_MODIFIED
+#endif // SLZ_MODIFIED
+// END SLZ MODIFIED
 
 float Eps_float() { return FLT_EPS; }
 float Min_float() { return FLT_MIN; }
@@ -1487,8 +1504,11 @@ bool HasFlag(uint bitfield, uint flag)
 }
 
 // SLZ MODIFIED // don't cast float to half on return if the input vector is a float3
+#ifndef SLZ_MODIFIED
+#define SLZ_MODIFIED
 
 // Normalize that account for vectors with zero length
+#ifdef SLZ_MODIFIED
 real3 SafeNormalize(real3 inVec)
 {
     float dp3 = max(REAL_MIN, dot(inVec, inVec));
@@ -1502,18 +1522,17 @@ float3 SafeNormalize(float3 inVec)
     return inVec * rsqrt(dp3);
 }
 #endif
-
-// ELSE SLZ MODIFIED
-
-/*
+#else // SLZ_MODIFIED
 // Normalize that account for vectors with zero length
 real3 SafeNormalize(float3 inVec)
 {
     float dp3 = max(FLT_MIN, dot(inVec, inVec));
     return inVec * rsqrt(dp3);
 }
-*/
+#endif // SLZ_MODIFIED
 
+#undef SLZ_MODIFIED
+#endif // SLZ_MODIFIED
 // END SLZ MODIFIED
 
 // Checks if a vector is normalized
