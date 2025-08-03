@@ -1461,7 +1461,12 @@ namespace UnityEngine.Rendering.Universal
         void ExecuteBlock(int blockIndex, in RenderBlocks renderBlocks,
             ScriptableRenderContext context, ref RenderingData renderingData, bool submit = false)
         {
+#if BUGFIX
+            using RenderBlocks.BlockRange blockRange = renderBlocks.GetRange(blockIndex);
+            foreach (int currIndex in blockRange)
+#else
             foreach (int currIndex in renderBlocks.GetRange(blockIndex))
+#endif // BUGFIX
             {
                 var renderPass = m_ActiveRenderPassQueue[currIndex];
                 ExecuteRenderPass(context, renderPass, ref renderingData);

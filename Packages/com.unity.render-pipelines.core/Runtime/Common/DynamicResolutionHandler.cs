@@ -184,7 +184,7 @@ namespace UnityEngine.Rendering
                     }
                 }
 
-                //if we didnt find a dead object, we create one from scratch.
+                //if we didn't find a dead object, we create one from scratch.
                 if (instance == null)
                 {
                     instance = new DynamicResolutionHandler();

@@ -32,7 +32,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
         uint m_Value;
 
         static uint s_CurrentValidBit = 1 << 16;
-        
+
 #if OPTIMISATION
         const uint s_SharedResourceValidBit = 0x7FFF << 16;
 #else
@@ -83,6 +83,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
             return m_Value == other.m_Value && type == other.type;
         }
 
+        [Unity.Burst.BurstDiscard]
         public override bool Equals(object obj)
         {
             return obj is ResourceHandle other && Equals(other);

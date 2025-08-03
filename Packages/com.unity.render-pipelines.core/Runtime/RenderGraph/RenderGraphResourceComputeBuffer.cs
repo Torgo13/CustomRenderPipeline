@@ -99,6 +99,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
             return count == other.count && stride == other.stride && type == other.type && name == other.name;
         }
 
+        [Unity.Burst.BurstDiscard]
         public override bool Equals(object obj)
         {
             return obj is ComputeBufferDesc other && Equals(other);

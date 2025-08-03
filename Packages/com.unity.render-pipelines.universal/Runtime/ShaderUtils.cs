@@ -109,7 +109,11 @@ namespace UnityEngine.Rendering.Universal
         /// <returns>The URP Shader Path ID.</returns>
         public static ShaderPathID GetEnumFromPath(string path)
         {
+#if OPTIMISATION
+            var index = Array.IndexOf(s_ShaderPaths, path);
+#else
             var index = Array.FindIndex(s_ShaderPaths, m => m == path);
+#endif // OPTIMISATION
             return (ShaderPathID)index;
         }
 

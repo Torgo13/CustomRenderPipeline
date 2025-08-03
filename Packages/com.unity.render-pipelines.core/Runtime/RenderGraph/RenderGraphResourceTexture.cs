@@ -75,6 +75,9 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
     /// Subset of the texture desc containing information for fast memory allocation (when platform supports it)
     /// </summary>
     public struct FastMemoryDesc
+#if OPTIMISATION_IEQUATABLE
+        : IEquatable<FastMemoryDesc>
+#endif // OPTIMISATION_IEQUATABLE
     {
         ///<summary>Whether the texture will be in fast memory.</summary>
         public bool inFastMemory;
@@ -82,6 +85,26 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
         public FastMemoryFlags flags;
         ///<summary>How much of the render target is to be switched into fast memory (between 0 and 1).</summary>
         public float residencyFraction;
+
+#if OPTIMISATION_IEQUATABLE
+        public bool Equals(FastMemoryDesc other)
+        {
+            return inFastMemory == other.inFastMemory
+                && flags == other.flags
+                && residencyFraction.Equals(other.residencyFraction);
+        }
+
+        [Unity.Burst.BurstDiscard]
+        public override bool Equals(object obj)
+        {
+            return obj is FastMemoryDesc other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(inFastMemory, (int)flags, residencyFraction);
+        }
+#endif // OPTIMISATION_IEQUATABLE
     }
 #endif
 

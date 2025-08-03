@@ -229,7 +229,7 @@ namespace UnityEngine.Rendering.Universal
             m_JitterMatrix = jitterMatrix;
         }
 
-        // Helper function to populate builtin stereo matricies as well as URP stereo matricies
+        // Helper function to populate builtin stereo matrices as well as URP stereo matrices
         internal void PushBuiltinShaderConstantsXR(CommandBuffer cmd, bool renderIntoTexture)
         {
 #if ENABLE_VR && ENABLE_XR_MODULE
@@ -1269,7 +1269,7 @@ namespace UnityEngine.Rendering.Universal
         /// <summary> Keyword used for Snapdragon Game Super Resolution. </summary>
         public const string Sgsr = "_SGSR";
 #endif // CUSTOM_URP
-        
+
         /// <summary> Keyword used for Gamma 2.0. </summary>
         public const string Gamma20 = "_GAMMA_20";
 
@@ -1420,7 +1420,12 @@ namespace UnityEngine.Rendering.Universal
             if (camera == null)
                 throw new ArgumentNullException("camera");
 
+#if OPTIMISATION_UNITY
+            var cameraType = camera.cameraType;
+            return cameraType == CameraType.Game || cameraType == CameraType.VR;
+#else
             return camera.cameraType == CameraType.Game || camera.cameraType == CameraType.VR;
+#endif // OPTIMISATION_UNITY
         }
 
         /// <summary>

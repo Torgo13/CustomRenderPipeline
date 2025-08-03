@@ -697,7 +697,7 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
-        // Hide: User aren't supposed to have to create it.
+        // Hide: Users aren't supposed to have to create it.
         //[MenuItem("Assets/Create/Rendering/URP Editor Resources", priority = CoreUtils.Sections.section8 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority)]
         static void CreateUniversalPipelineEditorResources()
         {
