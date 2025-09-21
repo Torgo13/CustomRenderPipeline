@@ -13,7 +13,7 @@ namespace UnityEngine.Rendering
         {
             return debugIds.Value.TryGetValue(parameter.fieldHash, out var debugId) ? debugId : string.Empty;
         }
-        
+
         internal static void AddVolumeParameterDebugId(VolumeParameter parameter, FieldInfo field)
         {
             var fieldHash = field.GetHashCode();

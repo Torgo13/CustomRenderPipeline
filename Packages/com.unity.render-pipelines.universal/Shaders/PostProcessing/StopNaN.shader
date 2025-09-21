@@ -2,6 +2,7 @@ Shader "Hidden/Universal Render Pipeline/Stop NaN"
 {
     HLSLINCLUDE
         #pragma exclude_renderers gles
+        #pragma exclude_renderers gles
         #pragma target 3.5
 
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"

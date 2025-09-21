@@ -40,7 +40,7 @@ namespace UnityEngine.Rendering.Universal.Internal
         private static readonly ProfilingSampler m_ProfilingSamplerFPUpload = new ProfilingSampler("Forward+ Upload");
 
 #if OPTIMISATION_SHADERPARAMS
-        class ShaderParams
+        readonly struct ShaderParams
         {
             public readonly int k_URP_ZBinBuffer;
             public readonly int k_urp_TileBuffer;

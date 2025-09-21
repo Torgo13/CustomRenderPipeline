@@ -7,7 +7,7 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/GlobalSamplers.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/EntityLighting.hlsl"
 
-#ifdef USE_FULL_PRECISION_BLIT_TEXTURE
+#ifdef USE_FULL_PRECISION_BLIT_TEXTURE // URP_17.3.0
 TEXTURE2D_X_FLOAT(_BlitTexture);
 #else
 TEXTURE2D_X(_BlitTexture);

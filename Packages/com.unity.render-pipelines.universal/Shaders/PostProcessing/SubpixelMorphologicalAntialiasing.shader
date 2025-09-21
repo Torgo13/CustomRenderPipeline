@@ -51,7 +51,7 @@ Shader "Hidden/Universal Render Pipeline/SubpixelMorphologicalAntialiasing"
 
             HLSLPROGRAM
 
-                #define USE_FULL_PRECISION_BLIT_TEXTURE 1
+                #define USE_FULL_PRECISION_BLIT_TEXTURE 1 // URP_17.3.0
                 #pragma vertex VertBlend
                 #pragma fragment FragBlend
                 #include "SubpixelMorphologicalAntialiasingBridge.hlsl"

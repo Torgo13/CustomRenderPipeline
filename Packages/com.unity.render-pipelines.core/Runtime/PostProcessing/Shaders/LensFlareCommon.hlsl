@@ -133,7 +133,7 @@ float GetOcclusion(float ratio)
         float2 dir = _OcclusionRadius * SampleDiskUniform(Hash(2 * i + 0), Hash(2 * i + 1));
         float2 pos0 = _ScreenPos.xy + dir;
         float2 pos = pos0 * 0.5f + 0.5f;
-#if UNITY_UV_STARTS_AT_TOP
+#if UNITY_UV_STARTS_AT_TOP // URP_17.3.0
         pos.y = 1.0f - pos.y;
 #endif
 

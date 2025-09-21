@@ -76,7 +76,11 @@ namespace UnityEngine.Rendering
                         {
                             path = attrMenu.menu;
                             if (attrMenu is VolumeComponentMenuForRenderPipeline supportedOn)
+#if OPTIMISATION
+                                skipComponent |= -1 == Array.IndexOf(supportedOn.pipelineTypes, currentPipelineType);
+#else
                                 skipComponent |= !supportedOn.pipelineTypes.Contains(currentPipelineType);
+#endif // OPTIMISATION
                             break;
                         }
                         case HideInInspector attrHide:
@@ -104,9 +108,14 @@ namespace UnityEngine.Rendering
                 volumes.Add((path, t));
             }
 
+#if OPTIMISATION
+            volumes.Sort(static delegate ((string, Type) x, (string, Type) y) { return x.Item1.CompareTo(y.Item1); });
+            return volumes;
+#else
             return volumes
                 .OrderBy(i => i.Item1)
                 .ToList();
+#endif // OPTIMISATION
         }
 
         /// <summary>
@@ -335,15 +344,10 @@ namespace UnityEngine.Rendering
         internal void ReplaceData(VolumeStack stack)
         {
             var resetParameters = stack.defaultParameters;
-#if OPTIMISATION // Support resetParameters being a List or Array
-            foreach (var resetParam in resetParameters)
-            {
-#else
             var resetParametersCount = resetParameters.Length;
             for (int i = 0; i < resetParametersCount; i++)
             {
                 var resetParam = resetParameters[i];
-#endif // OPTIMISATION
                 var targetParam = resetParam.parameter;
                 targetParam.overrideState = false;
                 targetParam.SetValue(resetParam.defaultValue);

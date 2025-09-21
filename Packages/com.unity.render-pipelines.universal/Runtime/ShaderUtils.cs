@@ -124,7 +124,11 @@ namespace UnityEngine.Rendering.Universal
         /// <returns>True or false if it's a URP shader or not.</returns>
         public static bool IsLWShader(Shader shader)
         {
+#if OPTIMISATION
+            return -1 != Array.IndexOf(s_ShaderPaths, shader.name);
+#else
             return s_ShaderPaths.Contains(shader.name);
+#endif // OPTIMISATION
         }
 
 #if UNITY_EDITOR
