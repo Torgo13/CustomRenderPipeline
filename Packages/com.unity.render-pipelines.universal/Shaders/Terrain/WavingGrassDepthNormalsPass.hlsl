@@ -49,7 +49,9 @@ GrassVertexDepthNormalOutput DepthNormalOnlyVertex(GrassVertexDepthNormalInput v
     posVS.xy += v.tangent.xy;
     // Complete SV_POSITION's view space to HClip space transformation
     o.clipPos = mul(GetViewToHClipMatrix(), float4(posVS, 1));
-    //o.clipPos = vertexInput.positionCS;
+    /*
+    o.clipPos = vertexInput.positionCS;
+    */
 
     o.viewDirWS = GetCameraPositionWS() - vertexInput.positionWS;
     return o;
@@ -83,7 +85,9 @@ GrassVertexDepthNormalOutput DepthNormalOnlyBillboardVertex(GrassVertexDepthNorm
     posVS.xy += v.tangent.xy;
     // Complete SV_POSITION's view space to HClip space transformation
     o.clipPos = mul(GetViewToHClipMatrix(), float4(posVS, 1));
-    //o.clipPos = vertexInput.positionCS;
+    /*
+    o.clipPos = vertexInput.positionCS;
+    */
 
     o.viewDirWS = GetCameraPositionWS() - vertexInput.positionWS;
     return o;
@@ -91,6 +95,9 @@ GrassVertexDepthNormalOutput DepthNormalOnlyBillboardVertex(GrassVertexDepthNorm
 
 half4 DepthNormalOnlyFragment(GrassVertexDepthNormalOutput input) : SV_TARGET
 {
+    /*
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_MainTex)).a, input.color, _Cutoff);
+    */
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_PointClamp)).a, input.color, _Cutoff);
     #if defined(_GBUFFER_NORMALS_OCT)
         float3 normalWS = normalize(input.normal);
@@ -99,6 +106,10 @@ half4 DepthNormalOnlyFragment(GrassVertexDepthNormalOutput input) : SV_TARGET
         half3 packedNormalWS = PackFloat2To888(remappedOctNormalWS);      // values between [ 0,  1]
         return half4(packedNormalWS, 0.0);
     #else
+        /*
+        half3 normalWS = half3(normalize(cross(ddy(input.viewDirWS), ddx(input.viewDirWS))));
+        return half4(normalWS, 0.0);
+        */
         return half4(NormalizeNormalPerPixel(input.normal), 0.0);
     #endif
 }

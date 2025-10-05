@@ -45,7 +45,7 @@ void InitializeInputData(GrassVertexOutput input, out InputData inputData)
     inputData.positionWS = input.posWSShininess.xyz;
 
     half3 viewDirWS = input.viewDir;
-#if !defined(SHADER_API_MOBILE)
+#if !defined(SHADER_API_MOBILE) // URP_17.3.0
     viewDirWS = SafeNormalize(viewDirWS);
 #endif
 
@@ -110,11 +110,13 @@ void InitializeVertData(GrassVertexInput input, inout GrassVertexOutput vertData
     posVS.xy += input.tangent.xy;
     // Complete SV_POSITION's view space to HClip space transformation
     vertData.clipPos = mul(GetViewToHClipMatrix(), float4(posVS, 1));
-    //vertData.clipPos = vertexInput.positionCS;
+    /*
+    vertData.clipPos = vertexInput.positionCS;
+    */
 
     vertData.viewDir = GetCameraPositionWS() - vertexInput.positionWS;
     
-#if !defined(SHADER_API_MOBILE)
+#if !defined(SHADER_API_MOBILE) // URP_17.3.0
     vertData.viewDir = SafeNormalize(vertData.viewDir);
 #endif
 
@@ -175,7 +177,9 @@ GrassVertexOutput WavingGrassBillboardVert(GrassVertexInput v)
     UNITY_TRANSFER_INSTANCE_ID(v, o);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-    //TerrainBillboardGrass (v.vertex, v.tangent.xy);
+    /*
+    TerrainBillboardGrass (v.vertex, v.tangent.xy);
+    */
     // wave amount defined by the grass height
     float waveAmount = v.tangent.y;
     o.color = TerrainWaveGrass (v.vertex, waveAmount, v.color);
@@ -187,6 +191,9 @@ GrassVertexOutput WavingGrassBillboardVert(GrassVertexInput v)
 
 inline void InitializeSimpleLitSurfaceData(GrassVertexOutput input, out SurfaceData outSurfaceData)
 {
+    /*
+    half4 diffuseAlpha = SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_MainTex));
+    */
     half4 diffuseAlpha = SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_PointClamp));
     half3 diffuse = diffuseAlpha.rgb * input.color.rgb;
 
@@ -265,7 +272,9 @@ void InitializeVertData(GrassVertexDepthOnlyInput input, inout GrassVertexDepthO
     posVS.xy += input.tangent.xy;
     // Complete SV_POSITION's view space to HClip space transformation
     vertData.clipPos = mul(GetViewToHClipMatrix(), float4(posVS, 1));
-    //vertData.clipPos = vertexInput.positionCS;
+    /*    
+    vertData.clipPos = vertexInput.positionCS;
+    */
 }
 
 GrassVertexDepthOnlyOutput DepthOnlyVertex(GrassVertexDepthOnlyInput v)
@@ -292,8 +301,9 @@ GrassVertexDepthOnlyOutput DepthOnlyBillboardVertex(GrassVertexDepthOnlyInput v)
     UNITY_TRANSFER_INSTANCE_ID(v, o);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-    //TerrainBillboardGrass (v.vertex, v.tangent.xy);
-
+    /*
+    TerrainBillboardGrass (v.vertex, v.tangent.xy);
+    */
     // wave amount defined by the grass height
     float waveAmount = v.tangent.y;
     o.color = TerrainWaveGrass(v.vertex, waveAmount, v.color);
@@ -304,7 +314,10 @@ GrassVertexDepthOnlyOutput DepthOnlyBillboardVertex(GrassVertexDepthOnlyInput v)
 }
 
 half4 DepthOnlyFragment(GrassVertexDepthOnlyOutput input) : SV_TARGET
-{
+{    
+    /*
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_MainTex)).a, input.color, _Cutoff);
+    */
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_PointClamp)).a, input.color, _Cutoff);
     return input.clipPos.z;
 }
