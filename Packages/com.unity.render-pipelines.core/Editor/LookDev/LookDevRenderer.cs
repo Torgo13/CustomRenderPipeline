@@ -24,17 +24,7 @@ namespace UnityEditor.Rendering.LookDev
         private bool disposed = false;
 
         /// <summary>Dispose pattern</summary>
-#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-#else
-        public void Dispose()
-#endif // OPTIMISATION_IDISPOSABLE
         {
             if (disposed)
                 return;
@@ -42,16 +32,8 @@ namespace UnityEditor.Rendering.LookDev
 
             stage = null;
             updater = null;
-#if SAFETY
-            if (output != null)
-            {
-                output.Release();
-                output = null;
-            }
-#else
             output?.Release();
             output = null;
-#endif // SAFETY
         }
     }
 

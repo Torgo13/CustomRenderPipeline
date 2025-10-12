@@ -247,17 +247,7 @@ namespace UnityEditor.Rendering.LookDev
         private bool disposedValue = false; // To detect redundant calls
 
         /// <summary>Disposable behaviour</summary>
-#if OPTIMISATION_IDISPOSABLE
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-#else
         void IDisposable.Dispose()
-#endif // OPTIMISATION_IDISPOSABLE
         {
             if (!disposedValue)
             {
