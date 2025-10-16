@@ -565,6 +565,26 @@ namespace UnityEngine.Rendering
 
         static void QuickSort<T>(T[] data, int left, int right) where T : IComparable<T>, new()
         {
+#if OPTIMISATION
+            while (true)
+            {
+                if (left < right)
+                {
+                    int pivot = Partition(data, left, right);
+
+                    if (pivot >= 1)
+                        QuickSort(data, left, pivot);
+
+                    if (pivot + 1 < right)
+                    {
+                        left = pivot + 1;
+                        continue;
+                    }
+                }
+
+                break;
+            }
+#else
             if (left < right)
             {
                 int pivot = Partition(data, left, right);
@@ -575,6 +595,7 @@ namespace UnityEngine.Rendering
                 if (pivot + 1 < right)
                     QuickSort(data, pivot + 1, right);
             }
+#endif // OPTIMISATION
         }
 
         /// <summary>

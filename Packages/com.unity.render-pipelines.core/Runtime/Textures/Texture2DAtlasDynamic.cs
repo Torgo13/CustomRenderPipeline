@@ -316,6 +316,29 @@ namespace UnityEngine.Rendering
 
         private void DebugStringFromNode(ref string res, Int16 n, int depthCurrent = 0, int depthMax = -1)
         {
+#if OPTIMISATION
+            while (true)
+            {
+                res += "{[" + depthCurrent + "], isOccupied = " + (m_Pool.m_Nodes[n].IsOccupied() ? "true" : "false") + ", self = " + m_Pool.m_Nodes[n].m_Self + ", " + m_Pool.m_Nodes[n].m_Rect.x + "," + m_Pool.m_Nodes[n].m_Rect.y + ", " + m_Pool.m_Nodes[n].m_Rect.z + ", " + m_Pool.m_Nodes[n].m_Rect.w + "}\n";
+
+                if (depthMax == -1 || depthCurrent < depthMax)
+                {
+                    if (m_Pool.m_Nodes[n].m_LeftChild >= 0)
+                    {
+                        DebugStringFromNode(ref res, m_Pool.m_Nodes[n].m_LeftChild, depthCurrent + 1, depthMax);
+                    }
+
+                    if (m_Pool.m_Nodes[n].m_RightChild >= 0)
+                    {
+                        n = m_Pool.m_Nodes[n].m_RightChild;
+                        ++depthCurrent;
+                        continue;
+                    }
+                }
+
+                break;
+            }
+#else
             res += "{[" + depthCurrent + "], isOccupied = " + (m_Pool.m_Nodes[n].IsOccupied() ? "true" : "false") + ", self = " + m_Pool.m_Nodes[n].m_Self + ", " + m_Pool.m_Nodes[n].m_Rect.x + "," + m_Pool.m_Nodes[n].m_Rect.y + ", " + m_Pool.m_Nodes[n].m_Rect.z + ", " + m_Pool.m_Nodes[n].m_Rect.w + "}\n";
 
             if (depthMax == -1 || depthCurrent < depthMax)
@@ -330,6 +353,7 @@ namespace UnityEngine.Rendering
                     DebugStringFromNode(ref res, m_Pool.m_Nodes[n].m_RightChild, depthCurrent + 1, depthMax);
                 }
             }
+#endif // OPTIMISATION
         }
     }
 
@@ -450,7 +474,12 @@ namespace UnityEngine.Rendering
                 if (m_AtlasAllocator.Allocate(out scaleOffset, key, width, height))
                 {
                     scaleOffset.Scale(new Vector4(1.0f / m_Width, 1.0f / m_Height, 1.0f / m_Width, 1.0f / m_Height));
+#if BUGFIX
+                    int mipmapCount = texture is Texture2D tex2D ? tex2D.mipmapCount : 0;
+                    for (int mipLevel = 0; mipLevel < mipmapCount; mipLevel++)
+#else
                     for (int mipLevel = 0; mipLevel < (texture as Texture2D).mipmapCount; mipLevel++)
+#endif // BUGFIX
                     {
                         cmd.SetRenderTarget(m_AtlasTexture, mipLevel);
                         Blitter.BlitQuad(cmd, texture, new Vector4(1, 1, 0, 0), scaleOffset, mipLevel, false);

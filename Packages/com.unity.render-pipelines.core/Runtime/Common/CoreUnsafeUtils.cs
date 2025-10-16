@@ -457,6 +457,27 @@ namespace UnityEngine.Rendering
             where TValue : struct
             where TGetter : struct, IKeyGetter<TValue, TKey>
         {
+#if OPTIMISATION
+            while (true)
+            {
+                // For Recursion
+                if (left < right)
+                {
+                    int pivot = Partition<TValue, TKey, TGetter>(data, left, right);
+
+                    if (pivot >= 1)
+                        QuickSort<TValue, TKey, TGetter>(data, left, pivot);
+
+                    if (pivot + 1 < right)
+                    {
+                        left = pivot + 1;
+                        continue;
+                    }
+                }
+
+                break;
+            }
+#else
             // For Recursion
             if (left < right)
             {
@@ -468,6 +489,7 @@ namespace UnityEngine.Rendering
                 if (pivot + 1 < right)
                     QuickSort<TValue, TKey, TGetter>(data, pivot + 1, right);
             }
+#endif // OPTIMISATION
         }
 
         /// <summary>

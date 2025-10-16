@@ -241,14 +241,36 @@ namespace UnityEngine
                 forward = forward
             };
         }
+        
+#if OPTIMISATION_UNITY
+        Camera _cameraMain;
+        Transform _cameraMainTransform;
+#endif // OPTIMISATION_UNITY
 
         void Update()
         {
+#if OPTIMISATION_UNITY
+            if (anchorPositionOverride == null )
+                return;
+            
+            if (_cameraMain == null)
+            {
+                _cameraMain = Camera.main;
+                if (_cameraMain == null)
+                    return;
+                
+                _cameraMainTransform = _cameraMain.transform;
+            }
+
+            if (anchorPositionOverride.hasChanged || _cameraMainTransform.hasChanged)
+                UpdateTransform(_cameraMain, anchorPosition);
+#else
             if (anchorPositionOverride == null || Camera.main == null)
                 return;
 
             if (anchorPositionOverride.hasChanged || Camera.main.transform.hasChanged)
                 UpdateTransform(Camera.main, anchorPosition);
+#endif // OPTIMISATION_UNITY
         }
 
         void OnDrawGizmosSelected()
